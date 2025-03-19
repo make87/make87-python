@@ -1,0 +1,84 @@
+name: Python3 SDK Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release"
+        required: true
+        default: "0.0.1"
+      dryrun:
+        description: "Dry run mode: do not publish or release"
+        required: false
+        default: "true"
+
+env:
+  PACKAGE_PATH: .
+
+jobs:
+  build_release_deploy:
+    runs-on: [ self-hosted, Linux, X64 ]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update Version in pyproject.toml
+        run: |
+          sed -i "s/^version = .*/version = \"${{ github.event.inputs.version }}\"/" "$PACKAGE_PATH/pyproject.toml"
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install build and release dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build Wheel
+        run: |
+          cd "$PACKAGE_PATH"
+          python -m build
+
+      - name: Determine Wheel Filename
+        id: wheel
+        shell: bash
+        run: echo "wheel=$(ls dist/*.whl | xargs -n 1 basename)" >> $GITHUB_OUTPUT
+
+      - name: Publish to PyPI
+        if: ${{ github.event.inputs.dryrun != 'true' }}
+        run: |
+          cd "$PACKAGE_PATH"
+          python -m twine upload dist/* -u __token__ -p ${{ secrets.PYPI_TOKEN_MAKE87 }}
+
+      - name: Build Documentation
+        run: |
+          python -m pip install -e .
+          cd docs
+          python -m pip install -r requirements.txt
+          mkdocs build
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.dryrun != 'true' }}
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "$PACKAGE_PATH/dist/${{ steps.wheel.outputs.wheel }}"
+          tag: release/${{ github.event.inputs.version }}
+          name: Python3 SDK ${{ github.event.inputs.version }}
+          removeArtifacts: true
+          omitBody: true
+          allowUpdates: true
+
+      - name: Deploy Documentation to Netlify
+        if: ${{ github.event.inputs.dryrun != 'true' }}
+        uses: nwtgck/actions-netlify@v3.0.0
+        with:
+          publish-dir: "docs/site"
+          deploy-message: "Deploy Python SDK Documentation ${{ github.event.inputs.version }} via GitHub Actions."
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_DOCS_DEPLOY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_DOCS_PYTHON_DEPLOY_SITE }}
