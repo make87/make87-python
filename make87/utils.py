@@ -1,12 +1,10 @@
 import json
 import os
 import random
-import sys
 from typing import List, Generic, TypeVar, Type, Optional, Any
 from typing import Union, Literal, Annotated
 
 from google.protobuf.message import Message
-from google.protobuf import timestamp_pb2
 from pydantic import BaseModel, Field
 
 T = TypeVar("T", bound=Message)
@@ -115,10 +113,10 @@ class MessageWithMetadata(Generic[T]):
 
 
 def create_header(
-        header_cls: Type[T],
-        entity_path: Optional[str] = None,
-        reference_id: Optional[int] = None,
-        timestamp: Optional[Any] = None
+    header_cls: Type[T],
+    entity_path: Optional[str] = None,
+    reference_id: Optional[int] = None,
+    timestamp: Optional[Any] = None,
 ) -> T:
     """Creates a default Header with explicitly defined fields."""
     header = header_cls()  # Instantiate the proto class
@@ -142,12 +140,12 @@ def create_header(
 
 
 def header_from_message(
-        header_cls: Type[T],
-        message: Message,
-        append_entity_path: Optional[str] = None,
-        reference_id: Optional[int] = None,
-        timestamp: Optional[Any] = None,
-        set_current_time: bool = False
+    header_cls: Type[T],
+    message: Message,
+    append_entity_path: Optional[str] = None,
+    reference_id: Optional[int] = None,
+    timestamp: Optional[Any] = None,
+    set_current_time: bool = False,
 ) -> T:
     """Clones a Header from an existing message and modifies specific fields."""
     # check if has header field, else raise

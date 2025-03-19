@@ -32,11 +32,7 @@ def smart_cast(value: str) -> Union[str, int, float, bool]:
         return value  # Return as string if conversion fails
 
 
-def get_config_value(
-    key: str,
-    default: Optional[T] = None,
-    decode: Optional[Callable[[Any], T]] = None
-) -> Optional[T]:
+def get_config_value(key: str, default: Optional[T] = None, decode: Optional[Callable[[Any], T]] = None) -> Optional[T]:
     value = ApplicationConfig.resolve().get(key, default)
 
     if value is None:

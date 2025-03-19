@@ -163,26 +163,24 @@ class BufferMessage:
                 message=message_with_metadata.message,
                 metadata=message_with_metadata.metadata,
                 timestamp=message_with_metadata.message.header.timestamp.ToDatetime(),
-                reference_id=message_with_metadata.message.header.reference_id
+                reference_id=message_with_metadata.message.header.reference_id,
             )
-
 
         return BufferMessage(
             message=message_with_metadata.message,
             metadata=message_with_metadata.metadata,
             timestamp=message_with_metadata.message.timestamp.ToDatetime(),
-            reference_id=None
+            reference_id=None,
         )
 
-class MessageGrouper:
 
+class MessageGrouper:
     @abc.abstractmethod
     def message_group_matches(self, messages: List[BufferMessage]) -> bool:
         pass
 
 
 class ReferenceIdGrouper(MessageGrouper):
-
     def message_group_matches(self, messages: List[BufferMessage]) -> bool:
         if len(messages) < 2:
             return True
@@ -210,9 +208,9 @@ class MultiSubscriber:
     """Handles synchronized subscription to multiple topics."""
 
     def __init__(
-            self,
-            # delta_time: float = 0.1,
-            group_on: MessageGrouper
+        self,
+        # delta_time: float = 0.1,
+        group_on: MessageGrouper,
     ):
         self._subscriber_topics: List[TypedSubscriber] = []
         self._buffers: Dict[str, deque] = {}
@@ -221,7 +219,7 @@ class MultiSubscriber:
         self._lock: threading.Lock = threading.Lock()
 
     def _buffer_message(self, callback: Callable[[T], None], message_with_metadata: MessageWithMetadata[T]):
-        message, metadata = message_with_metadata.message, message_with_metadata.metadata
+        metadata = message_with_metadata.metadata
         with self._lock:
             self._buffers[metadata.topic_name].append(
                 BufferMessage.from_message(message_with_metadata)
@@ -230,9 +228,9 @@ class MultiSubscriber:
             self._try_match_messages(callback=callback)
 
     def _buffer_message_with_metadata(
-            self, callback: Callable[[T_M], None], message_with_metadata: MessageWithMetadata[T]
+        self, callback: Callable[[T_M], None], message_with_metadata: MessageWithMetadata[T]
     ):
-        message, metadata = message_with_metadata.message, message_with_metadata.metadata
+        metadata = message_with_metadata.metadata
         with self._lock:
             self._buffers[metadata.topic_name].append(
                 BufferMessage.from_message(message_with_metadata)
@@ -241,7 +239,7 @@ class MultiSubscriber:
             self._try_match_messages_with_metadata(callback=callback)
 
     def _try_match_messages_generic(
-            self, callback: Callable[[Any], None], message_extractor: Callable[[BufferMessage], Any]
+        self, callback: Callable[[Any], None], message_extractor: Callable[[BufferMessage], Any]
     ):
         while all(self._buffers[topic._inner.name] for topic in self._subscriber_topics):
             msg_group: List[BufferMessage] = [self._buffers[topic._inner.name][0] for topic in self._subscriber_topics]
@@ -418,8 +416,9 @@ def get_subscriber(name: str, message_type: Type[T]) -> TypedSubscriber[T]:
     return _TopicManager.get_instance().get_subscriber_topic(name=name, message_type=message_type)
 
 
-def get_multi_subscriber(topics: Dict[str, Union[Type[T], Tuple[Type[T], int]]],
-                         group_on: Optional[MessageGrouper] = None) -> MultiSubscriber:
+def get_multi_subscriber(
+    topics: Dict[str, Union[Type[T], Tuple[Type[T], int]]], group_on: Optional[MessageGrouper] = None
+) -> MultiSubscriber:
     if group_on is None:
         group_on = GroupOn.REFERENCE_ID()
 
