@@ -1,5 +1,4 @@
-![image](docs/src/assets/images/make87_ME_1d_cv_cropped.svg)
-
+![make87 Banner Logo](docs/src/assets/images/make87_ME_1d_cv_cropped.svg)
 # make87 SDK for Python
 
 ## Overview
