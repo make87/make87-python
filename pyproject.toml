@@ -12,19 +12,19 @@ authors = [
     { name = "Nisse Knudsen", email = "nisse@make87.com" },
 ]
 dependencies = [
-    "protobuf",
-    "eclipse-zenoh==1.2.1",
+    "protobuf==4.25.5", # FIXED FOR MAKE87 PLATFORM COMPATIBILITY
+    "eclipse-zenoh==1.2.1", # FIXED FOR MAKE87 PLATFORM COMPATIBILITY
     "pydantic>=2.9.2,<3.0.0",
 ]
 readme = "README.md"
 requires-python = ">=3.9,<3.13"
 
 [project.optional-dependencies]
+storage = [
+    "s3path",
+]
 dev = [
     "pre-commit",
     "pytest",
     "pytest-mock",
-]
-storage = [
-    "s3path",
 ]
