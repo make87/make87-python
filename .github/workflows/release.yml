@@ -81,4 +81,4 @@ jobs:
           production-deploy: true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_DOCS_DEPLOY_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.NETLIFY_DOCS_PYTHON_DEPLOY_SITE }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DOCS_PYTHON_DEPLOY_SITE }}
