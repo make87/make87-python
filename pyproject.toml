@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["make87*"]
+
+[project]
+name = "make87"
+version = "0"
+authors = [
+    { name = "Nisse Knudsen", email = "nisse@make87.com" },
+]
+dependencies = [
+    "protobuf",
+    "eclipse-zenoh==1.2.1",
+    "pydantic>=2.9.2,<3.0.0",
+]
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+    "pytest-mock",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+]
+storage = [
+    "s3path",
+]
