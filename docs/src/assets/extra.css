@@ -1,0 +1,35 @@
+/* Add external link arrow icon in the navigation sidebar */
+.md-nav__link[href^="http"]::after {
+    content: " ↗"; /* Unicode for external link arrow */
+    font-size: 0.8em;
+}
+
+/* Add external link arrow for all external links */
+.md-content a[href^="http"]::after {
+    content: " ↗";
+    font-size: 0.8em;
+}
+
+
+/* Custom CSS for the theme */
+.md-header {
+    background-color: var(--md-header-bg-color, #101010) !important;
+}
+
+/* Navigation Title */
+.md-nav__title {
+    background-color: var(--md-nav-title-bg, #101010) !important;
+}
+
+:root > * {
+    --md-primary-fg-color: #FF5F1F; /* Primary color */
+    --md-accent-fg-color: #FF5F1F; /* Accent color */
+    --md-default-bg-color: #050505; /* Background color */
+    --md-header-bg-color: #101010; /* Header background color */
+    --md-nav-title-bg: #101010; /* Custom nav title background color */
+}
+
+/* Ensure background applies everywhere */
+[data-md-color-scheme="slate"] {
+    --md-default-bg-color: #050505;
+}
