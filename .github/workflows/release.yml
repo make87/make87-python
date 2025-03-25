@@ -15,6 +15,7 @@ jobs:
   build_release_deploy:
     if: startsWith(github.ref, 'refs/heads/release/')
     runs-on: [ self-hosted, Linux, X64 ]
+    environment: Release
     permissions:
       contents: write
     steps:
