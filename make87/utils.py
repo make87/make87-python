@@ -89,7 +89,7 @@ class EndpointBaseModel(BaseModel):
 
 class REQ(EndpointBaseModel):
     endpoint_type: Literal["REQ"]
-    congestion_control: CongestionControl = Field(default=CongestionControl.DEFAULT)
+    congestion_control: CongestionControl = Field(default=CongestionControl.BLOCK)
     priority: Priority = Field(default=Priority.DEFAULT)
     express: bool = Field(default=True)
 
