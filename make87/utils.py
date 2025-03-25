@@ -25,7 +25,7 @@ class TopicBaseModel(BaseModel):
 
 
 class Priority(Enum):
-    CONTROL = 0
+    # CONTROL = 0  # not part of zenoh-python for some reason
     REAL_TIME = 1
     INTERACTIVE_HIGH = 2
     INTERACTIVE_LOW = 3
@@ -39,9 +39,7 @@ class Priority(Enum):
     MAX = REAL_TIME
 
     def to_zenoh(self):
-        if self == Priority.CONTROL:
-            return zenoh.Priority.CONTROL
-        elif self == Priority.REAL_TIME:
+        if self == Priority.REAL_TIME:
             return zenoh.Priority.REAL_TIME
         elif self == Priority.INTERACTIVE_HIGH:
             return zenoh.Priority.INTERACTIVE_HIGH
@@ -102,7 +100,7 @@ class PUB(TopicBaseModel):
 
 
 class ChannelBase(BaseModel):
-    capacity: int
+    capacity: int = Field(default=256)
 
 
 class FifoChannel(ChannelBase):
@@ -118,7 +116,7 @@ HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator=
 
 class SUB(TopicBaseModel):
     topic_type: Literal["SUB"]
-    handler: HandlerChannel  # Add handler property
+    handler: HandlerChannel = Field(default_factory=lambda: FifoChannel(handler_type="FIFO"))
 
 
 class EndpointBaseModel(BaseModel):
@@ -137,7 +135,7 @@ class REQ(EndpointBaseModel):
 
 class PRV(EndpointBaseModel):
     endpoint_type: Literal["PRV"]
-    handler: Union[FifoChannel, RingChannel]  # Add handler property
+    handler: HandlerChannel = Field(default_factory=lambda: FifoChannel(handler_type="FIFO"))
 
 
 Topic = Annotated[Union[PUB, SUB], Field(discriminator="topic_type")]
