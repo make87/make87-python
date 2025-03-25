@@ -5,6 +5,7 @@ from typing import List, Generic, TypeVar, Type, Optional, Any
 from typing import Union, Literal, Annotated
 from enum import Enum
 
+import zenoh
 from google.protobuf.message import Message
 from pydantic import BaseModel, Field
 
@@ -37,6 +38,26 @@ class Priority(Enum):
     MIN = BACKGROUND
     MAX = REAL_TIME
 
+    def to_zenoh(self):
+        if self == Priority.CONTROL:
+            return zenoh.Priority.CONTROL
+        elif self == Priority.REAL_TIME:
+            return zenoh.Priority.REAL_TIME
+        elif self == Priority.INTERACTIVE_HIGH:
+            return zenoh.Priority.INTERACTIVE_HIGH
+        elif self == Priority.INTERACTIVE_LOW:
+            return zenoh.Priority.INTERACTIVE_LOW
+        elif self == Priority.DATA_HIGH:
+            return zenoh.Priority.DATA_HIGH
+        elif self == Priority.DATA:
+            return zenoh.Priority.DATA
+        elif self == Priority.DATA_LOW:
+            return zenoh.Priority.DATA_LOW
+        elif self == Priority.BACKGROUND:
+            return zenoh.Priority.BACKGROUND
+        else:
+            raise ValueError(f"Unknown Priority value: {self}")
+
 
 class Reliability(Enum):
     BEST_EFFORT = 0
@@ -44,12 +65,32 @@ class Reliability(Enum):
 
     DEFAULT = RELIABLE
 
+    def to_zenoh(self):
+        if self == Reliability.BEST_EFFORT:
+            return zenoh.Reliability.BEST_EFFORT
+        elif self == Reliability.RELIABLE:
+            return zenoh.Reliability.RELIABLE
+        elif self == Reliability.DEFAULT:
+            return zenoh.Reliability.DEFAULT
+        else:
+            raise ValueError(f"Unknown Reliability value: {self}")
+
 
 class CongestionControl(Enum):
     DROP = 0
     BLOCK = 1
 
     DEFAULT = DROP
+
+    def to_zenoh(self):
+        if self == CongestionControl.DROP:
+            return zenoh.CongestionControl.DROP
+        elif self == CongestionControl.BLOCK:
+            return zenoh.CongestionControl.BLOCK
+        elif self == CongestionControl.DEFAULT:
+            return zenoh.CongestionControl.DEFAULT
+        else:
+            raise ValueError(f"Unknown CongestionControl value: {self}")
 
 
 class PUB(TopicBaseModel):

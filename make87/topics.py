@@ -355,10 +355,10 @@ class _TopicManager:
                     topic_type = Publisher(
                         name=topic.topic_key,
                         session=session,
-                        priority=zenoh.Priority(topic.priority),
-                        congestion_control=zenoh.CongestionControl(topic.congestion_control),
+                        priority=topic.priority.to_zenoh(),
+                        congestion_control=topic.congestion_control.to_zenoh(),
                         express=topic.express,
-                        reliability=zenoh.Reliability(topic.reliability),
+                        reliability=topic.reliability.to_zenoh(),
                     )
                 elif isinstance(topic, SUB):
                     if isinstance(topic.handler, RingChannel):

@@ -194,8 +194,8 @@ class _EndpointManager:
                     endpoint_type = Requester(
                         name=endpoint.endpoint_key,
                         session=session,
-                        priority=zenoh.Priority(endpoint.priority),
-                        congestion_control=zenoh.CongestionControl(endpoint.congestion_control),
+                        priority=endpoint.priority.to_zenoh(),
+                        congestion_control=endpoint.congestion_control.to_zenoh(),
                         express=endpoint.express,
                     )
                 elif isinstance(endpoint, PRV):
