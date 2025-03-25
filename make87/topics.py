@@ -51,10 +51,35 @@ class TypedPublisher(Generic[T]):
 class Publisher(Topic):
     """A topic used for publishing messages."""
 
-    def __init__(self, name: str, session: zenoh.Session, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        session: zenoh.Session,
+        congestion_control: zenoh.CongestionControl = None,
+        priority: zenoh.Priority = None,
+        express: bool = None,
+        reliability: zenoh.Reliability = None,
+    ):
         super().__init__(name)
         self._session = session
-        self._pub = self._session.declare_publisher(f"{name}", encoding=zenoh.Encoding.APPLICATION_PROTOBUF, **kwargs)
+
+        if congestion_control is None:
+            congestion_control = zenoh.CongestionControl.DEFAULT
+        if priority is None:
+            priority = zenoh.Priority.DEFAULT
+        if express is None:
+            express = True
+        if reliability is None:
+            reliability = zenoh.Reliability.DEFAULT
+
+        self._pub = self._session.declare_publisher(
+            f"{name}",
+            encoding=zenoh.Encoding.APPLICATION_PROTOBUF,
+            congestion_control=congestion_control,
+            priority=priority,
+            express=express,
+            reliability=reliability,
+        )
 
     @property
     def publisher(self):
@@ -133,14 +158,16 @@ class Subscriber:
         self,
         name: str,
         session: zenoh.Session,
-        handler_type: Union[Type[zenoh.handlers.RingChannel], Type[zenoh.handlers.FifoChannel]],
-        handler_capacity: int,
+        handler_type: Union[Type[zenoh.handlers.RingChannel], Type[zenoh.handlers.FifoChannel]] = None,
+        handler_capacity: int = None,
     ):
         self.name = name
         self._session = session
         self._threads = []
-        self._handler_type = handler_type
-        self._handler_capacity = handler_capacity
+        self._handler_type = zenoh.handlers.FifoChannel if handler_type is None else handler_type
+        # API_DATA_RECEPTION_CHANNEL_SIZE=256
+        # https://github.com/eclipse-zenoh/zenoh/blob/76554672656c5e1ca28eab58f80faba4640d5419/zenoh/src/api/session.rs#L126
+        self._handler_capacity = 256 if handler_capacity is None else handler_capacity
 
     def subscribe(self, callback: Callable) -> None:
         """Creates a new subscriber with its own ring buffer and polling thread."""
