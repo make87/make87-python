@@ -3,10 +3,6 @@ name: Python SDK Release
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Version to release"
-        required: true
-        default: "0.0.1"
       dryrun:
         description: "Dry run mode: do not publish or release"
         required: false
@@ -17,17 +13,32 @@ env:
 
 jobs:
   build_release_deploy:
+    if: startsWith(github.ref, 'refs/heads/release/')
     runs-on: [ self-hosted, Linux, X64 ]
     environment: Release
     permissions:
       contents: write
     steps:
+      - name: Extract version from branch name
+        id: extract_version
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/release/}"
+          echo "Detected version: $BRANCH_NAME"
+
+          # Validate SemVer (including optional pre-release like -dev0)
+          if [[ "$BRANCH_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "version=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          else
+            echo "Invalid branch name: must match release/{semver}"
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Update Version in pyproject.toml
         run: |
-          sed -i "s/^version = .*/version = \"${{ github.event.inputs.version }}\"/" "$PACKAGE_PATH/pyproject.toml"
+          sed -i "s/^version = .*/version = \"${{ steps.extract_version.outputs.version }}\"/" "$PACKAGE_PATH/pyproject.toml"
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
@@ -67,8 +78,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "${{ env.PACKAGE_PATH }}/dist/${{ steps.wheel.outputs.wheel }}"
-          tag: release/${{ github.event.inputs.version }}
-          name: Python SDK ${{ github.event.inputs.version }}
+          tag: release/${{ steps.extract_version.outputs.version }}
+          name: Python SDK ${{ steps.extract_version.outputs.version }}
           removeArtifacts: true
           omitBody: true
           allowUpdates: true
@@ -78,7 +89,7 @@ jobs:
         uses: nwtgck/actions-netlify@v3.0.0
         with:
           publish-dir: "docs/site"
-          deploy-message: "Deploy Python SDK Documentation ${{ github.event.inputs.version }} via GitHub Actions."
+          deploy-message: "Deploy Python SDK Documentation ${{ steps.extract_version.outputs.version }} via GitHub Actions."
           production-deploy: true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_DOCS_DEPLOY_TOKEN }}

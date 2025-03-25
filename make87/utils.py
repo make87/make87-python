@@ -3,7 +3,9 @@ import os
 import random
 from typing import List, Generic, TypeVar, Type, Optional, Any
 from typing import Union, Literal, Annotated
+from enum import Enum
 
+import zenoh
 from google.protobuf.message import Message
 from pydantic import BaseModel, Field
 
@@ -22,12 +24,99 @@ class TopicBaseModel(BaseModel):
     message_type: str
 
 
+class Priority(Enum):
+    # CONTROL = 0  # not part of zenoh-python for some reason
+    REAL_TIME = 1
+    INTERACTIVE_HIGH = 2
+    INTERACTIVE_LOW = 3
+    DATA_HIGH = 4
+    DATA = 5
+    DATA_LOW = 6
+    BACKGROUND = 7
+
+    DEFAULT = DATA
+    MIN = BACKGROUND
+    MAX = REAL_TIME
+
+    def to_zenoh(self):
+        if self == Priority.REAL_TIME:
+            return zenoh.Priority.REAL_TIME
+        elif self == Priority.INTERACTIVE_HIGH:
+            return zenoh.Priority.INTERACTIVE_HIGH
+        elif self == Priority.INTERACTIVE_LOW:
+            return zenoh.Priority.INTERACTIVE_LOW
+        elif self == Priority.DATA_HIGH:
+            return zenoh.Priority.DATA_HIGH
+        elif self == Priority.DATA:
+            return zenoh.Priority.DATA
+        elif self == Priority.DATA_LOW:
+            return zenoh.Priority.DATA_LOW
+        elif self == Priority.BACKGROUND:
+            return zenoh.Priority.BACKGROUND
+        else:
+            raise ValueError(f"Unknown Priority value: {self}")
+
+
+class Reliability(Enum):
+    BEST_EFFORT = 0
+    RELIABLE = 1
+
+    DEFAULT = RELIABLE
+
+    def to_zenoh(self):
+        if self == Reliability.BEST_EFFORT:
+            return zenoh.Reliability.BEST_EFFORT
+        elif self == Reliability.RELIABLE:
+            return zenoh.Reliability.RELIABLE
+        elif self == Reliability.DEFAULT:
+            return zenoh.Reliability.RELIABLE
+        else:
+            raise ValueError(f"Unknown Reliability value: {self}")
+
+
+class CongestionControl(Enum):
+    DROP = 0
+    BLOCK = 1
+
+    DEFAULT = DROP
+
+    def to_zenoh(self):
+        if self == CongestionControl.DROP:
+            return zenoh.CongestionControl.DROP
+        elif self == CongestionControl.BLOCK:
+            return zenoh.CongestionControl.BLOCK
+        elif self == CongestionControl.DEFAULT:
+            return zenoh.CongestionControl.DEFAULT
+        else:
+            raise ValueError(f"Unknown CongestionControl value: {self}")
+
+
 class PUB(TopicBaseModel):
     topic_type: Literal["PUB"]
+    congestion_control: CongestionControl = Field(default=CongestionControl.DEFAULT)
+    priority: Priority = Field(default=Priority.DEFAULT)
+    express: bool = Field(default=True)
+    reliability: Reliability = Field(default=Reliability.DEFAULT)
+
+
+class ChannelBase(BaseModel):
+    capacity: int = Field(default=100)
+
+
+class FifoChannel(ChannelBase):
+    handler_type: Literal["FIFO"]
+
+
+class RingChannel(ChannelBase):
+    handler_type: Literal["RING"]
+
+
+HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator="handler_type")]
 
 
 class SUB(TopicBaseModel):
     topic_type: Literal["SUB"]
+    handler: HandlerChannel = Field(default_factory=lambda: RingChannel(handler_type="RING"))
 
 
 class EndpointBaseModel(BaseModel):
@@ -39,10 +128,14 @@ class EndpointBaseModel(BaseModel):
 
 class REQ(EndpointBaseModel):
     endpoint_type: Literal["REQ"]
+    congestion_control: CongestionControl = Field(default=CongestionControl.BLOCK)
+    priority: Priority = Field(default=Priority.DEFAULT)
+    express: bool = Field(default=True)
 
 
 class PRV(EndpointBaseModel):
     endpoint_type: Literal["PRV"]
+    handler: HandlerChannel = Field(default_factory=lambda: FifoChannel(handler_type="FIFO"))
 
 
 Topic = Annotated[Union[PUB, SUB], Field(discriminator="topic_type")]
