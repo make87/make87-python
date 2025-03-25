@@ -8,7 +8,7 @@ from google.protobuf.message import Message
 import concurrent.futures
 
 from make87.session import get_session
-from make87.utils import parse_endpoints, REQ, PRV, IS_IN_RELEASE_MODE
+from make87.utils import parse_endpoints, REQ, PRV, IS_IN_RELEASE_MODE, RingChannel, FifoChannel
 
 T_REQ = TypeVar("T_REQ", bound=Optional[Message])
 T_RES = TypeVar("T_RES", bound=Optional[Message])
@@ -63,11 +63,23 @@ class TypedProvider(Generic[T_REQ, T_RES]):
 
 
 class Provider(Endpoint):
-    """A endpoint used for publishing messages."""
+    """An endpoint used for providing data to an incoming request."""
 
-    def __init__(self, name: str, session: zenoh.Session):
+    def __init__(
+        self,
+        name: str,
+        session: zenoh.Session,
+        handler_type: Union[Type[zenoh.handlers.RingChannel], Type[zenoh.handlers.FifoChannel]] = None,
+        handler_capacity: int = None,
+    ):
         super().__init__(name)
         self._session = session
+        # TODO: Implement handler-based provider
+        self._handler_type = zenoh.handlers.FifoChannel if handler_type is None else handler_type
+        # API_QUERY_RECEPTION_CHANNEL_SIZE=256
+        # https://github.com/eclipse-zenoh/zenoh/blob/76554672656c5e1ca28eab58f80faba4640d5419/zenoh/src/api/session.rs#L127
+        self._handler_capacity = 256 if handler_capacity is None else handler_capacity
+
         self._queryable: Optional[zenoh.Queryable] = None
         self._token: Optional[zenoh.LivelinessToken] = None
 
@@ -101,11 +113,21 @@ class TypedRequester(Generic[T_REQ, T_RES]):
 
 
 class Requester(Endpoint):
-    """A endpoint used for subscribing to messages."""
+    """An endpoint used for requesting data from a provider."""
 
-    def __init__(self, name: str, session: zenoh.Session):
+    def __init__(
+        self,
+        name: str,
+        session: zenoh.Session,
+        congestion_control: zenoh.CongestionControl = None,
+        priority: zenoh.Priority = None,
+        express: bool = None,
+    ):
         super().__init__(name)
         self._session = session
+        self._congestion_control = zenoh.CongestionControl.BLOCK if congestion_control is None else congestion_control
+        self._priority = zenoh.Priority.DEFAULT if priority is None else priority
+        self._express = True if express is None else express
 
     def request(self, message: zenoh.ZBytes, timeout: float = 10.0) -> zenoh.ZBytes:
         subscriber = self._session.liveliness().declare_subscriber(key_expr=self.name, history=True)
@@ -127,9 +149,9 @@ class Requester(Endpoint):
             selector=self.name,
             payload=message,
             encoding=zenoh.Encoding.APPLICATION_PROTOBUF,
-            priority=zenoh.Priority.REAL_TIME,
-            express=True,
-            congestion_control=zenoh.CongestionControl.BLOCK,
+            priority=self._priority,
+            express=self._express,
+            congestion_control=self._congestion_control,
         ).recv()
 
         try:
@@ -172,11 +194,25 @@ class _EndpointManager:
                     endpoint_type = Requester(
                         name=endpoint.endpoint_key,
                         session=session,
+                        priority=zenoh.Priority(endpoint.priority),
+                        congestion_control=zenoh.CongestionControl(endpoint.congestion_control),
+                        express=endpoint.express,
                     )
                 elif isinstance(endpoint, PRV):
+                    if isinstance(endpoint.handler, RingChannel):
+                        handler_type = zenoh.handlers.RingChannel
+                    elif isinstance(endpoint.handler, FifoChannel):
+                        handler_type = zenoh.handlers.FifoChannel
+                    else:
+                        raise ValueError(f"Invalid handler type {endpoint.handler.handler_type}")
+
+                    handler_capacity = endpoint.handler.capacity
+
                     endpoint_type = Provider(
                         name=endpoint.endpoint_key,
                         session=session,
+                        handler_type=handler_type,
+                        handler_capacity=handler_capacity,
                     )
                 else:
                     raise ValueError(f"Invalid endpoint type {endpoint.endpoint_type}")
