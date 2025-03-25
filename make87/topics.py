@@ -11,10 +11,18 @@ from typing import Union
 
 import zenoh
 from google.protobuf.message import Message
-from zenoh.handlers import RingChannel
 
 from make87.session import get_session
-from make87.utils import parse_topics, PUB, SUB, Metadata, MessageWithMetadata, IS_IN_RELEASE_MODE
+from make87.utils import (
+    parse_topics,
+    PUB,
+    SUB,
+    Metadata,
+    MessageWithMetadata,
+    IS_IN_RELEASE_MODE,
+    RingChannel,
+    FifoChannel,
+)
 
 T = TypeVar("T", bound=Message)
 T_M = TypeVar("T_M", bound="MessageWithMetadata")
@@ -43,11 +51,34 @@ class TypedPublisher(Generic[T]):
 class Publisher(Topic):
     """A topic used for publishing messages."""
 
-    def __init__(self, name: str, session: zenoh.Session):
+    def __init__(
+        self,
+        name: str,
+        session: zenoh.Session,
+        congestion_control: zenoh.CongestionControl = None,
+        priority: zenoh.Priority = None,
+        express: bool = None,
+        reliability: zenoh.Reliability = None,
+    ):
         super().__init__(name)
         self._session = session
+
+        if congestion_control is None:
+            congestion_control = zenoh.CongestionControl.DEFAULT
+        if priority is None:
+            priority = zenoh.Priority.DEFAULT
+        if express is None:
+            express = True
+        if reliability is None:
+            reliability = zenoh.Reliability.DEFAULT
+
         self._pub = self._session.declare_publisher(
-            f"{name}", encoding=zenoh.Encoding.APPLICATION_PROTOBUF, priority=zenoh.Priority.REAL_TIME, express=True
+            f"{name}",
+            encoding=zenoh.Encoding.APPLICATION_PROTOBUF,
+            congestion_control=congestion_control,
+            priority=priority,
+            express=express,
+            reliability=reliability,
         )
 
     @property
@@ -98,35 +129,43 @@ class TypedSubscriber(Generic[T]):
 
         self._inner.subscribe(_decode_message)
 
-    def receive(self) -> T:
-        """Receive a message from the topic."""
-        sample = self._inner.subscriber.recv()
-        message = self._message_type()
-        message.ParseFromString(sample.payload.to_bytes())
-        return message
-
-    def receive_with_metadata(self) -> MessageWithMetadata[T]:
-        """Receive a message from the topic."""
-        sample = self._inner.subscriber.recv()
-        message = self._message_type()
-        message.ParseFromString(sample.payload.to_bytes())
-        return MessageWithMetadata(
-            message=message,
-            metadata=Metadata(
-                topic_name=str(sample.key_expr),
-                message_type_decoded=type(message).__name__,
-                bytes_transmitted=len(sample.payload),
-            ),
-        )
+    # def receive(self) -> T:
+    #     """Receive a message from the topic."""
+    #     sample = self._inner.subscriber.recv()
+    #     message = self._message_type()
+    #     message.ParseFromString(sample.payload.to_bytes())
+    #     return message
+    #
+    # def receive_with_metadata(self) -> MessageWithMetadata[T]:
+    #     """Receive a message from the topic."""
+    #     sample = self._inner.subscriber.recv()
+    #     message = self._message_type()
+    #     message.ParseFromString(sample.payload.to_bytes())
+    #     return MessageWithMetadata(
+    #         message=message,
+    #         metadata=Metadata(
+    #             topic_name=str(sample.key_expr),
+    #             message_type_decoded=type(message).__name__,
+    #             bytes_transmitted=len(sample.payload),
+    #         ),
+    #     )
 
 
 class Subscriber:
     """A topic used for subscribing to messages with individual polling threads."""
 
-    def __init__(self, name: str, session: zenoh.Session):
+    def __init__(
+        self,
+        name: str,
+        session: zenoh.Session,
+        handler_type: Union[Type[zenoh.handlers.RingChannel], Type[zenoh.handlers.FifoChannel]] = None,
+        handler_capacity: int = None,
+    ):
         self.name = name
         self._session = session
         self._threads = []
+        self._handler_type = zenoh.handlers.FifoChannel if handler_type is None else handler_type
+        self._handler_capacity = 100 if handler_capacity is None else handler_capacity
 
     def subscribe(self, callback: Callable) -> None:
         """Creates a new subscriber with its own ring buffer and polling thread."""
@@ -134,8 +173,7 @@ class Subscriber:
         def polling_loop():
             """Threaded loop to poll messages in a blocking fashion."""
             # Declare a new subscriber with the ring buffer
-            ring_channel = RingChannel(1)
-            with self._session.declare_subscriber(self.name, ring_channel) as sub:
+            with self._session.declare_subscriber(self.name, self._handler_type(self._handler_capacity)) as sub:
                 for sample in sub:
                     try:
                         callback(sample)  # Process the message
@@ -315,11 +353,26 @@ class _TopicManager:
                     topic_type = Publisher(
                         name=topic.topic_key,
                         session=session,
+                        priority=topic.priority.to_zenoh(),
+                        congestion_control=topic.congestion_control.to_zenoh(),
+                        express=topic.express,
+                        reliability=topic.reliability.to_zenoh(),
                     )
                 elif isinstance(topic, SUB):
+                    if isinstance(topic.handler, RingChannel):
+                        handler_type = zenoh.handlers.RingChannel
+                    elif isinstance(topic.handler, FifoChannel):
+                        handler_type = zenoh.handlers.FifoChannel
+                    else:
+                        raise ValueError(f"Invalid handler type {topic.handler.handler_type}")
+
+                    handler_capacity = topic.handler.capacity
+
                     topic_type = Subscriber(
                         name=topic.topic_key,
                         session=session,
+                        handler_type=handler_type,
+                        handler_capacity=handler_capacity,
                     )
                 else:
                     raise ValueError(f"Invalid topic type {topic.topic_type}")

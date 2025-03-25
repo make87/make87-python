@@ -27,4 +27,6 @@ dev = [
     "pre-commit",
     "pytest",
     "pytest-mock",
+    # dependencies for integration tests
+    "make87_messages"
 ]
