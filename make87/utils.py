@@ -100,7 +100,7 @@ class PUB(TopicBaseModel):
 
 
 class ChannelBase(BaseModel):
-    capacity: int = Field(default=256)
+    capacity: int = Field(default=100)
 
 
 class FifoChannel(ChannelBase):
@@ -116,7 +116,7 @@ HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator=
 
 class SUB(TopicBaseModel):
     topic_type: Literal["SUB"]
-    handler: HandlerChannel = Field(default_factory=lambda: FifoChannel(handler_type="FIFO"))
+    handler: HandlerChannel = Field(default_factory=lambda: RingChannel(handler_type="RING"))
 
 
 class EndpointBaseModel(BaseModel):

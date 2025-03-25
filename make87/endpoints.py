@@ -76,9 +76,7 @@ class Provider(Endpoint):
         self._session = session
         # TODO: Implement handler-based provider
         self._handler_type = zenoh.handlers.FifoChannel if handler_type is None else handler_type
-        # API_QUERY_RECEPTION_CHANNEL_SIZE=256
-        # https://github.com/eclipse-zenoh/zenoh/blob/76554672656c5e1ca28eab58f80faba4640d5419/zenoh/src/api/session.rs#L127
-        self._handler_capacity = 256 if handler_capacity is None else handler_capacity
+        self._handler_capacity = 100 if handler_capacity is None else handler_capacity
 
         self._queryable: Optional[zenoh.Queryable] = None
         self._token: Optional[zenoh.LivelinessToken] = None

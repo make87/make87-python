@@ -165,9 +165,7 @@ class Subscriber:
         self._session = session
         self._threads = []
         self._handler_type = zenoh.handlers.FifoChannel if handler_type is None else handler_type
-        # API_DATA_RECEPTION_CHANNEL_SIZE=256
-        # https://github.com/eclipse-zenoh/zenoh/blob/76554672656c5e1ca28eab58f80faba4640d5419/zenoh/src/api/session.rs#L126
-        self._handler_capacity = 256 if handler_capacity is None else handler_capacity
+        self._handler_capacity = 100 if handler_capacity is None else handler_capacity
 
     def subscribe(self, callback: Callable) -> None:
         """Creates a new subscriber with its own ring buffer and polling thread."""
