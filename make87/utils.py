@@ -3,6 +3,7 @@ import os
 import random
 from typing import List, Generic, TypeVar, Type, Optional, Any
 from typing import Union, Literal, Annotated
+from enum import Enum
 
 from google.protobuf.message import Message
 from pydantic import BaseModel, Field
@@ -22,12 +23,61 @@ class TopicBaseModel(BaseModel):
     message_type: str
 
 
+class Priority(Enum):
+    CONTROL = 0
+    REAL_TIME = 1
+    INTERACTIVE_HIGH = 2
+    INTERACTIVE_LOW = 3
+    DATA_HIGH = 4
+    DATA = 5
+    DATA_LOW = 6
+    BACKGROUND = 7
+
+    DEFAULT = DATA
+    MIN = BACKGROUND
+    MAX = REAL_TIME
+
+
+class Reliability(Enum):
+    BEST_EFFORT = 0
+    RELIABLE = 1
+
+    DEFAULT = RELIABLE
+
+
+class CongestionControl(Enum):
+    DROP = 0
+    BLOCK = 1
+
+    DEFAULT = DROP
+
+
 class PUB(TopicBaseModel):
     topic_type: Literal["PUB"]
+    congestion_control: CongestionControl = Field(default=CongestionControl.DEFAULT)
+    priority: Priority = Field(default=Priority.DEFAULT)
+    express: bool = Field(default=True)
+    reliability: Reliability = Field(default=Reliability.DEFAULT)
+
+
+class ChannelBase(BaseModel):
+    capacity: int
+
+
+class FifoChannel(ChannelBase):
+    handler_type: Literal["FIFO"]
+
+
+class RingChannel(ChannelBase):
+    handler_type: Literal["RING"]
+
+
+HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator="handler_type")]
 
 
 class SUB(TopicBaseModel):
     topic_type: Literal["SUB"]
+    handler: HandlerChannel  # Add handler property
 
 
 class EndpointBaseModel(BaseModel):
@@ -39,10 +89,14 @@ class EndpointBaseModel(BaseModel):
 
 class REQ(EndpointBaseModel):
     endpoint_type: Literal["REQ"]
+    congestion_control: CongestionControl = Field(default=CongestionControl.DEFAULT)
+    priority: Priority = Field(default=Priority.DEFAULT)
+    express: bool = Field(default=True)
 
 
 class PRV(EndpointBaseModel):
     endpoint_type: Literal["PRV"]
+    handler: Union[FifoChannel, RingChannel]  # Add handler property
 
 
 Topic = Annotated[Union[PUB, SUB], Field(discriminator="topic_type")]

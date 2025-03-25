@@ -11,10 +11,18 @@ from typing import Union
 
 import zenoh
 from google.protobuf.message import Message
-from zenoh.handlers import RingChannel
 
 from make87.session import get_session
-from make87.utils import parse_topics, PUB, SUB, Metadata, MessageWithMetadata, IS_IN_RELEASE_MODE
+from make87.utils import (
+    parse_topics,
+    PUB,
+    SUB,
+    Metadata,
+    MessageWithMetadata,
+    IS_IN_RELEASE_MODE,
+    RingChannel,
+    FifoChannel,
+)
 
 T = TypeVar("T", bound=Message)
 T_M = TypeVar("T_M", bound="MessageWithMetadata")
@@ -43,12 +51,10 @@ class TypedPublisher(Generic[T]):
 class Publisher(Topic):
     """A topic used for publishing messages."""
 
-    def __init__(self, name: str, session: zenoh.Session):
+    def __init__(self, name: str, session: zenoh.Session, **kwargs):
         super().__init__(name)
         self._session = session
-        self._pub = self._session.declare_publisher(
-            f"{name}", encoding=zenoh.Encoding.APPLICATION_PROTOBUF, priority=zenoh.Priority.REAL_TIME, express=True
-        )
+        self._pub = self._session.declare_publisher(f"{name}", encoding=zenoh.Encoding.APPLICATION_PROTOBUF, **kwargs)
 
     @property
     def publisher(self):
@@ -123,10 +129,18 @@ class TypedSubscriber(Generic[T]):
 class Subscriber:
     """A topic used for subscribing to messages with individual polling threads."""
 
-    def __init__(self, name: str, session: zenoh.Session):
+    def __init__(
+        self,
+        name: str,
+        session: zenoh.Session,
+        handler_type: Union[Type[zenoh.handlers.RingChannel], Type[zenoh.handlers.FifoChannel]],
+        handler_capacity: int,
+    ):
         self.name = name
         self._session = session
         self._threads = []
+        self._handler_type = handler_type
+        self._handler_capacity = handler_capacity
 
     def subscribe(self, callback: Callable) -> None:
         """Creates a new subscriber with its own ring buffer and polling thread."""
@@ -134,8 +148,7 @@ class Subscriber:
         def polling_loop():
             """Threaded loop to poll messages in a blocking fashion."""
             # Declare a new subscriber with the ring buffer
-            ring_channel = RingChannel(1)
-            with self._session.declare_subscriber(self.name, ring_channel) as sub:
+            with self._session.declare_subscriber(self.name, self._handler_type(self._handler_capacity)) as sub:
                 for sample in sub:
                     try:
                         callback(sample)  # Process the message
@@ -315,11 +328,26 @@ class _TopicManager:
                     topic_type = Publisher(
                         name=topic.topic_key,
                         session=session,
+                        priority=zenoh.Priority(topic.priority),
+                        congestion_control=zenoh.CongestionControl(topic.congestion_control),
+                        express=topic.express,
+                        reliability=zenoh.Reliability(topic.reliability),
                     )
                 elif isinstance(topic, SUB):
+                    if isinstance(topic.handler, RingChannel):
+                        handler_type = zenoh.handlers.RingChannel
+                    elif isinstance(topic.handler, FifoChannel):
+                        handler_type = zenoh.handlers.FifoChannel
+                    else:
+                        raise ValueError(f"Invalid handler type {topic.handler.handler_type}")
+
+                    handler_capacity = topic.handler.capacity
+
                     topic_type = Subscriber(
                         name=topic.topic_key,
                         session=session,
+                        handler_type=handler_type,
+                        handler_capacity=handler_capacity,
                     )
                 else:
                     raise ValueError(f"Invalid topic type {topic.topic_type}")
