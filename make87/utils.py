@@ -69,7 +69,7 @@ class Reliability(Enum):
         elif self == Reliability.RELIABLE:
             return zenoh.Reliability.RELIABLE
         elif self == Reliability.DEFAULT:
-            return zenoh.Reliability.BEST_EFFORT
+            return zenoh.Reliability.RELIABLE
         else:
             raise ValueError(f"Unknown Reliability value: {self}")
 
