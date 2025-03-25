@@ -129,26 +129,26 @@ class TypedSubscriber(Generic[T]):
 
         self._inner.subscribe(_decode_message)
 
-    def receive(self) -> T:
-        """Receive a message from the topic."""
-        sample = self._inner.subscriber.recv()
-        message = self._message_type()
-        message.ParseFromString(sample.payload.to_bytes())
-        return message
-
-    def receive_with_metadata(self) -> MessageWithMetadata[T]:
-        """Receive a message from the topic."""
-        sample = self._inner.subscriber.recv()
-        message = self._message_type()
-        message.ParseFromString(sample.payload.to_bytes())
-        return MessageWithMetadata(
-            message=message,
-            metadata=Metadata(
-                topic_name=str(sample.key_expr),
-                message_type_decoded=type(message).__name__,
-                bytes_transmitted=len(sample.payload),
-            ),
-        )
+    # def receive(self) -> T:
+    #     """Receive a message from the topic."""
+    #     sample = self._inner.subscriber.recv()
+    #     message = self._message_type()
+    #     message.ParseFromString(sample.payload.to_bytes())
+    #     return message
+    #
+    # def receive_with_metadata(self) -> MessageWithMetadata[T]:
+    #     """Receive a message from the topic."""
+    #     sample = self._inner.subscriber.recv()
+    #     message = self._message_type()
+    #     message.ParseFromString(sample.payload.to_bytes())
+    #     return MessageWithMetadata(
+    #         message=message,
+    #         metadata=Metadata(
+    #             topic_name=str(sample.key_expr),
+    #             message_type_decoded=type(message).__name__,
+    #             bytes_transmitted=len(sample.payload),
+    #         ),
+    #     )
 
 
 class Subscriber:
