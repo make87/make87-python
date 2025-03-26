@@ -25,7 +25,7 @@ class _StdErrHandler:
         pass
 
     def publish_log(self, message):
-        log_header = Header(entity_path=f"/stdout/{make87.DEPLOYED_APPLICATION_NAME}")
+        log_header = Header(entity_path=f"{make87.DEPLOYED_APPLICATION_NAME}/stdout")
         log_header.timestamp.GetCurrentTime()
 
         log_msg = LogMessage(header=log_header)
