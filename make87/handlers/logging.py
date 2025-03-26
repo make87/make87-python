@@ -21,7 +21,7 @@ class _LogHandler(logging.Handler):
         if self._topic is None:
             return
 
-        log_header = Header(entity_path=f"/logging/{make87.DEPLOYED_APPLICATION_ID}")
+        log_header = Header(entity_path=f"/logging/{make87.DEPLOYED_APPLICATION_NAME}")
         log_header.timestamp.FromDatetime(datetime.fromtimestamp(record.created, tz=timezone.utc))
 
         log_msg = LogMessage(header=log_header)
