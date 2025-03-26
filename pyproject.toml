@@ -20,6 +20,10 @@ dependencies = [
 readme = "README.md"
 requires-python = ">=3.9,<3.13"
 
+[project.urls]
+Homepage = "https://www.make87.com"
+Source = "https://github.com/make87/make87-python"
+
 [project.optional-dependencies]
 storage = [
     "s3path",
