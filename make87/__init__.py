@@ -11,6 +11,7 @@ from make87.endpoints import (  # noqa
 from make87.endpoints import _EndpointManager
 from make87.peripherals import _PeripheralManager
 from make87.peripherals import resolve_peripheral_name  # noqa
+from make87.handlers import logging, stdout, stderr
 from make87.session import _SessionManager
 from make87.topics import (  # noqa
     MultiSubscriber,
@@ -85,6 +86,10 @@ def initialize():
     _TopicManager.get_instance().initialize()
     _EndpointManager.get_instance().initialize()
     _PeripheralManager.get_instance().initialize()
+
+    logging.initialize()
+    stdout.initialize()
+    stderr.initialize()
 
 
 def loop():
