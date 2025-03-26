@@ -8,6 +8,7 @@ include = ["make87*"]
 [project]
 name = "make87"
 version = "0"
+license = { text = "make87 Platform SDK License" }
 authors = [
     { name = "Nisse Knudsen", email = "nisse@make87.com" },
 ]
