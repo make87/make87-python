@@ -54,7 +54,7 @@ class TestPublisherTopics:
         assert len(endpoints.endpoints) == 0
 
     def test_parse_topics_with_congestion_control(self, monkeypatch):
-        valid_json = '{"topics": [{"topic_name": "test_topic", "topic_key": "test_key", "message_type": "test_type", "topic_type": "PUB", "congestion_control": 0}]}'
+        valid_json = '{"topics": [{"topic_name": "test_topic", "topic_key": "test_key", "message_type": "test_type", "topic_type": "PUB", "congestion_control": "DROP"}]}'
         monkeypatch.setenv("TOPICS", valid_json)
         topics = parse_topics()
         assert isinstance(topics, Topics)
@@ -70,7 +70,7 @@ class TestPublisherTopics:
         assert topics.topics[0].express is False
 
     def test_parse_topics_with_priority(self, monkeypatch):
-        valid_json = '{"topics": [{"topic_name": "test_topic", "topic_key": "test_key", "message_type": "test_type", "topic_type": "PUB", "priority": 1}]}'
+        valid_json = '{"topics": [{"topic_name": "test_topic", "topic_key": "test_key", "message_type": "test_type", "topic_type": "PUB", "priority": "REAL_TIME"}]}'
         monkeypatch.setenv("TOPICS", valid_json)
         topics = parse_topics()
         assert isinstance(topics, Topics)
@@ -78,7 +78,7 @@ class TestPublisherTopics:
         assert topics.topics[0].priority == Priority.REAL_TIME
 
     def test_parse_topics_with_reliability(self, monkeypatch):
-        valid_json = '{"topics": [{"topic_name": "test_topic", "topic_key": "test_key", "message_type": "test_type", "topic_type": "PUB", "reliability": 1}]}'
+        valid_json = '{"topics": [{"topic_name": "test_topic", "topic_key": "test_key", "message_type": "test_type", "topic_type": "PUB", "reliability": "RELIABLE"}]}'
         monkeypatch.setenv("TOPICS", valid_json)
         topics = parse_topics()
         assert isinstance(topics, Topics)

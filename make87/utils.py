@@ -24,15 +24,14 @@ class TopicBaseModel(BaseModel):
     message_type: str
 
 
-class Priority(Enum):
-    # CONTROL = 0  # not part of zenoh-python for some reason
-    REAL_TIME = 1
-    INTERACTIVE_HIGH = 2
-    INTERACTIVE_LOW = 3
-    DATA_HIGH = 4
-    DATA = 5
-    DATA_LOW = 6
-    BACKGROUND = 7
+class Priority(str, Enum):
+    REAL_TIME = "REAL_TIME"
+    INTERACTIVE_HIGH = "INTERACTIVE_HIGH"
+    INTERACTIVE_LOW = "INTERACTIVE_LOW"
+    DATA_HIGH = "DATA_HIGH"
+    DATA = "DATA"
+    DATA_LOW = "DATA_LOW"
+    BACKGROUND = "BACKGROUND"
 
     DEFAULT = DATA
     MIN = BACKGROUND
@@ -58,8 +57,8 @@ class Priority(Enum):
 
 
 class Reliability(Enum):
-    BEST_EFFORT = 0
-    RELIABLE = 1
+    BEST_EFFORT = "BEST_EFFORT"
+    RELIABLE = "RELIABLE"
 
     DEFAULT = RELIABLE
 
@@ -75,8 +74,8 @@ class Reliability(Enum):
 
 
 class CongestionControl(Enum):
-    DROP = 0
-    BLOCK = 1
+    DROP = "DROP"
+    BLOCK = "BLOCK"
 
     DEFAULT = DROP
 
