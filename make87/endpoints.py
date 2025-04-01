@@ -130,15 +130,17 @@ class Requester(Endpoint):
     def request(self, message: zenoh.ZBytes, timeout: float = 10.0) -> zenoh.ZBytes:
         subscriber = self._session.liveliness().declare_subscriber(key_expr=self.name, history=True)
 
-        # Use the standard ThreadPoolExecutor to call subscriber.recv() with a timeout.
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(subscriber.recv)
-            try:
-                sample = future.result(timeout=timeout)
-            except concurrent.futures.TimeoutError:
-                raise ProviderNotAvailable(
-                    f"Endpoint '{self.name}' is not available. Timed out waiting for endpoint to become available."
-                )
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = executor.submit(subscriber.recv)
+        try:
+            sample = future.result(timeout=timeout)
+        except concurrent.futures.TimeoutError:
+            executor.shutdown(wait=False)
+            raise ProviderNotAvailable(
+                f"Endpoint '{self.name}' is not available. Timed out waiting for endpoint to become available."
+            )
+        else:
+            executor.shutdown(wait=False)
 
         if sample.kind != zenoh.SampleKind.PUT:
             raise ProviderNotAvailable(f"Endpoint '{self.name}' is not available.")
@@ -150,12 +152,16 @@ class Requester(Endpoint):
             priority=self._priority,
             express=self._express,
             congestion_control=self._congestion_control,
-        ).recv()
+        ).try_recv()
+
+        # This is None in case that Provider shutdown between receiving liveliness and sending request
+        if reply is None:
+            raise ProviderNotAvailable(f"Endpoint '{self.name}' is not available.")
 
         try:
             return reply.ok.payload
         except Exception:
-            raise Exception(f"Failed to request endpoint '{self.name}': {reply.err.payload.to_string()}")
+            raise Exception(f"Error returned while requesting endpoint '{self.name}': {reply.err.payload.to_string()}")
 
 
 class _EndpointManager:
