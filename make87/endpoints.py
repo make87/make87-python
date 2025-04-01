@@ -151,7 +151,7 @@ class Requester(Endpoint):
         if reply.ok is not None:
             return reply.ok.payload
         elif reply.err is not None:
-            if bytes(reply.err.payload).decode().upper() == "TIMEOUT":
+            if bytes(reply.err.payload).decode("utf-8").strip().upper() == "TIMEOUT":
                 raise ResponseTimeout(
                     f"Waited {timeout}s for response until timed out. Consider increasing your timeout or checking with the provider side."
                 )
