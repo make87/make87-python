@@ -5,7 +5,6 @@ from typing import Union
 
 import zenoh
 from google.protobuf.message import Message
-import concurrent.futures
 
 from make87.session import get_session
 from make87.utils import parse_endpoints, REQ, PRV, IS_IN_RELEASE_MODE, RingChannel, FifoChannel
@@ -15,6 +14,9 @@ T_RES = TypeVar("T_RES", bound=Optional[Message])
 
 
 class ProviderNotAvailable(Exception): ...
+
+
+class ResponseTimeout(Exception): ...
 
 
 class Endpoint:
@@ -128,21 +130,6 @@ class Requester(Endpoint):
         self._express = True if express is None else express
 
     def request(self, message: zenoh.ZBytes, timeout: float = 10.0) -> zenoh.ZBytes:
-        subscriber = self._session.liveliness().declare_subscriber(key_expr=self.name, history=True)
-
-        # Use the standard ThreadPoolExecutor to call subscriber.recv() with a timeout.
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(subscriber.recv)
-            try:
-                sample = future.result(timeout=timeout)
-            except concurrent.futures.TimeoutError:
-                raise ProviderNotAvailable(
-                    f"Endpoint '{self.name}' is not available. Timed out waiting for endpoint to become available."
-                )
-
-        if sample.kind != zenoh.SampleKind.PUT:
-            raise ProviderNotAvailable(f"Endpoint '{self.name}' is not available.")
-
         reply = self._session.get(
             selector=self.name,
             payload=message,
@@ -150,12 +137,28 @@ class Requester(Endpoint):
             priority=self._priority,
             express=self._express,
             congestion_control=self._congestion_control,
-        ).recv()
+            timeout=timeout,
+        )
 
         try:
+            reply = reply.recv()
+        except zenoh.ZError as e:
+            if all(token in str(e).upper() for token in ("CHANNEL", "CLOSED")):
+                raise ProviderNotAvailable(f"Endpoint '{self.name}' is not available.")
+            else:
+                raise Exception(f"Error while requesting endpoint '{self.name}': {e}")
+
+        if reply.ok is not None:
             return reply.ok.payload
-        except Exception:
-            raise Exception(f"Failed to request endpoint '{self.name}': {reply.err.payload.to_string()}")
+        elif reply.err is not None:
+            if bytes(reply.err.payload).decode("utf-8").strip().upper() == "TIMEOUT":
+                raise ResponseTimeout(
+                    f"Waited {timeout}s for response until timed out. Consider increasing your timeout or checking with the provider side."
+                )
+            else:
+                raise Exception(
+                    f"Error returned while requesting endpoint '{self.name}': {reply.err.payload.to_string()}"
+                )
 
 
 class _EndpointManager:

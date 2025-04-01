@@ -2,6 +2,7 @@ from time import sleep
 
 from make87.endpoints import (  # noqa
     ProviderNotAvailable,
+    ResponseTimeout,
     TypedProvider,
     TypedRequester,
     get_provider,
@@ -49,6 +50,7 @@ __all__ = [
     "Metadata",
     "MultiSubscriber",
     "ProviderNotAvailable",
+    "ResponseTimeout",
     "TypedProvider",
     "TypedPublisher",
     "TypedRequester",
