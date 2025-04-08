@@ -1,7 +1,9 @@
+from make87_messages.text.log_message_pb2 import LogMessage
+
 LEVEL_MAPPING = {
-    "DEBUG": 10,
-    "INFO": 20,
-    "WARNING": 30,
-    "ERROR": 40,
-    "CRITICAL": 50,
+    "DEBUG": LogMessage.DEBUG,
+    "INFO": LogMessage.INFO,
+    "WARNING": LogMessage.WARNING,
+    "ERROR": LogMessage.ERROR,
+    "CRITICAL": LogMessage.CRITICAL,
 }
