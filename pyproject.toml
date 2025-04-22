@@ -13,7 +13,7 @@ authors = [
     { name = "Nisse Knudsen", email = "nisse@make87.com" },
 ]
 dependencies = [
-    "protobuf==4.25.5", # FIXED FOR MAKE87 PLATFORM COMPATIBILITY
+    "protobuf>=3.20,<6.0", # Relax for broader compatibility
     "eclipse-zenoh==1.2.1", # FIXED FOR MAKE87 PLATFORM COMPATIBILITY
     "pydantic>=2.9.2,<3.0.0",
 ]
