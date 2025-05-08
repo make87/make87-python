@@ -16,6 +16,7 @@ dependencies = [
     "protobuf>=4.22,<7.0", # Relax for broader compatibility with message packages
     "eclipse-zenoh==1.2.1", # FIXED FOR MAKE87 PLATFORM COMPATIBILITY
     "pydantic>=2.9.2,<3.0.0",
+    "pytest>=8.3.5",
 ]
 readme = "README.md"
 requires-python = ">=3.9,<3.13"

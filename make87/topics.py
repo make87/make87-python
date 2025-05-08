@@ -156,12 +156,12 @@ class Subscriber:
 
     def __init__(
         self,
-        name: str,
+        name: str | List[str],
         session: zenoh.Session,
         handler_type: Union[Type[zenoh.handlers.RingChannel], Type[zenoh.handlers.FifoChannel]] = None,
         handler_capacity: int = None,
     ):
-        self.name = name
+        self.names = [name] if isinstance(name, str) else name
         self._session = session
         self._threads = []
         self._handler_type = zenoh.handlers.FifoChannel if handler_type is None else handler_type
@@ -170,20 +170,21 @@ class Subscriber:
     def subscribe(self, callback: Callable) -> None:
         """Creates a new subscriber with its own ring buffer and polling thread."""
 
-        def polling_loop():
+        def polling_loop(key: str):
             """Threaded loop to poll messages in a blocking fashion."""
             # Declare a new subscriber with the ring buffer
-            with self._session.declare_subscriber(self.name, self._handler_type(self._handler_capacity)) as sub:
+            with self._session.declare_subscriber(key, self._handler_type(self._handler_capacity)) as sub:
                 for sample in sub:
                     try:
                         callback(sample)  # Process the message
                     except Exception as e:
-                        print(f"Error in callback for topic '{self.name}': {e}")
+                        print(f"Error in callback for topic '{key}': {e}")
 
         # Start a new thread for this subscriber
-        thread = threading.Thread(target=polling_loop, daemon=True)
-        thread.start()
-        self._threads.append(thread)
+        for key in self.names:
+            thread = threading.Thread(target=polling_loop, daemon=True, args=[key])
+            thread.start()
+            self._threads.append(thread)
 
 
 @dataclasses.dataclass
@@ -325,7 +326,7 @@ class _TopicManager:
 
     def __init__(self):
         self._topics: Dict[str, Union[Publisher, Subscriber]] = {}
-        self._topic_names: Dict[str, str] = {}
+        self._topic_names: Dict[str, str | List[str]] = {}
         self._initialized: bool = False
 
     @classmethod
@@ -369,7 +370,7 @@ class _TopicManager:
                     handler_capacity = topic.handler.capacity
 
                     topic_type = Subscriber(
-                        name=topic.topic_key,
+                        name=topic.topic_key if len(topic.topic_keys) < 1 else topic.topic_keys,
                         session=session,
                         handler_type=handler_type,
                         handler_capacity=handler_capacity,
@@ -377,7 +378,10 @@ class _TopicManager:
                 else:
                     raise ValueError(f"Invalid topic type {topic.topic_type}")
                 self._topics[topic.topic_key] = topic_type
-                self._topic_names[topic.topic_name] = topic.topic_key
+                if isinstance(topic, PUB):
+                    self._topic_names[topic.topic_key] = topic.topic_key
+                elif isinstance(topic, SUB):
+                    self._topic_names[topic.topic_name] = topic.topic_key if len(topic.topic_keys) < 1 else topic.topic_keys
 
             self._initialized = True
 

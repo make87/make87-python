@@ -20,7 +20,6 @@ UINT32_MAX = 4294967295
 
 class TopicBaseModel(BaseModel):
     topic_name: str
-    topic_key: str
     message_type: str
 
 
@@ -91,6 +90,7 @@ class CongestionControl(Enum):
 
 
 class PUB(TopicBaseModel):
+    topic_key: str
     topic_type: Literal["PUB"]
     congestion_control: CongestionControl = Field(default=CongestionControl.DEFAULT)
     priority: Priority = Field(default=Priority.DEFAULT)
@@ -115,6 +115,8 @@ HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator=
 
 class SUB(TopicBaseModel):
     topic_type: Literal["SUB"]
+    topic_key: str = Field(default="")
+    topic_keys: List[str] = Field(default_factory=list)
     handler: HandlerChannel = Field(default_factory=lambda: RingChannel(handler_type="RING"))
 
 
