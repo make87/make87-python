@@ -379,7 +379,7 @@ class _TopicManager:
                     raise ValueError(f"Invalid topic type {topic.topic_type}")
                 self._topics[topic.topic_key] = topic_type
                 if isinstance(topic, PUB):
-                    self._topic_names[topic.topic_key] = topic.topic_key
+                    self._topic_names[topic.topic_name] = topic.topic_key
                 elif isinstance(topic, SUB):
                     self._topic_names[topic.topic_name] = topic.topic_key if len(topic.topic_keys) < 1 else topic.topic_keys
 
