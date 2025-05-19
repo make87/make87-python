@@ -1,11 +1,12 @@
 import json
+import logging
 from typing import Any, Callable, Optional, Union
 import zenoh
 from functools import cached_property
-from make87.protocols.base import Protocol
+from make87.protocols.base import Make87Interface
 
 
-class ZenohProtocol(Protocol):
+class ZenohInterface(Make87Interface):
     """
     Concrete Protocol implementation for Zenoh messaging.
     Lazily initializes config and session for efficiency.
@@ -70,13 +71,17 @@ class ZenohProtocol(Protocol):
         """
         if handler is None:
             handler = zenoh.RingChannel(...)  # TODO: use config values provided from outside!
+        else:
+            logging.warning(
+                "Application code defines a custom handler for the provider. Any handler config values for will be ignored."
+            )
 
         return self.session.declare_subscriber(
             key_expr=self._get_key_expr(name),
             handler=handler,
         )
 
-    def get_querier(
+    def get_requester(
         self,
         name: str,
     ) -> zenoh.Querier:
@@ -91,7 +96,7 @@ class ZenohProtocol(Protocol):
             express=self._get_express(name),
         )
 
-    def get_queryable(
+    def get_provider(
         self,
         name: str,
         handler: Optional[Union[Callable[[zenoh.Query], Any], zenoh.handlers.Callback]] = None,
@@ -101,6 +106,10 @@ class ZenohProtocol(Protocol):
         """
         if handler is None:
             handler = zenoh.RingChannel(...)  # TODO: use config values provided from outside!
+        else:
+            logging.warning(
+                "Application code defines a custom handler for the provider. Any handler config values for will be ignored."
+            )
 
         return self.session.declare_queryable(
             key_expr=self._get_key_expr(name),

@@ -5,9 +5,9 @@ SendT = TypeVar("SendT")  # Protocol "send" type (e.g., zenoh.ZBytes)
 RecvT = TypeVar("RecvT")  # Protocol "receive" type (e.g., zenoh.Sample)
 
 
-class Protocol(ABC):
+class Make87Interface(ABC):
     """
-    Abstract base class for messaging protocols.
+    Abstract base class for messaging interfaces.
     Handles publisher/subscriber setup.
     """
 
@@ -17,7 +17,7 @@ class Protocol(ABC):
     @abstractmethod
     def get_publisher(self, name: str) -> Any:
         """
-        Return a protocol-native publisher for the given topic.
+        Return an interface-native publisher for the given topic.
         """
         pass
 
@@ -29,23 +29,39 @@ class Protocol(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_requester(self, name: str) -> Any:
+        """
+        Set up a request handler for the given topic.
+        The callback receives user-level decoded messages of type T.
+        """
+        pass
 
-class ProtocolAdapter(ABC, Generic[SendT, RecvT]):
+    @abstractmethod
+    def get_provider(self, name: str) -> Any:
+        """
+        Set up a provider for the given topic.
+        The callback receives user-level decoded messages of type T.
+        """
+        pass
+
+
+class InterfaceAdapter(ABC, Generic[SendT, RecvT]):
     """
-    Base class for protocol adapters.
+    Base class for interface adapters.
 
     Methods:
         pack(payload: bytes) -> SendT:
-            Packs bytes into a protocol-native message object (ready to send).
+            Packs bytes into a interface-native message object (ready to send).
 
         unpack(message: RecvT) -> bytes:
-            Unpacks the payload bytes from a protocol-native message object (ready to decode).
+            Unpacks the payload bytes from a interface-native message object (ready to decode).
     """
 
     @abstractmethod
     def pack(self, payload: bytes, **metadata) -> SendT:
         """
-        Packs bytes and optional protocol metadata into a message object.
+        Packs bytes and optional interface metadata into a message object.
 
         Args:
             payload (bytes): The main payload.
@@ -59,10 +75,10 @@ class ProtocolAdapter(ABC, Generic[SendT, RecvT]):
     @abstractmethod
     def unpack(self, message: RecvT) -> Tuple[bytes, ...]:
         """
-        Unpacks the protocol-native message.
+        Unpacks the interface-native message.
         Returns:
             Tuple: (payload_bytes, ...metadata)
                 - payload_bytes (bytes): Always at index 0
-                - ...metadata: Any additional protocol-specific data
+                - ...metadata: Any additional interface-specific data
         """
         raise NotImplementedError()

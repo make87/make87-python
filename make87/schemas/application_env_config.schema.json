@@ -1,0 +1,955 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ApplicationEnvConfig",
+  "type": "object",
+  "properties": {
+    "topics": {
+      "$ref": "#/definitions/TopicConfigs"
+    },
+    "endpoints": {
+      "$ref": "#/definitions/EndpointConfigs"
+    },
+    "services": {
+      "$ref": "#/definitions/ServiceConfigs"
+    },
+    "url_mapping": {
+      "$ref": "#/definitions/URLMapping"
+    },
+    "peripherals": {
+      "$ref": "#/definitions/MountedPeripherals"
+    },
+    "config": {
+      "type": "string"
+    },
+    "entrypoint_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deployed_application_id": {
+      "type": "string"
+    },
+    "system_id": {
+      "type": "string"
+    },
+    "deployed_application_name": {
+      "type": "string"
+    },
+    "is_release_version": {
+      "type": "boolean"
+    },
+    "public_ip": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "make87_ip": {
+      "type": "string"
+    },
+    "port_config": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PortConfig"
+      }
+    },
+    "git_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "git_branch": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "application_id": {
+      "type": "string"
+    },
+    "application_name": {
+      "type": "string"
+    },
+    "storage_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "storage_endpoint_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "storage_access_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "storage_secret_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "topics",
+    "endpoints",
+    "services",
+    "url_mapping",
+    "peripherals",
+    "config",
+    "deployed_application_id",
+    "system_id",
+    "deployed_application_name",
+    "is_release_version",
+    "make87_ip",
+    "port_config",
+    "application_id",
+    "application_name"
+  ],
+  "definitions": {
+    "URLMapping": {
+      "type": "object",
+      "properties": {
+        "name_to_url": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "name_to_url"
+      ]
+    },
+    "TopicConfigs": {
+      "type": "object",
+      "properties": {
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TopicConfig"
+          }
+        }
+      },
+      "required": [
+        "topics"
+      ]
+    },
+    "TopicConfig": {
+      "type": "object",
+      "oneOf": [
+        {
+          "title": "TopicPubConfig",
+          "properties": {
+            "topic_type": {
+              "const": "PUB"
+            },
+            "topic_name": {
+              "type": "string"
+            },
+            "topic_key": {
+              "type": "string"
+            },
+            "message_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "topic_type",
+            "topic_name",
+            "topic_key",
+            "message_type"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "title": "TopicSubConfig",
+          "properties": {
+            "topic_type": {
+              "const": "SUB"
+            },
+            "topic_name": {
+              "type": "string"
+            },
+            "topic_key": {
+              "type": "string"
+            },
+            "message_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "topic_type",
+            "topic_name",
+            "topic_key",
+            "message_type"
+          ],
+          "additionalProperties": true
+        }
+      ]
+    },
+    "EndpointConfigs": {
+      "type": "object",
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EndpointConfig"
+          }
+        }
+      },
+      "required": [
+        "endpoints"
+      ]
+    },
+    "EndpointConfig": {
+      "type": "object",
+      "oneOf": [
+        {
+          "title": "EndpointReqConfig",
+          "properties": {
+            "endpoint_type": {
+              "const": "REQ"
+            },
+            "endpoint_name": {
+              "type": "string"
+            },
+            "endpoint_key": {
+              "type": "string"
+            },
+            "requester_message_type": {
+              "type": "string"
+            },
+            "provider_message_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "endpoint_type",
+            "endpoint_name",
+            "endpoint_key",
+            "requester_message_type",
+            "provider_message_type"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "title": "EndpointPrvConfig",
+          "properties": {
+            "endpoint_type": {
+              "const": "PRV"
+            },
+            "endpoint_name": {
+              "type": "string"
+            },
+            "endpoint_key": {
+              "type": "string"
+            },
+            "requester_message_type": {
+              "type": "string"
+            },
+            "provider_message_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "endpoint_type",
+            "endpoint_name",
+            "endpoint_key",
+            "requester_message_type",
+            "provider_message_type"
+          ],
+          "additionalProperties": true
+        }
+      ]
+    },
+    "ServiceConfigs": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ServiceConfig"
+          }
+        }
+      },
+      "required": [
+        "services"
+      ]
+    },
+    "ServiceConfig": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "spec": {
+              "type": "string"
+            },
+            "key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "spec",
+            "key"
+          ],
+          "additionalProperties": true
+        }
+      ]
+    },
+    "MountedPeripherals": {
+      "type": "object",
+      "properties": {
+        "peripherals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MountedPeripheral"
+          }
+        }
+      },
+      "required": [
+        "peripherals"
+      ]
+    },
+    "MountedPeripheral": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "peripheral": {
+          "$ref": "#/definitions/Peripheral"
+        }
+      },
+      "required": [
+        "name",
+        "peripheral"
+      ]
+    },
+    "Peripheral": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "GPU": {
+              "$ref": "#/definitions/GpuPeripheral"
+            }
+          },
+          "required": [
+            "GPU"
+          ]
+        },
+        {
+          "properties": {
+            "I2C": {
+              "$ref": "#/definitions/I2cPeripheral"
+            }
+          },
+          "required": [
+            "I2C"
+          ]
+        },
+        {
+          "properties": {
+            "GPIO": {
+              "$ref": "#/definitions/GpioPeripheral"
+            }
+          },
+          "required": [
+            "GPIO"
+          ]
+        },
+        {
+          "properties": {
+            "Camera": {
+              "$ref": "#/definitions/CameraPeripheral"
+            }
+          },
+          "required": [
+            "Camera"
+          ]
+        },
+        {
+          "properties": {
+            "RealSense": {
+              "$ref": "#/definitions/RealSenseCameraPeripheral"
+            }
+          },
+          "required": [
+            "RealSense"
+          ]
+        },
+        {
+          "properties": {
+            "ISP": {
+              "$ref": "#/definitions/IspPeripheral"
+            }
+          },
+          "required": [
+            "ISP"
+          ]
+        },
+        {
+          "properties": {
+            "Codec": {
+              "$ref": "#/definitions/CodecPeripheral"
+            }
+          },
+          "required": [
+            "Codec"
+          ]
+        },
+        {
+          "properties": {
+            "Rendering": {
+              "$ref": "#/definitions/RenderingPeripheral"
+            }
+          },
+          "required": [
+            "Rendering"
+          ]
+        },
+        {
+          "properties": {
+            "Speaker": {
+              "$ref": "#/definitions/OtherPeripheral"
+            }
+          },
+          "required": [
+            "Speaker"
+          ]
+        },
+        {
+          "properties": {
+            "Keyboard": {
+              "$ref": "#/definitions/OtherPeripheral"
+            }
+          },
+          "required": [
+            "Keyboard"
+          ]
+        },
+        {
+          "properties": {
+            "Mouse": {
+              "$ref": "#/definitions/OtherPeripheral"
+            }
+          },
+          "required": [
+            "Mouse"
+          ]
+        },
+        {
+          "properties": {
+            "GenericDevice": {
+              "$ref": "#/definitions/GenericDevicePeripheral"
+            }
+          },
+          "required": [
+            "GenericDevice"
+          ]
+        },
+        {
+          "properties": {
+            "Other": {
+              "$ref": "#/definitions/OtherPeripheral"
+            }
+          },
+          "required": [
+            "Other"
+          ]
+        }
+      ]
+    },
+    "GpuPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "index": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vram": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "name",
+        "model",
+        "device_nodes"
+      ]
+    },
+    "I2cPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "bus_number": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "detected_devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/I2cDetectedDevice"
+          }
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "bus_number",
+        "name",
+        "device_nodes",
+        "detected_devices"
+      ]
+    },
+    "I2cDetectedDevice": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "address"
+      ]
+    },
+    "GpioPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "chip_name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "num_lines": {
+          "type": "integer"
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GpioLineInfo"
+          }
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "chip_name",
+        "label",
+        "num_lines",
+        "device_nodes",
+        "lines"
+      ]
+    },
+    "GpioLineInfo": {
+      "type": "object",
+      "properties": {
+        "line_offset": {
+          "type": "integer"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "consumer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "direction": {
+          "type": "string"
+        },
+        "active_state": {
+          "type": "string"
+        },
+        "used": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "line_offset",
+        "direction",
+        "active_state",
+        "used"
+      ]
+    },
+    "CameraPeripheral": {
+      "type": "object",
+      "properties": {
+        "reference": {
+          "type": "string"
+        },
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "volumes": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "camera_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "protocol": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "reference",
+        "peripheral_type",
+        "name",
+        "device_nodes",
+        "volumes"
+      ]
+    },
+    "RealSenseCameraPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "serial_number": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "name",
+        "device_nodes",
+        "serial_number",
+        "model"
+      ]
+    },
+    "IspPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "supported_features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "name",
+        "supported_features",
+        "device_nodes"
+      ]
+    },
+    "CodecPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "supported_codecs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "name",
+        "supported_codecs",
+        "device_nodes"
+      ]
+    },
+    "RenderingPeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "supported_apis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "max_performance": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "name",
+        "supported_apis",
+        "device_nodes"
+      ]
+    },
+    "OtherPeripheral": {
+      "type": "object",
+      "properties": {
+        "reference": {
+          "type": "string"
+        },
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "device_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "reference",
+        "peripheral_type",
+        "name",
+        "device_nodes"
+      ]
+    },
+    "GenericDevicePeripheral": {
+      "type": "object",
+      "properties": {
+        "peripheral_type": {
+          "$ref": "#/definitions/PeripheralType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "device_node": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "peripheral_type",
+        "name",
+        "device_node"
+      ]
+    },
+    "PeripheralType": {
+      "oneOf": [
+        {
+          "const": "Camera"
+        },
+        {
+          "const": "RealSense"
+        },
+        {
+          "const": "Speaker"
+        },
+        {
+          "const": "Keyboard"
+        },
+        {
+          "const": "Mouse"
+        },
+        {
+          "const": "Microphone"
+        },
+        {
+          "const": "GPU"
+        },
+        {
+          "const": "I2C"
+        },
+        {
+          "const": "GPIO"
+        },
+        {
+          "const": "ISP"
+        },
+        {
+          "const": "Codec"
+        },
+        {
+          "const": "Rendering"
+        },
+        {
+          "const": "GenericDevice"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "Other": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "Other"
+          ]
+        }
+      ]
+    },
+    "PortConfig": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "$ref": "#/definitions/ProtocolEnum"
+        },
+        "target_port": {
+          "type": "integer"
+        },
+        "published_port": {
+          "type": "integer"
+        },
+        "publish_mode": {
+          "$ref": "#/definitions/PublishMode"
+        },
+        "is_system_interface": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "protocol",
+        "target_port",
+        "published_port",
+        "publish_mode",
+        "is_system_interface"
+      ]
+    },
+    "ProtocolEnum": {
+      "enum": [
+        "TCP",
+        "UDP",
+        "SCTP",
+        "HTTP",
+        "WS",
+        "SSH"
+      ]
+    },
+    "PublishMode": {
+      "enum": [
+        "Ingress",
+        "Host"
+      ]
+    }
+  }
+}
