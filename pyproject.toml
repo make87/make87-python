@@ -41,5 +41,5 @@ dev = [
     "pytest-mock",
     "ruff>=0.11.10",
     "make87_messages",
-    "datamodel-code-generator",
+    "datamodel-code-generator==0.30.1",
 ]
