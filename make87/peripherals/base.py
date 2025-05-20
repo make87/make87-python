@@ -1,5 +1,7 @@
 from abc import ABC
+from typing import Optional
 
+from make87.config import load_config_from_env
 from make87.models.application_env_config import ApplicationEnvConfig
 from make87.peripherals.factory import create_peripheral_from_data
 
@@ -10,8 +12,10 @@ class PeripheralBase(ABC):
 
 
 class PeripheralManager:
-    def __init__(self, config: ApplicationEnvConfig):
-        self._config = config
+    def __init__(self, make87_config: Optional[ApplicationEnvConfig] = None):
+        if make87_config is None:
+            make87_config = load_config_from_env()
+        self._config = make87_config
         self._peripherals = self._build_registry()
 
     def _build_registry(self):

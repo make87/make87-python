@@ -78,9 +78,15 @@ class ChannelBase(BaseModel):
 class FifoChannel(ChannelBase):
     handler_type: Literal["FIFO"]
 
+    def to_zenoh(self):
+        return zenoh.handlers.FifoChannel(capacity=self.capacity)
+
 
 class RingChannel(ChannelBase):
     handler_type: Literal["RING"]
+
+    def to_zenoh(self):
+        return zenoh.handlers.RingChannel(capacity=self.capacity)
 
 
 HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator="handler_type")]
@@ -97,11 +103,11 @@ class ZenohPublisherConfig(BaseModel):
     reliability: Reliability
 
 
-class ZenohProviderConfig(BaseModel):
+class ZenohRequesterConfig(BaseModel):
     congestion_control: CongestionControl
     priority: Priority
     express: bool
 
 
-class ZenohRequesterConfig(BaseModel):
+class ZenohProviderConfig(BaseModel):
     handler: HandlerChannel

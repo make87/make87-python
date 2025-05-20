@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar, Tuple, Literal, Union, overload
+from typing import Any, Generic, TypeVar, Tuple, Literal, Union, overload, Optional
 
 from make87.config import load_config_from_env
 from make87.models.application_env_config import (
@@ -20,7 +20,7 @@ class InterfaceBase(ABC):
     Handles publisher/subscriber setup.
     """
 
-    def __init__(self, make87_config: ApplicationEnvConfig = None):
+    def __init__(self, make87_config: Optional[ApplicationEnvConfig] = None):
         """
         Initialize the interface with a configuration object.
         If no config is provided, it will attempt to load from the environment.
