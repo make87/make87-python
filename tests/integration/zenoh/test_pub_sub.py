@@ -8,7 +8,8 @@ from pathlib import Path
 
 import itertools
 import pytest
-from make87.utils import Priority, Reliability, CongestionControl
+
+from make87.interfaces.zenoh.model import Priority, Reliability, CongestionControl
 
 # Test inputs
 priorities = [Priority.REAL_TIME, Priority.DATA, Priority.BACKGROUND]

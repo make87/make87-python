@@ -2,6 +2,11 @@ import signal
 import threading
 
 
+__all__ = [
+    "run_forever",
+]
+
+
 def run_forever():
     stop_event = threading.Event()
 
@@ -12,4 +17,3 @@ def run_forever():
     signal.signal(signal.SIGINT, handle_stop)  # Optional: Ctrl-C
 
     stop_event.wait()
-    # Perform any cleanup here if needed
