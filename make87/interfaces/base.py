@@ -1,18 +1,71 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar, Tuple
+from typing import Any, Generic, TypeVar, Tuple, Literal, Union, overload
+
+from make87.config import get_config
+from make87.models.application_env_config import (
+    TopicPubConfig,
+    TopicSubConfig,
+    EndpointReqConfig,
+    EndpointPrvConfig,
+)
 
 SendT = TypeVar("SendT")  # Protocol "send" type (e.g., zenoh.ZBytes)
 RecvT = TypeVar("RecvT")  # Protocol "receive" type (e.g., zenoh.Sample)
 
 
-class Make87Interface(ABC):
+class Interface(ABC):
     """
     Abstract base class for messaging interfaces.
     Handles publisher/subscriber setup.
     """
 
-    def __init__(self, make87_config: Any):
-        self._make87_config = make87_config
+    def __init__(self):
+        self._config = get_config()
+
+    @overload
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["PUB"]) -> TopicPubConfig: ...
+
+    @overload
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["SUB"]) -> TopicSubConfig: ...
+
+    @overload
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["REQ"]) -> EndpointReqConfig: ...
+
+    @overload
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["PRV"]) -> EndpointPrvConfig: ...
+
+    def get_interface_config_by_name(
+        self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV"]
+    ) -> Union[TopicPubConfig, TopicSubConfig, EndpointReqConfig, EndpointPrvConfig]:
+        """
+        Takes a user-level interface name and looks up the corresponding API-level config object.
+        """
+        if iface_type == "PUB":
+            return next(
+                cfg.root
+                for cfg in self._config.topics
+                if isinstance(cfg.root, TopicPubConfig) and cfg.root.topic_name == name
+            )
+        elif iface_type == "SUB":
+            return next(
+                cfg.root
+                for cfg in self._config.topics
+                if isinstance(cfg.root, TopicSubConfig) and cfg.root.topic_name == name
+            )
+        elif iface_type == "REQ":
+            return next(
+                cfg.root
+                for cfg in self._config.endpoints
+                if isinstance(cfg.root, EndpointReqConfig) and cfg.root.endpoint_name == name
+            )
+        elif iface_type == "PRV":
+            return next(
+                cfg.root
+                for cfg in self._config.endpoints
+                if isinstance(cfg.root, EndpointPrvConfig) and cfg.root.endpoint_name == name
+            )
+        else:
+            raise NotImplementedError(f"Interface type {iface_type} is not supported.")
 
     @abstractmethod
     def get_publisher(self, name: str) -> Any:

@@ -1,20 +1,16 @@
 import logging
-import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from make87 import APPLICATION_ID, DEPLOYED_APPLICATION_ID, DEPLOYED_SYSTEM_ID
+from make87.config import get_config
 
 if TYPE_CHECKING:
     from s3path import S3Path
 
-# Constants for environment variable names
-ENV_STORAGE_ENDPOINT_URL = "MAKE87_STORAGE_ENDPOINT_URL"
-ENV_STORAGE_ACCESS_KEY = "MAKE87_STORAGE_ACCESS_KEY"
-ENV_STORAGE_SECRET_KEY = "MAKE87_STORAGE_SECRET_KEY"
-ENV_STORAGE_PATH = "MAKE87_STORAGE_PATH"
-
+# Cached S3 resource, initialized on first use
 _MAKE87_RESOURCE: Optional[Any] = None
+_config = get_config()
 
 
 def _setup_make87_resource() -> None:
@@ -22,15 +18,11 @@ def _setup_make87_resource() -> None:
     global _MAKE87_RESOURCE
     import boto3
 
-    endpoint_url = os.environ[ENV_STORAGE_ENDPOINT_URL]
-    access_key = os.environ.get(ENV_STORAGE_ACCESS_KEY)
-    secret_key = os.environ.get(ENV_STORAGE_SECRET_KEY)
-
     _MAKE87_RESOURCE = boto3.resource(
         "s3",
-        endpoint_url=endpoint_url,
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key,
+        endpoint_url=_config.storage_endpoint_url,
+        aws_access_key_id=_config.storage_access_key,
+        aws_secret_access_key=_config.storage_secret_key,
     )
 
 
@@ -48,11 +40,11 @@ def get_make87_resource() -> Any:
 def get_system_storage_path() -> Path:
     """Returns the path to the system storage directory."""
     path = Path("/tmp/make87") / DEPLOYED_SYSTEM_ID
-    if ENV_STORAGE_PATH in os.environ:
+    storage_url = _config.storage_url
+    if storage_url is not None:
         resource = get_make87_resource()
         from s3path import S3Path, register_configuration_parameter
 
-        storage_url = os.environ[ENV_STORAGE_PATH]
         path = S3Path(storage_url)
         register_configuration_parameter(path, resource=resource)
         # workaround for issue in `s3path` where testing for the bucket existence without passing the configured credentials.

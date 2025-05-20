@@ -3,12 +3,12 @@ from typing import Tuple, Optional
 import zenoh
 from zenoh.zenoh import ZBytes
 
-from make87.protocols.base import ProtocolAdapter
+from make87.interfaces.base import InterfaceAdapter
 
 
-class ZenohAdapter(ProtocolAdapter[zenoh.ZBytes, zenoh.Sample]):
+class ZenohAdapter(InterfaceAdapter[zenoh.ZBytes, zenoh.Sample]):
     """
-    Adapter for converting between bytes and Zenoh protocol-native message objects.
+    Adapter for converting between bytes and Zenoh interface-native message objects.
     """
 
     def pack(self, payload: bytes, **metadata) -> zenoh.ZBytes:
