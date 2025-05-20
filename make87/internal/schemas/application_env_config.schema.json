@@ -341,6 +341,7 @@
       "type": "object",
       "oneOf": [
         {
+          "title": "GpuPeripheral",
           "properties": {
             "GPU": {
               "$ref": "#/definitions/GpuPeripheral"
@@ -351,6 +352,7 @@
           ]
         },
         {
+          "title": "I2cPeripheral",
           "properties": {
             "I2C": {
               "$ref": "#/definitions/I2cPeripheral"
@@ -361,6 +363,7 @@
           ]
         },
         {
+          "title": "GpioPeripheral",
           "properties": {
             "GPIO": {
               "$ref": "#/definitions/GpioPeripheral"
@@ -371,6 +374,7 @@
           ]
         },
         {
+          "title": "CameraPeripheral",
           "properties": {
             "Camera": {
               "$ref": "#/definitions/CameraPeripheral"
@@ -381,6 +385,7 @@
           ]
         },
         {
+          "title": "RealSenseCameraPeripheral",
           "properties": {
             "RealSense": {
               "$ref": "#/definitions/RealSenseCameraPeripheral"
@@ -391,6 +396,7 @@
           ]
         },
         {
+          "title": "IspPeripheral",
           "properties": {
             "ISP": {
               "$ref": "#/definitions/IspPeripheral"
@@ -401,6 +407,7 @@
           ]
         },
         {
+          "title": "CodecPeripheral",
           "properties": {
             "Codec": {
               "$ref": "#/definitions/CodecPeripheral"
@@ -411,6 +418,7 @@
           ]
         },
         {
+          "title": "RenderingPeripheral",
           "properties": {
             "Rendering": {
               "$ref": "#/definitions/RenderingPeripheral"
@@ -421,6 +429,7 @@
           ]
         },
         {
+          "title": "OtherPeripheral_Speaker",
           "properties": {
             "Speaker": {
               "$ref": "#/definitions/OtherPeripheral"
@@ -431,6 +440,7 @@
           ]
         },
         {
+          "title": "OtherPeripheral_Keyboard",
           "properties": {
             "Keyboard": {
               "$ref": "#/definitions/OtherPeripheral"
@@ -441,6 +451,7 @@
           ]
         },
         {
+          "title": "OtherPeripheral_Mouse",
           "properties": {
             "Mouse": {
               "$ref": "#/definitions/OtherPeripheral"
@@ -451,6 +462,7 @@
           ]
         },
         {
+          "title": "GenericDevicePeripheral",
           "properties": {
             "GenericDevice": {
               "$ref": "#/definitions/GenericDevicePeripheral"
@@ -461,6 +473,7 @@
           ]
         },
         {
+          "title": "OtherPeripheral",
           "properties": {
             "Other": {
               "$ref": "#/definitions/OtherPeripheral"
@@ -473,6 +486,7 @@
       ]
     },
     "GpuPeripheral": {
+      "title": "GpuPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -511,6 +525,7 @@
       ]
     },
     "I2cPeripheral": {
+      "title": "I2cPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -561,6 +576,7 @@
       ]
     },
     "GpioPeripheral": {
+      "title": "GpioPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -633,6 +649,7 @@
       ]
     },
     "CameraPeripheral": {
+      "title": "CameraPeripheral",
       "type": "object",
       "properties": {
         "reference": {
@@ -683,6 +700,7 @@
       ]
     },
     "RealSenseCameraPeripheral": {
+      "title": "RealSenseCameraPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -713,6 +731,7 @@
       ]
     },
     "IspPeripheral": {
+      "title": "IspPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -742,6 +761,7 @@
       ]
     },
     "CodecPeripheral": {
+      "title": "CodecPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -771,6 +791,7 @@
       ]
     },
     "RenderingPeripheral": {
+      "title": "RenderingPeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {
@@ -806,6 +827,7 @@
       ]
     },
     "OtherPeripheral": {
+      "title": "OtherPeripheral",
       "type": "object",
       "properties": {
         "reference": {
@@ -832,6 +854,7 @@
       ]
     },
     "GenericDevicePeripheral": {
+      "title": "GenericDevicePeripheral",
       "type": "object",
       "properties": {
         "peripheral_type": {

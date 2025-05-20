@@ -1,26 +1,33 @@
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar, Tuple, Literal, Union, overload
 
-from make87.config import get_config
+from make87.config import load_config_from_env
 from make87.models.application_env_config import (
     TopicPubConfig,
     TopicSubConfig,
     EndpointReqConfig,
     EndpointPrvConfig,
+    ApplicationEnvConfig,
 )
 
 SendT = TypeVar("SendT")  # Protocol "send" type (e.g., zenoh.ZBytes)
 RecvT = TypeVar("RecvT")  # Protocol "receive" type (e.g., zenoh.Sample)
 
 
-class Interface(ABC):
+class InterfaceBase(ABC):
     """
     Abstract base class for messaging interfaces.
     Handles publisher/subscriber setup.
     """
 
-    def __init__(self):
-        self._config = get_config()
+    def __init__(self, make87_config: ApplicationEnvConfig = None):
+        """
+        Initialize the interface with a configuration object.
+        If no config is provided, it will attempt to load from the environment.
+        """
+        if make87_config is None:
+            make87_config = load_config_from_env()
+        self._config = make87_config
 
     @overload
     def get_interface_config_by_name(self, name: str, iface_type: Literal["PUB"]) -> TopicPubConfig: ...

@@ -3,14 +3,14 @@ import logging
 from typing import Any, Callable, Optional, Union
 import zenoh
 from functools import cached_property
-from make87.interfaces.base import Interface
+from make87.interfaces.base import InterfaceBase
 from make87.interfaces.zenoh.model import ZenohPublisherConfig
 
 
-class ZenohInterface(Interface):
+class ZenohInterface(InterfaceBase):
     """
     Concrete Protocol implementation for Zenoh messaging.
-    Lazily initializes config and session for efficiency.
+    Lazily initializes Zenoh config and session for efficiency.
     """
 
     @cached_property
