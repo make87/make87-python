@@ -4,31 +4,27 @@ import uuid
 from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.models.application_env_config import (
     ApplicationEnvConfig,
-    TopicConfigs,
-    EndpointConfigs,
-    ServiceConfigs,
     URLMapping,
     MountedPeripherals,
-    EndpointReqConfig,
+    EndpointConfigReq,
+    EndpointType,
 )
 
 
 @pytest.fixture
 def req_config():
     return ApplicationEnvConfig(
-        topics=TopicConfigs(topics=[]),
-        endpoints=EndpointConfigs(
-            endpoints=[
-                EndpointReqConfig(
-                    endpoint_name="HELLO_WORLD_MESSAGE",
-                    endpoint_key="my_endpoint_key",
-                    endpoint_type="REQ",
-                    requester_message_type="make87_messages.text.text_plain.PlainText",
-                    provider_message_type="make87_messages.text.text_plain.PlainText",
-                )
-            ]
-        ),
-        services=ServiceConfigs(services=[]),
+        topics=[],
+        endpoints=[
+            EndpointConfigReq(
+                endpoint_name="HELLO_WORLD_MESSAGE",
+                endpoint_key="my_endpoint_key",
+                endpoint_type=EndpointType.REQ,
+                requester_message_type="make87_messages.text.text_plain.PlainText",
+                provider_message_type="make87_messages.text.text_plain.PlainText",
+            )
+        ],
+        services=[],
         url_mapping=URLMapping(name_to_url={}),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
@@ -36,7 +32,7 @@ def req_config():
         system_id=uuid.uuid4().hex,
         deployed_application_name="req_app_1",
         is_release_version=True,
-        make87_ip="10.10.0.1",
+        vpn_ip="10.10.0.1",
         port_config=[],
         application_id=uuid.uuid4().hex,
         application_name="req_app",

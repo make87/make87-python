@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from make87.models.application_env_config import CameraPeripheralModel
+from make87.models.application_env_config import PeripheralCamera
 from make87.peripherals.base import PeripheralBase
 
 
@@ -22,7 +22,7 @@ class CameraPeripheral(PeripheralBase):
         self.protocol = protocol
 
     @classmethod
-    def from_config(cls, config: CameraPeripheralModel):
+    def from_config(cls, config: PeripheralCamera):
         camera = config.Camera  # CameraPeripheral instance
         return cls(
             name=camera.name,

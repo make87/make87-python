@@ -4,30 +4,26 @@ import uuid
 from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.models.application_env_config import (
     ApplicationEnvConfig,
-    TopicConfigs,
-    TopicPubConfig,
-    EndpointConfigs,
-    ServiceConfigs,
     URLMapping,
     MountedPeripherals,
+    TopicConfigPub,
+    TopicType,
 )
 
 
 @pytest.fixture
 def pub_config():
     return ApplicationEnvConfig(
-        topics=TopicConfigs(
-            topics=[
-                TopicPubConfig(
-                    topic_name="HELLO_WORLD_MESSAGE",
-                    topic_key="my_topic_key",
-                    topic_type="PUB",
-                    message_type="make87_messages.text.text_plain.PlainText",
-                )
-            ]
-        ),
-        endpoints=EndpointConfigs(endpoints=[]),
-        services=ServiceConfigs(services=[]),
+        topics=[
+            TopicConfigPub(
+                topic_name="HELLO_WORLD_MESSAGE",
+                topic_key="my_topic_key",
+                topic_type=TopicType.PUB,
+                message_type="make87_messages.text.text_plain.PlainText",
+            )
+        ],
+        endpoints=[],
+        services=[],
         url_mapping=URLMapping(name_to_url={}),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
@@ -35,7 +31,7 @@ def pub_config():
         system_id=uuid.uuid4().hex,
         deployed_application_name="pub_app_1",
         is_release_version=True,
-        make87_ip="10.10.0.1",
+        vpn_ip="10.10.0.1",
         port_config=[],
         application_id=uuid.uuid4().hex,
         application_name="pub_app",

@@ -3,10 +3,10 @@ from typing import Any, Generic, TypeVar, Tuple, Literal, Union, overload, Optio
 
 from make87.config import load_config_from_env
 from make87.models.application_env_config import (
-    TopicPubConfig,
-    TopicSubConfig,
-    EndpointReqConfig,
-    EndpointPrvConfig,
+    TopicConfigPub,
+    TopicConfigSub,
+    EndpointConfigReq,
+    EndpointConfigPrv,
     ApplicationEnvConfig,
 )
 
@@ -30,20 +30,20 @@ class InterfaceBase(ABC):
         self._config = make87_config
 
     @overload
-    def get_interface_config_by_name(self, name: str, iface_type: Literal["PUB"]) -> TopicPubConfig: ...
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["PUB"]) -> TopicConfigPub: ...
 
     @overload
-    def get_interface_config_by_name(self, name: str, iface_type: Literal["SUB"]) -> TopicSubConfig: ...
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["SUB"]) -> TopicConfigSub: ...
 
     @overload
-    def get_interface_config_by_name(self, name: str, iface_type: Literal["REQ"]) -> EndpointReqConfig: ...
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["REQ"]) -> EndpointConfigReq: ...
 
     @overload
-    def get_interface_config_by_name(self, name: str, iface_type: Literal["PRV"]) -> EndpointPrvConfig: ...
+    def get_interface_config_by_name(self, name: str, iface_type: Literal["PRV"]) -> EndpointConfigPrv: ...
 
     def get_interface_config_by_name(
         self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV"]
-    ) -> Union[TopicPubConfig, TopicSubConfig, EndpointReqConfig, EndpointPrvConfig]:
+    ) -> Union[TopicConfigPub, TopicConfigSub, EndpointConfigReq, EndpointConfigPrv]:
         """
         Takes a user-level interface name and looks up the corresponding API-level config object.
         """
@@ -51,8 +51,8 @@ class InterfaceBase(ABC):
             try:
                 return next(
                     cfg.root
-                    for cfg in self._config.topics.topics
-                    if isinstance(cfg.root, TopicPubConfig) and cfg.root.topic_name == name
+                    for cfg in self._config.topics
+                    if isinstance(cfg.root, TopicConfigPub) and cfg.root.topic_name == name
                 )
             except StopIteration:
                 raise KeyError(f"Publisher with name {name} not found.")
@@ -60,8 +60,8 @@ class InterfaceBase(ABC):
             try:
                 return next(
                     cfg.root
-                    for cfg in self._config.topics.topics
-                    if isinstance(cfg.root, TopicSubConfig) and cfg.root.topic_name == name
+                    for cfg in self._config.topics
+                    if isinstance(cfg.root, TopicConfigSub) and cfg.root.topic_name == name
                 )
             except StopIteration:
                 raise KeyError(f"Subscriber with name {name} not found.")
@@ -69,8 +69,8 @@ class InterfaceBase(ABC):
             try:
                 return next(
                     cfg.root
-                    for cfg in self._config.endpoints.endpoints
-                    if isinstance(cfg.root, EndpointReqConfig) and cfg.root.endpoint_name == name
+                    for cfg in self._config.endpoints
+                    if isinstance(cfg.root, EndpointConfigReq) and cfg.root.endpoint_name == name
                 )
             except StopIteration:
                 raise KeyError(f"Requester with name {name} not found.")
@@ -78,8 +78,8 @@ class InterfaceBase(ABC):
             try:
                 return next(
                     cfg.root
-                    for cfg in self._config.endpoints.endpoints
-                    if isinstance(cfg.root, EndpointPrvConfig) and cfg.root.endpoint_name == name
+                    for cfg in self._config.endpoints
+                    if isinstance(cfg.root, EndpointConfigPrv) and cfg.root.endpoint_name == name
                 )
             except StopIteration:
                 raise KeyError(f"Provider with name {name} not found.")

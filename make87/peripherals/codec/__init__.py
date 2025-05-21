@@ -1,6 +1,6 @@
 from typing import List
 
-from make87.models.application_env_config import CodecPeripheralModel
+from make87.models.application_env_config import PeripheralCodec
 from make87.peripherals.base import PeripheralBase
 
 
@@ -16,7 +16,7 @@ class CodecPeripheral(PeripheralBase):
         self.device_nodes = device_nodes
 
     @classmethod
-    def from_config(cls, config: CodecPeripheralModel):
+    def from_config(cls, config: PeripheralCodec):
         codec = config.Codec
         return cls(
             name=codec.name,

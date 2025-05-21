@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from make87.models.application_env_config import RenderingPeripheralModel
+from make87.models.application_env_config import PeripheralRendering
 from make87.peripherals.base import PeripheralBase
 
 
@@ -18,7 +18,7 @@ class RenderingPeripheral(PeripheralBase):
         self.max_performance = max_performance
 
     @classmethod
-    def from_config(cls, config: RenderingPeripheralModel):
+    def from_config(cls, config: PeripheralRendering):
         rendering = config.Rendering
         return cls(
             name=rendering.name,
