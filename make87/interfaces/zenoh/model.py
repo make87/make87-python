@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal, Union, Optional
 
 import zenoh
 from pydantic import BaseModel, Field
@@ -93,21 +93,21 @@ HandlerChannel = Annotated[Union[FifoChannel, RingChannel], Field(discriminator=
 
 
 class ZenohSubscriberConfig(BaseModel):
-    handler: HandlerChannel
+    handler: Optional[HandlerChannel] = None
 
 
 class ZenohPublisherConfig(BaseModel):
-    congestion_control: CongestionControl
-    priority: Priority
-    express: bool
-    reliability: Reliability
+    congestion_control: Optional[CongestionControl] = None
+    priority: Optional[Priority] = None
+    express: Optional[bool] = None
+    reliability: Optional[Reliability] = None
 
 
 class ZenohRequesterConfig(BaseModel):
-    congestion_control: CongestionControl
-    priority: Priority
-    express: bool
+    congestion_control: Optional[CongestionControl] = None
+    priority: Optional[Priority] = None
+    express: Optional[bool] = None
 
 
 class ZenohProviderConfig(BaseModel):
-    handler: HandlerChannel
+    handler: Optional[HandlerChannel] = None

@@ -3,6 +3,7 @@ import subprocess
 import time
 import sys
 import os
+import uuid
 from pathlib import Path
 
 
@@ -10,6 +11,16 @@ import itertools
 import pytest
 
 from make87.interfaces.zenoh.model import Priority, Reliability, CongestionControl
+from make87.models import (
+    ApplicationEnvConfig,
+    TopicConfigs,
+    TopicSubConfig,
+    EndpointConfigs,
+    ServiceConfigs,
+    URLMapping,
+    MountedPeripherals,
+    TopicPubConfig,
+)
 
 # Test inputs
 priorities = [Priority.REAL_TIME, Priority.DATA, Priority.BACKGROUND]
@@ -113,23 +124,69 @@ def test_defaults_only():
 
     base_env = os.environ.copy()
 
+    sub_config = ApplicationEnvConfig(
+        topics=TopicConfigs(
+            topics=[
+                TopicSubConfig(
+                    topic_name="HELLO_WORLD_MESSAGE",
+                    topic_key="my_topic_key",
+                    topic_type="SUB",
+                    message_type="make87_messages.text.text_plain.PlainText",
+                )
+            ]
+        ),
+        endpoints=EndpointConfigs(endpoints=[]),
+        services=ServiceConfigs(services=[]),
+        url_mapping=URLMapping(name_to_url={}),
+        peripherals=MountedPeripherals(peripherals=[]),
+        config="{}",
+        deployed_application_id=uuid.uuid4().hex,
+        system_id=uuid.uuid4().hex,
+        deployed_application_name="sub_app_1",
+        is_release_version=True,
+        make87_ip="10.10.0.1",
+        port_config=[],
+        application_id=uuid.uuid4().hex,
+        application_name="sub_app",
+    )
+
     subscriber_env = base_env.copy()
     subscriber_env.update(
         {
-            "ENDPOINTS": '{"endpoints": []}',
-            "TOPICS": (
-                '{"topics": [{"topic_name": "HELLO_WORLD_MESSAGE", "topic_key": "my_topic_key", "topic_type": "SUB", "message_type": "make87_messages.text.text_plain.PlainText"}]}'
-            ),
+            "MAKE87_CONFIG": sub_config.model_dump_json(),
         }
+    )
+
+    pub_config = ApplicationEnvConfig(
+        topics=TopicConfigs(
+            topics=[
+                TopicPubConfig(
+                    topic_name="HELLO_WORLD_MESSAGE",
+                    topic_key="my_topic_key",
+                    topic_type="PUB",
+                    message_type="make87_messages.text.text_plain.PlainText",
+                )
+            ]
+        ),
+        endpoints=EndpointConfigs(endpoints=[]),
+        services=ServiceConfigs(services=[]),
+        url_mapping=URLMapping(name_to_url={}),
+        peripherals=MountedPeripherals(peripherals=[]),
+        config="{}",
+        deployed_application_id=uuid.uuid4().hex,
+        system_id=uuid.uuid4().hex,
+        deployed_application_name="pub_app_1",
+        is_release_version=True,
+        make87_ip="10.10.0.1",
+        port_config=[],
+        application_id=uuid.uuid4().hex,
+        application_name="pub_app",
     )
 
     publisher_env = base_env.copy()
     publisher_env.update(
         {
-            "ENDPOINTS": '{"endpoints": []}',
-            "TOPICS": (
-                '{"topics": [{"topic_type": "PUB", "topic_name": "HELLO_WORLD_MESSAGE", "topic_key": "my_topic_key", "message_type": "make87_messages.text.text_plain.PlainText"}]}'
-            ),
+            "MAKE87_CONFIG": pub_config.model_dump_json(),
         }
     )
 

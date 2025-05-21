@@ -33,14 +33,14 @@ class ZenohInterface(InterfaceBase):
         """Declare and return a Zenoh publisher for the given name. The publisher is
         not cached, and it is user responsibility to manage its lifecycle."""
         iface_config = self.get_interface_config_by_name(name=name, iface_type="PUB")
-        qos_config = ZenohPublisherConfig.model_validate(iface_config.model_config)
+        qos_config = ZenohPublisherConfig.model_validate(iface_config.model_extra)
 
         return self.session.declare_publisher(
             key_expr=iface_config.topic_key,
-            congestion_control=qos_config.congestion_control.to_zenoh(),
-            priority=qos_config.priority.to_zenoh(),
+            congestion_control=qos_config.congestion_control.to_zenoh() if qos_config.congestion_control else None,
+            priority=qos_config.priority.to_zenoh() if qos_config.priority else None,
             express=qos_config.express,
-            reliability=qos_config.reliability.to_zenoh(),
+            reliability=qos_config.reliability.to_zenoh() if qos_config.reliability else None,
         )
 
     def get_subscriber(
@@ -54,10 +54,10 @@ class ZenohInterface(InterfaceBase):
         a Channel handler will be created from the make87 config values.
         """
         iface_config = self.get_interface_config_by_name(name=name, iface_type="SUB")
-        qos_config = ZenohSubscriberConfig.model_validate(iface_config.model_config)
+        qos_config = ZenohSubscriberConfig.model_validate(iface_config.model_extra)
 
         if handler is None:
-            handler = qos_config.handler.to_zenoh()
+            handler = qos_config.handler.to_zenoh() if qos_config.handler is not None else None
         else:
             logging.warning(
                 "Application code defines a custom handler for the provider. Any handler config values for will be ignored."
@@ -79,9 +79,9 @@ class ZenohInterface(InterfaceBase):
         qos_config = ZenohRequesterConfig.model_validate(iface_config.model_config)
 
         return self.session.declare_querier(
-            key_expr=iface_config.topic_key,
-            congestion_control=qos_config.congestion_control.to_zenoh(),
-            priority=qos_config.priority.to_zenoh(),
+            key_expr=iface_config.endpoint_key,
+            congestion_control=qos_config.congestion_control.to_zenoh() if qos_config.congestion_control else None,
+            priority=qos_config.priority.to_zenoh() if qos_config.priority else None,
             express=qos_config.express,
         )
 
@@ -95,17 +95,17 @@ class ZenohInterface(InterfaceBase):
         The handler can be a Python function or a Zenoh callback. If `None` is provided (or omitted),
         a Channel handler will be created from the make87 config values.
         """
-        iface_config = self.get_interface_config_by_name(name=name, iface_type="SUB")
+        iface_config = self.get_interface_config_by_name(name=name, iface_type="PRV")
         qos_config = ZenohProviderConfig.model_validate(iface_config.model_config)
 
         if handler is None:
-            handler = qos_config.handler.to_zenoh()
+            handler = qos_config.handler.to_zenoh() if qos_config.handler is not None else None
         else:
             logging.warning(
                 "Application code defines a custom handler for the provider. Any handler config values for will be ignored."
             )
 
         return self.session.declare_queryable(
-            key_expr=iface_config.topic_key,
+            key_expr=iface_config.endpoint_key,
             handler=handler,
         )

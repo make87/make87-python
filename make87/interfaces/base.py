@@ -48,29 +48,41 @@ class InterfaceBase(ABC):
         Takes a user-level interface name and looks up the corresponding API-level config object.
         """
         if iface_type == "PUB":
-            return next(
-                cfg.root
-                for cfg in self._config.topics
-                if isinstance(cfg.root, TopicPubConfig) and cfg.root.topic_name == name
-            )
+            try:
+                return next(
+                    cfg.root
+                    for cfg in self._config.topics.topics
+                    if isinstance(cfg.root, TopicPubConfig) and cfg.root.topic_name == name
+                )
+            except StopIteration:
+                raise KeyError(f"Publisher with name {name} not found.")
         elif iface_type == "SUB":
-            return next(
-                cfg.root
-                for cfg in self._config.topics
-                if isinstance(cfg.root, TopicSubConfig) and cfg.root.topic_name == name
-            )
+            try:
+                return next(
+                    cfg.root
+                    for cfg in self._config.topics.topics
+                    if isinstance(cfg.root, TopicSubConfig) and cfg.root.topic_name == name
+                )
+            except StopIteration:
+                raise KeyError(f"Subscriber with name {name} not found.")
         elif iface_type == "REQ":
-            return next(
-                cfg.root
-                for cfg in self._config.endpoints
-                if isinstance(cfg.root, EndpointReqConfig) and cfg.root.endpoint_name == name
-            )
+            try:
+                return next(
+                    cfg.root
+                    for cfg in self._config.endpoints.endpoints
+                    if isinstance(cfg.root, EndpointReqConfig) and cfg.root.endpoint_name == name
+                )
+            except StopIteration:
+                raise KeyError(f"Requester with name {name} not found.")
         elif iface_type == "PRV":
-            return next(
-                cfg.root
-                for cfg in self._config.endpoints
-                if isinstance(cfg.root, EndpointPrvConfig) and cfg.root.endpoint_name == name
-            )
+            try:
+                return next(
+                    cfg.root
+                    for cfg in self._config.endpoints.endpoints
+                    if isinstance(cfg.root, EndpointPrvConfig) and cfg.root.endpoint_name == name
+                )
+            except StopIteration:
+                raise KeyError(f"Provider with name {name} not found.")
         else:
             raise NotImplementedError(f"Interface type {iface_type} is not supported.")
 
