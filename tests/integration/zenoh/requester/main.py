@@ -1,12 +1,11 @@
 from make87_messages.core.header_pb2 import Header
 from make87_messages.text.text_plain_pb2 import PlainText
 from make87.encodings import ProtobufEncoder
-from make87.interfaces.zenoh import ZenohInterface, ZenohAdapter
+from make87.interfaces.zenoh import ZenohInterface
 
 
 def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
-    zenoh_adapter = ZenohAdapter()
     zenoh_interface = ZenohInterface()
 
     requester = zenoh_interface.get_requester("EXAMPLE_ENDPOINT")
@@ -16,12 +15,10 @@ def main():
         header.timestamp.GetCurrentTime()
         message = PlainText(header=header, body="Hello, World! 🐍")
         message_encoded = message_encoder.encode(message)
-        message_packed = zenoh_adapter.pack(message_encoded)
-        response = requester.get(payload=message_packed)
+        response = requester.get(payload=message_encoded)
         for r in response:
             if r.ok is not None:
-                response_unpacked, *_ = zenoh_adapter.unpack(r.ok)
-                response_message = message_encoder.decode(response_unpacked)
+                response_message = message_encoder.decode(r.ok.payload.to_bytes())
                 print(f"Received response: {response_message}")
             else:
                 print(f"Received error: {r.error.payload.to_string()}")

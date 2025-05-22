@@ -2,24 +2,27 @@ import pytest
 import uuid
 
 from make87.interfaces.zenoh.interface import ZenohInterface
-from make87.models.application_env_config import (
-    ApplicationEnvConfig,
+from make87.models import (
+    ApplicationConfig,
     URLMapping,
     MountedPeripherals,
     TopicConfigSub,
-    TopicType1,
+    TopicConfig,
+    TopicTypeSub,
 )
 
 
 @pytest.fixture
 def sub_config():
-    return ApplicationEnvConfig(
+    return ApplicationConfig(
         topics=[
-            TopicConfigSub(
-                topic_name="HELLO_WORLD_MESSAGE",
-                topic_key="my_topic_key",
-                topic_type=TopicType1.SUB,
-                message_type="make87_messages.text.text_plain.PlainText",
+            TopicConfig(
+                root=TopicConfigSub(
+                    topic_name="HELLO_WORLD_MESSAGE",
+                    topic_key="my_topic_key",
+                    topic_type=TopicTypeSub.SUB,
+                    message_type="make87_messages.text.text_plain.PlainText",
+                )
             )
         ],
         endpoints=[],

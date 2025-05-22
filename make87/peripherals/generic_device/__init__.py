@@ -1,4 +1,4 @@
-from make87.models.application_env_config import PeripheralGenericDevice
+from make87.models import GenericDevicePeripheral as GenericDevicePeripheralModel
 from make87.peripherals.base import PeripheralBase
 
 
@@ -8,7 +8,7 @@ class GenericDevicePeripheral(PeripheralBase):
         self.device_node = device_node
 
     @classmethod
-    def from_config(cls, config: PeripheralGenericDevice):
+    def from_config(cls, config: GenericDevicePeripheralModel):
         generic = config.GenericDevice
         return cls(
             name=generic.name,

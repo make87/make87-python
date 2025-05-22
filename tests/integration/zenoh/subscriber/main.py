@@ -3,19 +3,17 @@ from datetime import datetime, timezone
 from make87_messages.text.text_plain_pb2 import PlainText
 
 from make87.encodings import ProtobufEncoder
-from make87.interfaces.zenoh import ZenohInterface, ZenohAdapter
+from make87.interfaces.zenoh import ZenohInterface
 from make87 import run_forever
 
 
 def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
-    zenoh_adapter = ZenohAdapter()
     zenoh_interface = ZenohInterface()
     subscriber = zenoh_interface.get_subscriber("HELLO_WORLD_MESSAGE")
 
     for sample in subscriber:
-        message_unpacked, *_ = zenoh_adapter.unpack(sample)
-        message = message_encoder.decode(message_unpacked)
+        message = message_encoder.decode(sample.payload.to_bytes())
         received_dt = datetime.now(tz=timezone.utc)
         publish_dt = message.header.timestamp.ToDatetime().replace(tzinfo=timezone.utc)
         print(

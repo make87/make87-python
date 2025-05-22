@@ -1,16 +1,16 @@
 from typing import overload
 
-from make87.models import PeripheralCodec
-from make87.models.application_env_config import (
+from make87.models import (
     Peripheral,
-    PeripheralCamera,
-    PeripheralGenericDevice,
-    PeripheralGpio,
-    PeripheralGpu,
-    PeripheralI2C,
-    PeripheralIsp,
-    PeripheralRealSense,
-    PeripheralRendering,
+    CodecPeripheral as CodecPeripheralModel,
+    CameraPeripheral as CameraPeripheralModel,
+    GenericDevicePeripheral as GenericDevicePeripheralModel,
+    GpioPeripheral as GpioPeripheralModel,
+    GpuPeripheral as GpuPeripheralModel,
+    I2cPeripheral as I2cPeripheralModel,
+    IspPeripheral as IspPeripheralModel,
+    RealSenseCameraPeripheral as RealSenseCameraPeripheralModel,
+    RenderingPeripheral as RenderingPeripheralModel,
 )
 from make87.peripherals.camera import CameraPeripheral
 from make87.peripherals.generic_device import GenericDevicePeripheral
@@ -25,45 +25,45 @@ from make87.peripherals.other import OtherPeripheral
 
 
 @overload
-def create_peripheral_from_data(mp: PeripheralCamera) -> CameraPeripheral: ...
+def create_peripheral_from_data(mp: CameraPeripheralModel) -> CameraPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralCodec) -> CodecPeripheral: ...
+def create_peripheral_from_data(mp: CodecPeripheralModel) -> CodecPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralGenericDevice) -> GenericDevicePeripheral: ...
+def create_peripheral_from_data(mp: GenericDevicePeripheralModel) -> GenericDevicePeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralGpio) -> GpioPeripheral: ...
+def create_peripheral_from_data(mp: GpioPeripheralModel) -> GpioPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralGpu) -> GpuPeripheral: ...
+def create_peripheral_from_data(mp: GpuPeripheralModel) -> GpuPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralI2C) -> I2cPeripheral: ...
+def create_peripheral_from_data(mp: I2cPeripheralModel) -> I2cPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralIsp) -> IspPeripheral: ...
+def create_peripheral_from_data(mp: IspPeripheralModel) -> IspPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralRealSense) -> RealSenseCameraPeripheral: ...
+def create_peripheral_from_data(mp: RealSenseCameraPeripheralModel) -> RealSenseCameraPeripheral: ...
 @overload
-def create_peripheral_from_data(mp: PeripheralRendering) -> RenderingPeripheral: ...
+def create_peripheral_from_data(mp: RenderingPeripheralModel) -> RenderingPeripheral: ...
 @overload
 def create_peripheral_from_data(mp: object) -> OtherPeripheral: ...
 
 
 def create_peripheral_from_data(mp) -> Peripheral:
-    if isinstance(mp, PeripheralCamera):
+    if isinstance(mp, CameraPeripheralModel):
         return CameraPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralCodec):
+    elif isinstance(mp, CodecPeripheralModel):
         return CodecPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralGenericDevice):
+    elif isinstance(mp, GenericDevicePeripheralModel):
         return GenericDevicePeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralGpio):
+    elif isinstance(mp, GpioPeripheralModel):
         return GpioPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralGpu):
+    elif isinstance(mp, GpuPeripheralModel):
         return GpuPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralI2C):
+    elif isinstance(mp, I2cPeripheralModel):
         return I2cPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralIsp):
+    elif isinstance(mp, IspPeripheralModel):
         return IspPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralRealSense):
+    elif isinstance(mp, RealSenseCameraPeripheralModel):
         return RealSenseCameraPeripheral.from_config(mp)
-    elif isinstance(mp, PeripheralRendering):
+    elif isinstance(mp, RenderingPeripheralModel):
         return RenderingPeripheral.from_config(mp)
     else:  # ("Other", "Speaker", "Keyboard", "Mouse")
         return OtherPeripheral.from_config(mp)

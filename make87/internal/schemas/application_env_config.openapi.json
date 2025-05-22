@@ -249,8 +249,7 @@
                 "type": "string"
               }
             },
-            "additionalProperties": true,
-            "title": "EndpointConfigReq"
+            "additionalProperties": true
           },
           {
             "type": "object",
@@ -284,8 +283,7 @@
                 "type": "string"
               }
             },
-            "additionalProperties": true,
-            "title": "EndpointConfigPrv"
+            "additionalProperties": true
           }
         ]
       },
@@ -605,8 +603,7 @@
               "GPU": {
                 "$ref": "#/components/schemas/GpuPeripheral"
               }
-            },
-            "title": "PeripheralGpu"
+            }
           },
           {
             "type": "object",
@@ -617,8 +614,7 @@
               "I2C": {
                 "$ref": "#/components/schemas/I2cPeripheral"
               }
-            },
-            "title": "PeripheralI2C"
+            }
           },
           {
             "type": "object",
@@ -629,8 +625,7 @@
               "GPIO": {
                 "$ref": "#/components/schemas/GpioPeripheral"
               }
-            },
-            "title": "PeripheralGpio"
+            }
           },
           {
             "type": "object",
@@ -641,8 +636,7 @@
               "Camera": {
                 "$ref": "#/components/schemas/CameraPeripheral"
               }
-            },
-            "title": "PeripheralCamera"
+            }
           },
           {
             "type": "object",
@@ -653,8 +647,7 @@
               "RealSense": {
                 "$ref": "#/components/schemas/RealSenseCameraPeripheral"
               }
-            },
-            "title": "PeripheralRealSense"
+            }
           },
           {
             "type": "object",
@@ -665,8 +658,7 @@
               "ISP": {
                 "$ref": "#/components/schemas/IspPeripheral"
               }
-            },
-            "title": "PeripheralIsp"
+            }
           },
           {
             "type": "object",
@@ -677,8 +669,7 @@
               "Codec": {
                 "$ref": "#/components/schemas/CodecPeripheral"
               }
-            },
-            "title": "PeripheralCodec"
+            }
           },
           {
             "type": "object",
@@ -689,8 +680,7 @@
               "Rendering": {
                 "$ref": "#/components/schemas/RenderingPeripheral"
               }
-            },
-            "title": "PeripheralRendering"
+            }
           },
           {
             "type": "object",
@@ -701,8 +691,7 @@
               "Speaker": {
                 "$ref": "#/components/schemas/OtherPeripheral"
               }
-            },
-            "title": "PeripheralSpeaker"
+            }
           },
           {
             "type": "object",
@@ -713,8 +702,7 @@
               "Keyboard": {
                 "$ref": "#/components/schemas/OtherPeripheral"
               }
-            },
-            "title": "PeripheralKeyboard"
+            }
           },
           {
             "type": "object",
@@ -725,8 +713,7 @@
               "Mouse": {
                 "$ref": "#/components/schemas/OtherPeripheral"
               }
-            },
-            "title": "PeripheralMouse"
+            }
           },
           {
             "type": "object",
@@ -737,8 +724,7 @@
               "GenericDevice": {
                 "$ref": "#/components/schemas/GenericDevicePeripheral"
               }
-            },
-            "title": "PeripheralGenericDevice"
+            }
           },
           {
             "type": "object",
@@ -749,8 +735,7 @@
               "Other": {
                 "$ref": "#/components/schemas/OtherPeripheral"
               }
-            },
-            "title": "PeripheralOther"
+            }
           }
         ]
       },
@@ -843,8 +828,7 @@
               "Other": {
                 "type": "string"
               }
-            },
-            "title": "PeripheralTypeOther"
+            }
           }
         ]
       },
@@ -1000,8 +984,7 @@
                 },
                 "additionalProperties": true
               }
-            },
-            "title": "ServiceConfigClient"
+            }
           },
           {
             "type": "object",
@@ -1034,8 +1017,7 @@
                 },
                 "additionalProperties": true
               }
-            },
-            "title": "ServiceConfigServer"
+            }
           }
         ]
       },
@@ -1069,8 +1051,7 @@
                 ]
               }
             },
-            "additionalProperties": true,
-            "title": "TopicConfigPub"
+            "additionalProperties": true
           },
           {
             "type": "object",
@@ -1100,8 +1081,7 @@
                 ]
               }
             },
-            "additionalProperties": true,
-            "title": "TopicConfigSub"
+            "additionalProperties": true
           }
         ]
       },

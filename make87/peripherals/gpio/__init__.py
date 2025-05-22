@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from make87.models.application_env_config import PeripheralGpio
+from make87.models import GpioPeripheral as GpioPeripheralModel
 from make87.peripherals.base import PeripheralBase
 
 
@@ -22,7 +22,7 @@ class GpioPeripheral(PeripheralBase):
         self.lines = lines
 
     @classmethod
-    def from_config(cls, config: PeripheralGpio):
+    def from_config(cls, config: GpioPeripheralModel):
         gpio = config.GPIO
         return cls(
             chip_name=gpio.chip_name,

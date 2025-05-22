@@ -12,14 +12,14 @@ import pytest
 
 from make87.interfaces.zenoh.model import Priority, Reliability, CongestionControl
 from make87.models import (
-    ApplicationEnvConfig,
-    TopicConfigs,
-    TopicSubConfig,
-    EndpointConfigs,
-    ServiceConfigs,
+    ApplicationConfig,
     URLMapping,
     MountedPeripherals,
-    TopicPubConfig,
+    TopicConfigSub,
+    TopicConfigPub,
+    TopicConfig,
+    TopicTypeSub,
+    TopicTypePub,
 )
 
 # Test inputs
@@ -124,19 +124,19 @@ def test_defaults_only():
 
     base_env = os.environ.copy()
 
-    sub_config = ApplicationEnvConfig(
-        topics=TopicConfigs(
-            topics=[
-                TopicSubConfig(
+    sub_config = ApplicationConfig(
+        topics=[
+            TopicConfig(
+                root=TopicConfigSub(
                     topic_name="HELLO_WORLD_MESSAGE",
                     topic_key="my_topic_key",
-                    topic_type="SUB",
+                    topic_type=TopicTypeSub.SUB,
                     message_type="make87_messages.text.text_plain.PlainText",
                 )
-            ]
-        ),
-        endpoints=EndpointConfigs(endpoints=[]),
-        services=ServiceConfigs(services=[]),
+            )
+        ],
+        endpoints=[],
+        services=[],
         url_mapping=URLMapping(name_to_url={}),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
@@ -144,7 +144,7 @@ def test_defaults_only():
         system_id=uuid.uuid4().hex,
         deployed_application_name="sub_app_1",
         is_release_version=True,
-        make87_ip="10.10.0.1",
+        vpn_ip="10.10.0.1",
         port_config=[],
         application_id=uuid.uuid4().hex,
         application_name="sub_app",
@@ -157,19 +157,19 @@ def test_defaults_only():
         }
     )
 
-    pub_config = ApplicationEnvConfig(
-        topics=TopicConfigs(
-            topics=[
-                TopicPubConfig(
+    pub_config = ApplicationConfig(
+        topics=[
+            TopicConfig(
+                root=TopicConfigPub(
                     topic_name="HELLO_WORLD_MESSAGE",
                     topic_key="my_topic_key",
-                    topic_type="PUB",
+                    topic_type=TopicTypePub.PUB,
                     message_type="make87_messages.text.text_plain.PlainText",
                 )
-            ]
-        ),
-        endpoints=EndpointConfigs(endpoints=[]),
-        services=ServiceConfigs(services=[]),
+            )
+        ],
+        endpoints=[],
+        services=[],
         url_mapping=URLMapping(name_to_url={}),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
@@ -177,7 +177,7 @@ def test_defaults_only():
         system_id=uuid.uuid4().hex,
         deployed_application_name="pub_app_1",
         is_release_version=True,
-        make87_ip="10.10.0.1",
+        vpn_ip="10.10.0.1",
         port_config=[],
         application_id=uuid.uuid4().hex,
         application_name="pub_app",

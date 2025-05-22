@@ -2,24 +2,20 @@ import pytest
 import uuid
 
 from make87.interfaces.zenoh.interface import ZenohInterface
-from make87.models.application_env_config import (
-    ApplicationEnvConfig,
-    URLMapping,
-    MountedPeripherals,
-    TopicConfigPub,
-    TopicType,
-)
+from make87.models import ApplicationConfig, URLMapping, MountedPeripherals, TopicConfigPub, TopicTypePub, TopicConfig
 
 
 @pytest.fixture
 def pub_config():
-    return ApplicationEnvConfig(
+    return ApplicationConfig(
         topics=[
-            TopicConfigPub(
-                topic_name="HELLO_WORLD_MESSAGE",
-                topic_key="my_topic_key",
-                topic_type=TopicType.PUB,
-                message_type="make87_messages.text.text_plain.PlainText",
+            TopicConfig(
+                root=TopicConfigPub(
+                    topic_name="HELLO_WORLD_MESSAGE",
+                    topic_key="my_topic_key",
+                    topic_type=TopicTypePub.PUB,
+                    message_type="make87_messages.text.text_plain.PlainText",
+                )
             )
         ],
         endpoints=[],

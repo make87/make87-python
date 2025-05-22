@@ -1,6 +1,6 @@
 from typing import List
 
-from make87.models.application_env_config import PeripheralOther
+from make87.models import OtherPeripheral as OtherPeripheralModel
 from make87.peripherals.base import PeripheralBase
 
 
@@ -16,7 +16,7 @@ class OtherPeripheral(PeripheralBase):
         self.device_nodes = device_nodes
 
     @classmethod
-    def from_config(cls, config: PeripheralOther):
+    def from_config(cls, config: OtherPeripheralModel):
         other = config.Other
         return cls(
             name=other.name,

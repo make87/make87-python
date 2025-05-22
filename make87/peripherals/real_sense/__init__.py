@@ -1,6 +1,6 @@
 from typing import List
 
-from make87.models.application_env_config import PeripheralRealSense
+from make87.models import RealSenseCameraPeripheral as RealSenseCameraPeripheralModel
 from make87.peripherals.base import PeripheralBase
 
 
@@ -18,7 +18,7 @@ class RealSenseCameraPeripheral(PeripheralBase):
         self.model = model
 
     @classmethod
-    def from_config(cls, config: PeripheralRealSense):
+    def from_config(cls, config: RealSenseCameraPeripheralModel):
         rs = config.RealSense
         return cls(
             name=rs.name,

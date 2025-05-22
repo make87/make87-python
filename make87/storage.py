@@ -4,11 +4,11 @@ from s3path import S3Path, register_configuration_parameter
 import boto3
 
 from make87.config import load_config_from_env
-from make87.models.application_env_config import ApplicationEnvConfig
+from make87.models import ApplicationConfig
 
 
 class BlobStorage:
-    def __init__(self, make87_config: Optional[ApplicationEnvConfig] = None):
+    def __init__(self, make87_config: Optional[ApplicationConfig] = None):
         if make87_config is None:
             make87_config = load_config_from_env()
         self._config = make87_config

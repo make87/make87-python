@@ -2,26 +2,29 @@ import pytest
 import uuid
 
 from make87.interfaces.zenoh.interface import ZenohInterface
-from make87.models.application_env_config import (
-    ApplicationEnvConfig,
+from make87.models import (
+    ApplicationConfig,
     URLMapping,
     MountedPeripherals,
     EndpointConfigReq,
-    EndpointType,
+    EndpointConfig,
+    EndpointTypeReq,
 )
 
 
 @pytest.fixture
 def req_config():
-    return ApplicationEnvConfig(
+    return ApplicationConfig(
         topics=[],
         endpoints=[
-            EndpointConfigReq(
-                endpoint_name="HELLO_WORLD_MESSAGE",
-                endpoint_key="my_endpoint_key",
-                endpoint_type=EndpointType.REQ,
-                requester_message_type="make87_messages.text.text_plain.PlainText",
-                provider_message_type="make87_messages.text.text_plain.PlainText",
+            EndpointConfig(
+                root=EndpointConfigReq(
+                    endpoint_name="HELLO_WORLD_MESSAGE",
+                    endpoint_key="my_endpoint_key",
+                    endpoint_type=EndpointTypeReq.REQ,
+                    requester_message_type="make87_messages.text.text_plain.PlainText",
+                    provider_message_type="make87_messages.text.text_plain.PlainText",
+                )
             )
         ],
         services=[],

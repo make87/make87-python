@@ -1,6 +1,6 @@
 from typing import List
 
-from make87.models.application_env_config import PeripheralIsp
+from make87.models import IspPeripheral as IspPeripheralModel
 from make87.peripherals.base import PeripheralBase
 
 
@@ -16,7 +16,7 @@ class IspPeripheral(PeripheralBase):
         self.device_nodes = device_nodes
 
     @classmethod
-    def from_config(cls, config: PeripheralIsp):
+    def from_config(cls, config: IspPeripheralModel):
         isp = config.ISP
         return cls(
             name=isp.name,

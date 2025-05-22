@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from make87.models.application_env_config import PeripheralGpu
+from make87.models import GpuPeripheral as GpuPeripheralModel
 from make87.peripherals.base import PeripheralBase
 
 
@@ -20,7 +20,7 @@ class GpuPeripheral(PeripheralBase):
         self.vram = vram
 
     @classmethod
-    def from_config(cls, config: PeripheralGpu):
+    def from_config(cls, config: GpuPeripheralModel):
         gpu = config.GPU
         return cls(
             name=gpu.name,

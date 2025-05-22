@@ -2,24 +2,20 @@ from datetime import datetime, timezone
 
 from make87_messages.text.text_plain_pb2 import PlainText
 from make87_messages.core.header_pb2 import Header
-from zenoh.zenoh import Query
 
 from make87.encodings import ProtobufEncoder
-from make87.interfaces.zenoh import ZenohAdapter, ZenohInterface
+from make87.interfaces.zenoh import ZenohInterface
 
 
 def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
-    zenoh_adapter = ZenohAdapter()
     zenoh_interface = ZenohInterface()
 
     provider = zenoh_interface.get_provider("EXAMPLE_ENDPOINT")
 
     while True:
         with provider.recv() as query:
-            query: Query = query
-            message_unpacked, key_expr, *_ = zenoh_adapter.unpack(query)
-            message = message_encoder.decode(message_unpacked)
+            message = message_encoder.decode(query.payload.to_bytes())
             received_dt = datetime.now(tz=timezone.utc)
             publish_dt = message.header.timestamp.ToDatetime().replace(tzinfo=timezone.utc)
             print(
@@ -35,9 +31,8 @@ def main():
                 body=message.body[::-1],  # Reverse the message body for demonstration
             )
             message_encoded = message_encoder.encode(response_message)
-            message_packed = zenoh_adapter.pack(message_encoded)
 
-            query.reply(key_expr=key_expr, payload=message_packed)
+            query.reply(key_expr=query.key_expr, payload=message_encoded)
 
 
 if __name__ == "__main__":

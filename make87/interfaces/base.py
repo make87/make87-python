@@ -1,17 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar, Tuple, Literal, Union, overload, Optional
+from typing import Any, Literal, Optional, Union, overload
 
 from make87.config import load_config_from_env
-from make87.models.application_env_config import (
+from make87.models import (
+    ApplicationConfig,
+    EndpointConfigPrv,
+    EndpointConfigReq,
     TopicConfigPub,
     TopicConfigSub,
-    EndpointConfigReq,
-    EndpointConfigPrv,
-    ApplicationEnvConfig,
 )
-
-SendT = TypeVar("SendT")  # Protocol "send" type (e.g., zenoh.ZBytes)
-RecvT = TypeVar("RecvT")  # Protocol "receive" type (e.g., zenoh.Sample)
 
 
 class InterfaceBase(ABC):
@@ -20,7 +17,7 @@ class InterfaceBase(ABC):
     Handles publisher/subscriber setup.
     """
 
-    def __init__(self, make87_config: Optional[ApplicationEnvConfig] = None):
+    def __init__(self, make87_config: Optional[ApplicationConfig] = None):
         """
         Initialize the interface with a configuration object.
         If no config is provided, it will attempt to load from the environment.
@@ -116,41 +113,3 @@ class InterfaceBase(ABC):
         The callback receives user-level decoded messages of type T.
         """
         pass
-
-
-class InterfaceAdapter(ABC, Generic[SendT, RecvT]):
-    """
-    Base class for interface adapters.
-
-    Methods:
-        pack(payload: bytes) -> SendT:
-            Packs bytes into a interface-native message object (ready to send).
-
-        unpack(message: RecvT) -> bytes:
-            Unpacks the payload bytes from a interface-native message object (ready to decode).
-    """
-
-    @abstractmethod
-    def pack(self, payload: bytes, **metadata) -> SendT:
-        """
-        Packs bytes and optional interface metadata into a message object.
-
-        Args:
-            payload (bytes): The main payload.
-            **metadata: Any additional fields (key, encoding, etc.)
-
-        Returns:
-            M: Protocol-native message
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def unpack(self, message: RecvT) -> Tuple[bytes, ...]:
-        """
-        Unpacks the interface-native message.
-        Returns:
-            Tuple: (payload_bytes, ...metadata)
-                - payload_bytes (bytes): Always at index 0
-                - ...metadata: Any additional interface-specific data
-        """
-        raise NotImplementedError()
