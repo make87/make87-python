@@ -1,3 +1,5 @@
+import time
+
 from make87_messages.core.header_pb2 import Header
 from make87_messages.text.text_plain_pb2 import PlainText
 from make87.encodings import ProtobufEncoder
@@ -20,6 +22,7 @@ def main():
             if r.ok is not None:
                 response_message = message_encoder.decode(r.ok.payload.to_bytes())
                 print(f"Received response: {response_message.body}")
+        time.sleep(0.1)
 
 
 if __name__ == "__main__":

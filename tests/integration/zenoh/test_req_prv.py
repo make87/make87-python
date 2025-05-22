@@ -130,9 +130,7 @@ def test_pub_sub_combination(priority, congestion_control, express, handler_type
         [sys.executable, str(requester_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=requester_env
     )
 
-    time.sleep(
-        12
-    )  # Let requester boot up and wait for response <-- TODO: check why the response with .ok takes so long. 1 sec should be enough.
+    time.sleep(1)  # Let requester boot up and wait for response
 
     # Kill publisher
     provider_proc.terminate()
@@ -243,9 +241,7 @@ def test_defaults_only():
         [sys.executable, str(requester_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=requester_env
     )
 
-    time.sleep(
-        12
-    )  # Let requester boot up and wait for response <-- TODO: check why the response with .ok takes so long. 1 sec should be enough.
+    time.sleep(1)  # Let requester boot up and wait for response
 
     # Kill publisher
     provider_proc.terminate()

@@ -27,7 +27,7 @@ Source = "https://github.com/make87/make87-python"
 
 [project.optional-dependencies]
 zenoh = [
-    "eclipse-zenoh==1.2.1",
+    "eclipse-zenoh>=1.4,<1.5",
 ]
 protobuf = [
     "protobuf>=4.22,<7.0",

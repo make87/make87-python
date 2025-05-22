@@ -20,7 +20,7 @@ def main():
         publisher.put(payload=message_encoded)
 
         print(f"Published: {message}")
-        time.sleep(1)
+        time.sleep(0.1)
 
 
 if __name__ == "__main__":
