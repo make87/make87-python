@@ -15,6 +15,10 @@ def pub_config():
                     topic_key="my_topic_key",
                     topic_type=TopicTypePub.PUB,
                     message_type="make87_messages.text.text_plain.PlainText",
+                    congestion_control="DROP",
+                    priority="REAL_TIME",
+                    express=True,
+                    reliability="BEST_EFFORT",
                 )
             )
         ],

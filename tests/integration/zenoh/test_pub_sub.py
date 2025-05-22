@@ -1,4 +1,3 @@
-import json
 import subprocess
 import time
 import sys
@@ -43,42 +42,77 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
 
     base_env = os.environ.copy()
 
+    sub_config = ApplicationConfig(
+        topics=[
+            TopicConfig(
+                root=TopicConfigSub(
+                    topic_name="HELLO_WORLD_MESSAGE",
+                    topic_key="my_topic_key",
+                    topic_type=TopicTypeSub.SUB,
+                    message_type="make87_messages.text.text_plain.PlainText",
+                    handler=dict(
+                        handler_type=handler_type,
+                        capacity=handler_capacity,
+                    ),
+                )
+            )
+        ],
+        endpoints=[],
+        services=[],
+        url_mapping=URLMapping(name_to_url={}),
+        peripherals=MountedPeripherals(peripherals=[]),
+        config="{}",
+        deployed_application_id=uuid.uuid4().hex,
+        system_id=uuid.uuid4().hex,
+        deployed_application_name="sub_app_1",
+        is_release_version=True,
+        vpn_ip="10.10.0.1",
+        port_config=[],
+        application_id=uuid.uuid4().hex,
+        application_name="sub_app",
+    )
+
     subscriber_env = base_env.copy()
-    publisher_env = base_env.copy()
-
-    subscriber_topic = {
-        "topic_name": "HELLO_WORLD_MESSAGE",
-        "topic_key": "my_topic_key",
-        "topic_type": "SUB",
-        "message_type": "make87_messages.text.text_plain.PlainText",
-        "handler": {
-            "handler_type": handler_type,
-            "capacity": handler_capacity,
-        },
-    }
-
-    publisher_topic = {
-        "topic_type": "PUB",
-        "topic_name": "HELLO_WORLD_MESSAGE",
-        "topic_key": "my_topic_key",
-        "message_type": "make87_messages.text.text_plain.PlainText",
-        "priority": priority.value,
-        "reliability": reliability.value,
-        "congestion_control": congestion_control.value,
-        "express": express,
-    }
-
     subscriber_env.update(
         {
-            "ENDPOINTS": json.dumps({"endpoints": []}),
-            "TOPICS": json.dumps({"topics": [subscriber_topic]}),
+            "MAKE87_CONFIG": sub_config.model_dump_json(),
         }
     )
 
+    pub_config = ApplicationConfig(
+        topics=[
+            TopicConfig(
+                root=TopicConfigPub(
+                    topic_name="HELLO_WORLD_MESSAGE",
+                    topic_key="my_topic_key",
+                    topic_type=TopicTypePub.PUB,
+                    message_type="make87_messages.text.text_plain.PlainText",
+                    congestion_control=congestion_control.value,
+                    priority=priority.value,
+                    express=express,
+                    reliability=reliability.value,
+                )
+            )
+        ],
+        endpoints=[],
+        services=[],
+        url_mapping=URLMapping(name_to_url={}),
+        peripherals=MountedPeripherals(peripherals=[]),
+        config="{}",
+        deployed_application_id=uuid.uuid4().hex,
+        system_id=uuid.uuid4().hex,
+        deployed_application_name="pub_app_1",
+        is_release_version=True,
+        vpn_ip="10.10.0.1",
+        port_config=[],
+        application_id=uuid.uuid4().hex,
+        application_name="pub_app",
+    )
+
+    publisher_env = base_env.copy()
     publisher_env.update(
         {
-            "ENDPOINTS": json.dumps({"endpoints": []}),
-            "TOPICS": json.dumps({"topics": [publisher_topic]}),
+            "MAKE87_CONFIG": pub_config.model_dump_json(),
         }
     )
 
@@ -113,6 +147,10 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
         sub_stdout, sub_stderr = subscriber_proc.communicate()
 
     output = sub_stdout.decode()
+
+    print(f"Output: {output}")
+    print(f"Subscriber stderr: {sub_stderr.decode()}")
+
     assert all(w in output.lower() for w in ("hello", "world"))
 
 

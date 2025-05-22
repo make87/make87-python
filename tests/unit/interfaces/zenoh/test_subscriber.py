@@ -22,6 +22,10 @@ def sub_config():
                     topic_key="my_topic_key",
                     topic_type=TopicTypeSub.SUB,
                     message_type="make87_messages.text.text_plain.PlainText",
+                    handler=dict(
+                        handler_type="FIFO",
+                        capacity=10,
+                    ),
                 )
             )
         ],

@@ -8,7 +8,7 @@ def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
     zenoh_interface = ZenohInterface()
 
-    requester = zenoh_interface.get_requester("EXAMPLE_ENDPOINT")
+    requester = zenoh_interface.get_requester("HELLO_WORLD_MESSAGE")
     header = Header(entity_path="/pytest/req_prv", reference_id=0)
 
     while True:
@@ -19,9 +19,7 @@ def main():
         for r in response:
             if r.ok is not None:
                 response_message = message_encoder.decode(r.ok.payload.to_bytes())
-                print(f"Received response: {response_message}")
-            else:
-                print(f"Received error: {r.error.payload.to_string()}")
+                print(f"Received response: {response_message.body}")
 
 
 if __name__ == "__main__":
