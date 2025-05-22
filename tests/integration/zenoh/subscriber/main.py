@@ -4,7 +4,6 @@ from make87_messages.text.text_plain_pb2 import PlainText
 
 from make87.encodings import ProtobufEncoder
 from make87.interfaces.zenoh import ZenohInterface
-from make87 import run_forever
 
 
 def main():
@@ -19,8 +18,6 @@ def main():
         print(
             f"Received message '{message.body}'. Sent at {publish_dt}. Received at {received_dt}. Took {(received_dt - publish_dt).total_seconds()} seconds."
         )
-
-    run_forever()
 
 
 if __name__ == "__main__":
