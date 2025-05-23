@@ -21,7 +21,17 @@ class ZenohInterface(InterfaceBase):
     @cached_property
     def zenoh_config(self) -> zenoh.Config:
         cfg = zenoh.Config()
-        cfg.insert_json5("connect/endpoints", json.dumps(list({f"tcp/{url}" for url in self._config.url_mapping})))
+        cfg.insert_json5(
+            "connect/endpoints",
+            json.dumps(
+                list(
+                    {
+                        f"tcp/{mapping.vpn_ip}:{mapping.vpn_port}"
+                        for interface_name, mapping in self._config.url_mapping.name_to_url.items()
+                    }
+                )
+            ),
+        )
         return cfg
 
     @cached_property
