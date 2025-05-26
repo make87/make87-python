@@ -8,7 +8,7 @@ from make87.interfaces.zenoh import ZenohInterface
 
 def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
-    zenoh_interface = ZenohInterface()
+    zenoh_interface = ZenohInterface(name="zenoh_test")
     subscriber = zenoh_interface.get_subscriber("HELLO_WORLD_MESSAGE")
 
     for sample in subscriber:

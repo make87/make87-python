@@ -2,52 +2,60 @@ import pytest
 import uuid
 
 from make87.interfaces.zenoh.interface import ZenohInterface
+from make87.internal.models.application_env_config import (
+    InterfaceConfig,
+    ApplicationInfo,
+    MappedSubscriber,
+)
 from make87.models import (
     ApplicationConfig,
-    URLMapping,
     MountedPeripherals,
-    TopicConfigSub,
-    TopicConfig,
-    TopicTypeSub,
 )
 
 
 @pytest.fixture
 def sub_config():
     return ApplicationConfig(
-        topics=[
-            TopicConfig(
-                root=TopicConfigSub(
-                    topic_name="HELLO_WORLD_MESSAGE",
-                    topic_key="my_topic_key",
-                    topic_type=TopicTypeSub.SUB,
-                    message_type="make87_messages.text.text_plain.PlainText",
-                    handler=dict(
-                        handler_type="FIFO",
-                        capacity=10,
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers=dict(
+                    HELLO_WORLD_MESSAGE=MappedSubscriber(
+                        topic_name="HELLO_WORLD_MESSAGE",
+                        topic_key="my_topic_key",
+                        protocol="zenoh",
+                        message_type="make87_messages.text.text_plain.PlainText",
+                        handler=dict(
+                            handler_type="FIFO",
+                            capacity=10,
+                        ),
+                        vpn_ip="10.10.0.1",
+                        vpn_port=12345,
                     ),
-                )
+                ),
+                publishers={},
+                requesters={},
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        endpoints=[],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="sub_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="sub_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
 
 @pytest.fixture
 def zenoh_interface(sub_config):
-    iface = ZenohInterface(make87_config=sub_config)
+    iface = ZenohInterface(name="zenoh_test", make87_config=sub_config)
     return iface
 
 

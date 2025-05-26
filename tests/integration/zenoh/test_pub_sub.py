@@ -10,15 +10,15 @@ import itertools
 import pytest
 
 from make87.interfaces.zenoh.model import Priority, Reliability, CongestionControl
+from make87.internal.models.application_env_config import (
+    ApplicationInfo,
+    PublisherTopicConfig,
+    InterfaceConfig,
+    MappedSubscriber,
+)
 from make87.models import (
     ApplicationConfig,
-    URLMapping,
     MountedPeripherals,
-    TopicConfigSub,
-    TopicConfigPub,
-    TopicConfig,
-    TopicTypeSub,
-    TopicTypePub,
 )
 
 # Test inputs
@@ -43,33 +43,40 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
     base_env = os.environ.copy()
 
     sub_config = ApplicationConfig(
-        topics=[
-            TopicConfig(
-                root=TopicConfigSub(
-                    topic_name="HELLO_WORLD_MESSAGE",
-                    topic_key="my_topic_key",
-                    topic_type=TopicTypeSub.SUB,
-                    message_type="make87_messages.text.text_plain.PlainText",
-                    handler=dict(
-                        handler_type=handler_type,
-                        capacity=handler_capacity,
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers=dict(
+                    HELLO_WORLD_MESSAGE=MappedSubscriber(
+                        topic_name="HELLO_WORLD_MESSAGE",
+                        topic_key="my_topic_key",
+                        protocol="zenoh",
+                        message_type="make87_messages.text.text_plain.PlainText",
+                        handler=dict(
+                            handler_type=handler_type,
+                            capacity=handler_capacity,
+                        ),
+                        vpn_ip="10.10.0.1",
+                        vpn_port=12345,
                     ),
-                )
+                ),
+                publishers={},
+                requesters={},
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        endpoints=[],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="sub_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="sub_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     subscriber_env = base_env.copy()
@@ -80,33 +87,38 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
     )
 
     pub_config = ApplicationConfig(
-        topics=[
-            TopicConfig(
-                root=TopicConfigPub(
-                    topic_name="HELLO_WORLD_MESSAGE",
-                    topic_key="my_topic_key",
-                    topic_type=TopicTypePub.PUB,
-                    message_type="make87_messages.text.text_plain.PlainText",
-                    congestion_control=congestion_control.value,
-                    priority=priority.value,
-                    express=express,
-                    reliability=reliability.value,
-                )
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers={},
+                publishers=dict(
+                    HELLO_WORLD_MESSAGE=PublisherTopicConfig(
+                        topic_name="HELLO_WORLD_MESSAGE",
+                        topic_key="my_topic_key",
+                        protocol="zenoh",
+                        message_type="make87_messages.text.text_plain.PlainText",
+                        congestion_control=congestion_control.value,
+                        priority=priority.value,
+                        express=express,
+                        reliability=reliability.value,
+                    )
+                ),
+                requesters={},
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        endpoints=[],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="pub_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="pub_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     publisher_env = base_env.copy()
@@ -163,29 +175,36 @@ def test_defaults_only():
     base_env = os.environ.copy()
 
     sub_config = ApplicationConfig(
-        topics=[
-            TopicConfig(
-                root=TopicConfigSub(
-                    topic_name="HELLO_WORLD_MESSAGE",
-                    topic_key="my_topic_key",
-                    topic_type=TopicTypeSub.SUB,
-                    message_type="make87_messages.text.text_plain.PlainText",
-                )
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers=dict(
+                    HELLO_WORLD_MESSAGE=MappedSubscriber(
+                        topic_name="HELLO_WORLD_MESSAGE",
+                        topic_key="my_topic_key",
+                        protocol="zenoh",
+                        message_type="make87_messages.text.text_plain.PlainText",
+                        vpn_ip="10.10.0.1",
+                        vpn_port=12345,
+                    ),
+                ),
+                publishers={},
+                requesters={},
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        endpoints=[],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="sub_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="sub_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     subscriber_env = base_env.copy()
@@ -196,29 +215,34 @@ def test_defaults_only():
     )
 
     pub_config = ApplicationConfig(
-        topics=[
-            TopicConfig(
-                root=TopicConfigPub(
-                    topic_name="HELLO_WORLD_MESSAGE",
-                    topic_key="my_topic_key",
-                    topic_type=TopicTypePub.PUB,
-                    message_type="make87_messages.text.text_plain.PlainText",
-                )
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers={},
+                publishers=dict(
+                    HELLO_WORLD_MESSAGE=PublisherTopicConfig(
+                        topic_name="HELLO_WORLD_MESSAGE",
+                        topic_key="my_topic_key",
+                        protocol="zenoh",
+                        message_type="make87_messages.text.text_plain.PlainText",
+                    )
+                ),
+                requesters={},
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        endpoints=[],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="pub_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="pub_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     publisher_env = base_env.copy()

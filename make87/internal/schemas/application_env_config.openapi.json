@@ -14,20 +14,49 @@
       "ApplicationEnvConfig": {
         "type": "object",
         "required": [
-          "topics",
-          "endpoints",
-          "services",
-          "url_mapping",
+          "interfaces",
           "peripherals",
           "config",
+          "application_info"
+        ],
+        "properties": {
+          "application_info": {
+            "$ref": "#/components/schemas/ApplicationInfo"
+          },
+          "config": {},
+          "interfaces": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/InterfaceConfig"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "peripherals": {
+            "$ref": "#/components/schemas/MountedPeripherals"
+          },
+          "storage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/StorageConfig"
+              }
+            ]
+          }
+        }
+      },
+      "ApplicationInfo": {
+        "type": "object",
+        "required": [
           "deployed_application_id",
-          "system_id",
           "deployed_application_name",
-          "is_release_version",
-          "vpn_ip",
-          "port_config",
+          "system_id",
           "application_id",
-          "application_name"
+          "application_name",
+          "is_release_version"
         ],
         "properties": {
           "application_id": {
@@ -36,24 +65,11 @@
           "application_name": {
             "type": "string"
           },
-          "config": {},
           "deployed_application_id": {
             "type": "string"
           },
           "deployed_application_name": {
             "type": "string"
-          },
-          "endpoints": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EndpointConfig"
-            }
-          },
-          "entrypoint_name": {
-            "type": [
-              "string",
-              "null"
-            ]
           },
           "git_branch": {
             "type": [
@@ -70,64 +86,7 @@
           "is_release_version": {
             "type": "boolean"
           },
-          "peripherals": {
-            "$ref": "#/components/schemas/MountedPeripherals"
-          },
-          "port_config": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PortConfig"
-            }
-          },
-          "public_ip": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "services": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ServiceConfig"
-            }
-          },
-          "storage_access_key": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "storage_endpoint_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "storage_secret_key": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "storage_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "system_id": {
-            "type": "string"
-          },
-          "topics": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TopicConfig"
-            }
-          },
-          "url_mapping": {
-            "$ref": "#/components/schemas/URLMapping"
-          },
-          "vpn_ip": {
             "type": "string"
           }
         }
@@ -186,6 +145,32 @@
           }
         }
       },
+      "ClientServiceConfig": {
+        "type": "object",
+        "required": [
+          "name",
+          "spec",
+          "key"
+        ],
+        "properties": {
+          "interface_name": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
       "CodecPeripheral": {
         "type": "object",
         "required": [
@@ -214,78 +199,6 @@
             }
           }
         }
-      },
-      "EndpointConfig": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "endpoint_name",
-              "endpoint_key",
-              "requester_message_type",
-              "provider_message_type",
-              "endpoint_type"
-            ],
-            "properties": {
-              "endpoint_key": {
-                "type": "string"
-              },
-              "endpoint_name": {
-                "type": "string"
-              },
-              "endpoint_type": {
-                "type": "string",
-                "enum": [
-                  "REQ"
-                ]
-              },
-              "interface_name": {
-                "type": "string"
-              },
-              "provider_message_type": {
-                "type": "string"
-              },
-              "requester_message_type": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": true
-          },
-          {
-            "type": "object",
-            "required": [
-              "endpoint_name",
-              "endpoint_key",
-              "requester_message_type",
-              "provider_message_type",
-              "endpoint_type"
-            ],
-            "properties": {
-              "endpoint_key": {
-                "type": "string"
-              },
-              "endpoint_name": {
-                "type": "string"
-              },
-              "endpoint_type": {
-                "type": "string",
-                "enum": [
-                  "PRV"
-                ]
-              },
-              "interface_name": {
-                "type": "string"
-              },
-              "provider_message_type": {
-                "type": "string"
-              },
-              "requester_message_type": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": true
-          }
-        ]
       },
       "GenericDevicePeripheral": {
         "type": "object",
@@ -476,6 +389,77 @@
           }
         }
       },
+      "InterfaceConfig": {
+        "type": "object",
+        "required": [
+          "name",
+          "publishers",
+          "subscribers",
+          "requesters",
+          "providers",
+          "clients",
+          "servers"
+        ],
+        "properties": {
+          "clients": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MappedClient"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "providers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProviderEndpointConfig"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "publishers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PublisherTopicConfig"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "requesters": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MappedRequester"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "servers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ServerServiceConfig"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "subscribers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MappedSubscriber"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "IspPeripheral": {
         "type": "object",
         "required": [
@@ -504,6 +488,45 @@
             }
           }
         }
+      },
+      "MappedClient": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MappedURL"
+          },
+          {
+            "$ref": "#/components/schemas/ClientServiceConfig"
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "MappedRequester": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MappedURL"
+          },
+          {
+            "$ref": "#/components/schemas/RequesterEndpointConfig"
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "MappedSubscriber": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MappedURL"
+          },
+          {
+            "$ref": "#/components/schemas/SubscriberTopicConfig"
+          },
+          {
+            "type": "object"
+          }
+        ]
       },
       "MappedURL": {
         "type": "object",
@@ -832,57 +855,73 @@
           }
         ]
       },
-      "PortConfig": {
+      "ProviderEndpointConfig": {
         "type": "object",
         "required": [
-          "name",
-          "target_port",
-          "published_port"
+          "endpoint_name",
+          "endpoint_key",
+          "requester_message_type",
+          "provider_message_type"
         ],
         "properties": {
-          "is_system_interface": {
-            "type": "boolean"
+          "encoding": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
-          "name": {
+          "endpoint_key": {
+            "type": "string"
+          },
+          "endpoint_name": {
+            "type": "string"
+          },
+          "interface_name": {
             "type": "string"
           },
           "protocol": {
-            "$ref": "#/components/schemas/ProtocolEnum"
+            "type": "string"
           },
-          "publish_mode": {
-            "$ref": "#/components/schemas/PublishMode"
+          "provider_message_type": {
+            "type": "string"
           },
-          "published_port": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The port on the swarm hosts.",
-            "minimum": 0
-          },
-          "target_port": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The port inside the container.",
-            "minimum": 0
+          "requester_message_type": {
+            "type": "string"
           }
-        }
+        },
+        "additionalProperties": true
       },
-      "ProtocolEnum": {
-        "type": "string",
-        "enum": [
-          "TCP",
-          "UDP",
-          "SCTP",
-          "HTTP",
-          "WS",
-          "SSH"
-        ]
-      },
-      "PublishMode": {
-        "type": "string",
-        "enum": [
-          "Ingress",
-          "Host"
-        ]
+      "PublisherTopicConfig": {
+        "type": "object",
+        "required": [
+          "topic_name",
+          "topic_key",
+          "message_type"
+        ],
+        "properties": {
+          "encoding": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "interface_name": {
+            "type": "string"
+          },
+          "message_type": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "topic_key": {
+            "type": "string"
+          },
+          "topic_name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
       },
       "RealSenseCameraPeripheral": {
         "type": "object",
@@ -951,156 +990,122 @@
           }
         }
       },
-      "ServiceConfig": {
-        "oneOf": [
-          {
-            "type": "object",
-            "description": "The service is a client",
-            "required": [
-              "Client"
-            ],
-            "properties": {
-              "Client": {
-                "type": "object",
-                "description": "The service is a client",
-                "required": [
-                  "name",
-                  "spec",
-                  "key"
-                ],
-                "properties": {
-                  "interface_name": {
-                    "type": "string"
-                  },
-                  "key": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "spec": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": true
-              }
-            }
-          },
-          {
-            "type": "object",
-            "description": "The service is a server",
-            "required": [
-              "Server"
-            ],
-            "properties": {
-              "Server": {
-                "type": "object",
-                "description": "The service is a server",
-                "required": [
-                  "name",
-                  "key",
-                  "spec"
-                ],
-                "properties": {
-                  "interface_name": {
-                    "type": "string"
-                  },
-                  "key": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "spec": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": true
-              }
-            }
-          }
-        ]
-      },
-      "TopicConfig": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "topic_name",
-              "topic_key",
-              "message_type",
-              "topic_type"
-            ],
-            "properties": {
-              "interface_name": {
-                "type": "string"
-              },
-              "message_type": {
-                "type": "string"
-              },
-              "topic_key": {
-                "type": "string"
-              },
-              "topic_name": {
-                "type": "string"
-              },
-              "topic_type": {
-                "type": "string",
-                "enum": [
-                  "PUB"
-                ]
-              }
-            },
-            "additionalProperties": true
-          },
-          {
-            "type": "object",
-            "required": [
-              "topic_name",
-              "topic_key",
-              "message_type",
-              "topic_type"
-            ],
-            "properties": {
-              "interface_name": {
-                "type": "string"
-              },
-              "message_type": {
-                "type": "string"
-              },
-              "topic_key": {
-                "type": "string"
-              },
-              "topic_name": {
-                "type": "string"
-              },
-              "topic_type": {
-                "type": "string",
-                "enum": [
-                  "SUB"
-                ]
-              }
-            },
-            "additionalProperties": true
-          }
-        ]
-      },
-      "URLMapping": {
+      "RequesterEndpointConfig": {
         "type": "object",
         "required": [
-          "name_to_url"
+          "endpoint_name",
+          "endpoint_key",
+          "requester_message_type",
+          "provider_message_type"
         ],
         "properties": {
-          "name_to_url": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/MappedURL"
-            },
-            "propertyNames": {
-              "type": "string"
-            }
+          "encoding": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "endpoint_key": {
+            "type": "string"
+          },
+          "endpoint_name": {
+            "type": "string"
+          },
+          "interface_name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "provider_message_type": {
+            "type": "string"
+          },
+          "requester_message_type": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ServerServiceConfig": {
+        "type": "object",
+        "required": [
+          "name",
+          "key",
+          "spec"
+        ],
+        "properties": {
+          "interface_name": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "StorageConfig": {
+        "type": "object",
+        "required": [
+          "url",
+          "endpoint_url",
+          "access_key",
+          "secret_key"
+        ],
+        "properties": {
+          "access_key": {
+            "type": "string"
+          },
+          "endpoint_url": {
+            "type": "string"
+          },
+          "secret_key": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
           }
         }
+      },
+      "SubscriberTopicConfig": {
+        "type": "object",
+        "required": [
+          "topic_name",
+          "topic_key",
+          "message_type"
+        ],
+        "properties": {
+          "encoding": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "interface_name": {
+            "type": "string"
+          },
+          "message_type": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "topic_key": {
+            "type": "string"
+          },
+          "topic_name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
       }
     }
   }

@@ -10,16 +10,16 @@ import itertools
 import pytest
 
 from make87.interfaces.zenoh.model import Priority, CongestionControl
+from make87.internal.models.application_env_config import (
+    InterfaceConfig,
+    MappedRequester,
+    ApplicationInfo,
+    ProviderEndpointConfig,
+)
 
 from make87.models import (
     ApplicationConfig,
-    URLMapping,
     MountedPeripherals,
-    EndpointConfigReq,
-    EndpointConfig,
-    EndpointTypeReq,
-    EndpointTypePrv,
-    EndpointConfigPrv,
 )
 
 # Test inputs
@@ -46,64 +46,72 @@ def test_pub_sub_combination(priority, congestion_control, express, handler_type
     provider_env = base_env.copy()
 
     req_config = ApplicationConfig(
-        topics=[],
-        endpoints=[
-            EndpointConfig(
-                root=EndpointConfigReq(
-                    endpoint_name="HELLO_WORLD_MESSAGE",
-                    endpoint_key="my_endpoint_key",
-                    endpoint_type=EndpointTypeReq.REQ,
-                    requester_message_type="make87_messages.text.text_plain.PlainText",
-                    provider_message_type="make87_messages.text.text_plain.PlainText",
-                    priority=priority.value,
-                    congestion_control=congestion_control.value,
-                    express=express,
-                )
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers={},
+                publishers={},
+                requesters=dict(
+                    HELLO_WORLD_MESSAGE=MappedRequester(
+                        endpoint_name="HELLO_WORLD_MESSAGE",
+                        endpoint_key="my_endpoint_key",
+                        protocol="zenoh",
+                        requester_message_type="make87_messages.text.text_plain.PlainText",
+                        provider_message_type="make87_messages.text.text_plain.PlainText",
+                        priority=priority.value,
+                        congestion_control=congestion_control.value,
+                        express=express,
+                        vpn_ip="10.10.0.1",
+                        vpn_port=12345,
+                    ),
+                ),
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="req_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="req_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     prv_config = ApplicationConfig(
-        topics=[],
-        endpoints=[
-            EndpointConfig(
-                root=EndpointConfigPrv(
-                    endpoint_name="HELLO_WORLD_MESSAGE",
-                    endpoint_key="my_endpoint_key",
-                    endpoint_type=EndpointTypePrv.PRV,
-                    requester_message_type="make87_messages.text.text_plain.PlainText",
-                    provider_message_type="make87_messages.text.text_plain.PlainText",
-                    handler=dict(
-                        handler_type=handler_type,
-                        capacity=handler_capacity,
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers={},
+                publishers={},
+                requesters={},
+                providers=dict(
+                    HELLO_WORLD_MESSAGE=ProviderEndpointConfig(
+                        endpoint_name="HELLO_WORLD_MESSAGE",
+                        endpoint_key="my_endpoint_key",
+                        protocol="zenoh",
+                        requester_message_type="make87_messages.text.text_plain.PlainText",
+                        provider_message_type="make87_messages.text.text_plain.PlainText",
                     ),
-                )
+                ),
+                clients={},
+                servers={},
             )
-        ],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="provider_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="provider_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     requester_env.update(
@@ -164,57 +172,69 @@ def test_defaults_only():
     provider_env = base_env.copy()
 
     req_config = ApplicationConfig(
-        topics=[],
-        endpoints=[
-            EndpointConfig(
-                root=EndpointConfigReq(
-                    endpoint_name="HELLO_WORLD_MESSAGE",
-                    endpoint_key="my_endpoint_key",
-                    endpoint_type=EndpointTypeReq.REQ,
-                    requester_message_type="make87_messages.text.text_plain.PlainText",
-                    provider_message_type="make87_messages.text.text_plain.PlainText",
-                )
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers={},
+                publishers={},
+                requesters=dict(
+                    HELLO_WORLD_MESSAGE=MappedRequester(
+                        endpoint_name="HELLO_WORLD_MESSAGE",
+                        endpoint_key="my_endpoint_key",
+                        protocol="zenoh",
+                        requester_message_type="make87_messages.text.text_plain.PlainText",
+                        provider_message_type="make87_messages.text.text_plain.PlainText",
+                        vpn_ip="10.10.0.1",
+                        vpn_port=12345,
+                    ),
+                ),
+                providers={},
+                clients={},
+                servers={},
             )
-        ],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="req_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="req_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     prv_config = ApplicationConfig(
-        topics=[],
-        endpoints=[
-            EndpointConfig(
-                root=EndpointConfigPrv(
-                    endpoint_name="HELLO_WORLD_MESSAGE",
-                    endpoint_key="my_endpoint_key",
-                    endpoint_type=EndpointTypePrv.PRV,
-                    requester_message_type="make87_messages.text.text_plain.PlainText",
-                    provider_message_type="make87_messages.text.text_plain.PlainText",
-                )
+        interfaces=dict(
+            zenoh_test=InterfaceConfig(
+                name="zenoh_test",
+                subscribers={},
+                publishers={},
+                requesters={},
+                providers=dict(
+                    HELLO_WORLD_MESSAGE=ProviderEndpointConfig(
+                        endpoint_name="HELLO_WORLD_MESSAGE",
+                        endpoint_key="my_endpoint_key",
+                        protocol="zenoh",
+                        requester_message_type="make87_messages.text.text_plain.PlainText",
+                        provider_message_type="make87_messages.text.text_plain.PlainText",
+                    ),
+                ),
+                clients={},
+                servers={},
             )
-        ],
-        services=[],
-        url_mapping=URLMapping(name_to_url={}),
+        ),
         peripherals=MountedPeripherals(peripherals=[]),
         config="{}",
-        deployed_application_id=uuid.uuid4().hex,
-        system_id=uuid.uuid4().hex,
-        deployed_application_name="provider_app_1",
-        is_release_version=True,
-        vpn_ip="10.10.0.1",
-        port_config=[],
-        application_id=uuid.uuid4().hex,
-        application_name="provider_app",
+        application_info=ApplicationInfo(
+            deployed_application_id=uuid.uuid4().hex,
+            system_id=uuid.uuid4().hex,
+            deployed_application_name="sub_app_1",
+            is_release_version=True,
+            application_id=uuid.uuid4().hex,
+            application_name="sub_app",
+        ),
     )
 
     requester_env.update(

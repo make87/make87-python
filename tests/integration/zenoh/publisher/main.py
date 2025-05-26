@@ -8,7 +8,7 @@ from make87.encodings import ProtobufEncoder
 
 def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
-    zenoh_interface = ZenohInterface()
+    zenoh_interface = ZenohInterface(name="zenoh_test")
 
     publisher = zenoh_interface.get_publisher("HELLO_WORLD_MESSAGE")
     header = Header(entity_path="/pytest/pub_sub", reference_id=0)

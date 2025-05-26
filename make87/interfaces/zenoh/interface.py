@@ -21,17 +21,11 @@ class ZenohInterface(InterfaceBase):
     @cached_property
     def zenoh_config(self) -> zenoh.Config:
         cfg = zenoh.Config()
-        cfg.insert_json5(
-            "connect/endpoints",
-            json.dumps(
-                list(
-                    {
-                        f"tcp/{mapping.vpn_ip}:{mapping.vpn_port}"
-                        for interface_name, mapping in self._config.url_mapping.name_to_url.items()
-                    }
-                )
-            ),
-        )
+        endpoints = {
+            f"tcp/{x.vpn_ip}:{x.vpn_port}"
+            for x in list(self.interface_config.requesters.values()) + list(self.interface_config.subscribers.values())
+        }
+        cfg.insert_json5("connect/endpoints", json.dumps(list(endpoints)))
         return cfg
 
     @cached_property
@@ -42,7 +36,7 @@ class ZenohInterface(InterfaceBase):
     def get_publisher(self, name: str) -> zenoh.Publisher:
         """Declare and return a Zenoh publisher for the given name. The publisher is
         not cached, and it is user responsibility to manage its lifecycle."""
-        iface_config = self.get_interface_config_by_name(name=name, iface_type="PUB")
+        iface_config = self.get_interface_type_by_name(name=name, iface_type="PUB")
         qos_config = ZenohPublisherConfig.model_validate(iface_config.model_extra)
 
         return self.session.declare_publisher(
@@ -63,7 +57,7 @@ class ZenohInterface(InterfaceBase):
         The handler can be a Python function or a Zenoh callback. If `None` is provided (or omitted),
         a Channel handler will be created from the make87 config values.
         """
-        iface_config = self.get_interface_config_by_name(name=name, iface_type="SUB")
+        iface_config = self.get_interface_type_by_name(name=name, iface_type="SUB")
         qos_config = ZenohSubscriberConfig.model_validate(iface_config.model_extra)
 
         if handler is None:
@@ -85,7 +79,7 @@ class ZenohInterface(InterfaceBase):
         """
         Declare and return a Zenoh querier for the given name.
         """
-        iface_config = self.get_interface_config_by_name(name=name, iface_type="REQ")
+        iface_config = self.get_interface_type_by_name(name=name, iface_type="REQ")
         qos_config = ZenohRequesterConfig.model_validate(iface_config.model_config)
 
         return self.session.declare_querier(
@@ -105,7 +99,7 @@ class ZenohInterface(InterfaceBase):
         The handler can be a Python function or a Zenoh callback. If `None` is provided (or omitted),
         a Channel handler will be created from the make87 config values.
         """
-        iface_config = self.get_interface_config_by_name(name=name, iface_type="PRV")
+        iface_config = self.get_interface_type_by_name(name=name, iface_type="PRV")
         qos_config = ZenohProviderConfig.model_validate(iface_config.model_config)
 
         if handler is None:
@@ -119,3 +113,15 @@ class ZenohInterface(InterfaceBase):
             key_expr=iface_config.endpoint_key,
             handler=handler,
         )
+
+    def get_client(self, name: str) -> Any:
+        """
+        Zenoh does not have a client concept, so this method is not implemented.
+        """
+        raise NotImplementedError("Zenoh does not support client interfaces.")
+
+    def get_server(self, name: str) -> Any:
+        """
+        Zenoh does not have a server concept, so this method is not implemented.
+        """
+        raise NotImplementedError("Zenoh does not support server interfaces.")

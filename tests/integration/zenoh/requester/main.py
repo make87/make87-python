@@ -8,7 +8,7 @@ from make87.interfaces.zenoh import ZenohInterface
 
 def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
-    zenoh_interface = ZenohInterface()
+    zenoh_interface = ZenohInterface(name="zenoh_test")
 
     requester = zenoh_interface.get_requester("HELLO_WORLD_MESSAGE")
     header = Header(entity_path="/pytest/req_prv", reference_id=0)
