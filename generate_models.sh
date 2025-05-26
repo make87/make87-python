@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 datamodel-codegen \
-  --input make87/internal/schemas/application_env_config.openapi.json \
+  --input schemas/application_env_config.openapi.json \
   --input-file-type openapi \
   --use-title-as-name \
   --output make87/internal/models/application_env_config.py \
