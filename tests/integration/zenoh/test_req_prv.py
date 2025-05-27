@@ -12,7 +12,7 @@ import pytest
 from make87.interfaces.zenoh.model import Priority, CongestionControl
 from make87.internal.models.application_env_config import (
     InterfaceConfig,
-    MappedRequester,
+    BoundRequester,
     ApplicationInfo,
     ProviderEndpointConfig,
 )
@@ -52,7 +52,7 @@ def test_pub_sub_combination(priority, congestion_control, express, handler_type
                 subscribers={},
                 publishers={},
                 requesters=dict(
-                    HELLO_WORLD_MESSAGE=MappedRequester(
+                    HELLO_WORLD_MESSAGE=BoundRequester(
                         endpoint_name="HELLO_WORLD_MESSAGE",
                         endpoint_key="my_endpoint_key",
                         protocol="zenoh",
@@ -63,6 +63,7 @@ def test_pub_sub_combination(priority, congestion_control, express, handler_type
                         express=express,
                         vpn_ip="10.10.0.1",
                         vpn_port=12345,
+                        same_node=True,
                     ),
                 ),
                 providers={},
@@ -178,7 +179,7 @@ def test_defaults_only():
                 subscribers={},
                 publishers={},
                 requesters=dict(
-                    HELLO_WORLD_MESSAGE=MappedRequester(
+                    HELLO_WORLD_MESSAGE=BoundRequester(
                         endpoint_name="HELLO_WORLD_MESSAGE",
                         endpoint_key="my_endpoint_key",
                         protocol="zenoh",
@@ -186,6 +187,7 @@ def test_defaults_only():
                         provider_message_type="make87_messages.text.text_plain.PlainText",
                         vpn_ip="10.10.0.1",
                         vpn_port=12345,
+                        same_node=True,
                     ),
                 ),
                 providers={},

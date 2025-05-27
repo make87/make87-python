@@ -4,7 +4,7 @@ import uuid
 from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.internal.models.application_env_config import (
     InterfaceConfig,
-    MappedRequester,
+    BoundRequester,
     ApplicationInfo,
 )
 from make87.models import (
@@ -22,7 +22,7 @@ def req_config():
                 subscribers={},
                 publishers={},
                 requesters=dict(
-                    HELLO_WORLD_MESSAGE=MappedRequester(
+                    HELLO_WORLD_MESSAGE=BoundRequester(
                         endpoint_name="HELLO_WORLD_MESSAGE",
                         endpoint_key="my_endpoint_key",
                         protocol="zenoh",
@@ -30,6 +30,7 @@ def req_config():
                         provider_message_type="make87_messages.text.text_plain.PlainText",
                         vpn_ip="10.10.0.1",
                         vpn_port=12345,
+                        same_node=True,
                     ),
                 ),
                 providers={},

@@ -5,7 +5,7 @@ from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.internal.models.application_env_config import (
     InterfaceConfig,
     ApplicationInfo,
-    MappedSubscriber,
+    BoundSubscriber,
 )
 from make87.models import (
     ApplicationConfig,
@@ -20,7 +20,7 @@ def sub_config():
             zenoh_test=InterfaceConfig(
                 name="zenoh_test",
                 subscribers=dict(
-                    HELLO_WORLD_MESSAGE=MappedSubscriber(
+                    HELLO_WORLD_MESSAGE=BoundSubscriber(
                         topic_name="HELLO_WORLD_MESSAGE",
                         topic_key="my_topic_key",
                         protocol="zenoh",
@@ -31,6 +31,7 @@ def sub_config():
                         ),
                         vpn_ip="10.10.0.1",
                         vpn_port=12345,
+                        same_node=True,
                     ),
                 ),
                 publishers={},

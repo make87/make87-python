@@ -1,16 +1,13 @@
 from make87.internal.models.application_env_config import (
-    ApplicationEnvConfig as ApplicationConfig,
-)
-from make87.internal.models.application_env_config import (
+    AccessPoint,
     ApplicationInfo,
+    BoundClient,
+    BoundRequester,
+    BoundSubscriber,
     ClientServiceConfig,
     GpioLineInfo,
     I2cDetectedDevice,
     InterfaceConfig,
-    MappedClient,
-    MappedRequester,
-    MappedSubscriber,
-    MappedURL,
     MountedPeripheral,
     MountedPeripherals,
     Peripheral,
@@ -21,6 +18,9 @@ from make87.internal.models.application_env_config import (
     ServerServiceConfig,
     StorageConfig,
     SubscriberTopicConfig,
+)
+from make87.internal.models.application_env_config import (
+    ApplicationEnvConfig as ApplicationConfig,
 )
 from make87.internal.models.application_env_config import (
     Peripheral1 as GpuPeripheral,
@@ -63,8 +63,12 @@ from make87.internal.models.application_env_config import (
 )
 
 __all__ = [
+    "AccessPoint",
     "ApplicationConfig",
     "ApplicationInfo",
+    "BoundClient",
+    "BoundRequester",
+    "BoundSubscriber",
     "CameraPeripheral",
     "ClientServiceConfig",
     "CodecPeripheral",
@@ -77,10 +81,6 @@ __all__ = [
     "InterfaceConfig",
     "IspPeripheral",
     "KeyboardPeripheral",
-    "MappedClient",
-    "MappedRequester",
-    "MappedSubscriber",
-    "MappedURL",
     "MountedPeripheral",
     "MountedPeripherals",
     "MousePeripheral",

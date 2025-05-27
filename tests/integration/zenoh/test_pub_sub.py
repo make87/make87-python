@@ -14,7 +14,7 @@ from make87.internal.models.application_env_config import (
     ApplicationInfo,
     PublisherTopicConfig,
     InterfaceConfig,
-    MappedSubscriber,
+    BoundSubscriber,
 )
 from make87.models import (
     ApplicationConfig,
@@ -47,7 +47,7 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
             zenoh_test=InterfaceConfig(
                 name="zenoh_test",
                 subscribers=dict(
-                    HELLO_WORLD_MESSAGE=MappedSubscriber(
+                    HELLO_WORLD_MESSAGE=BoundSubscriber(
                         topic_name="HELLO_WORLD_MESSAGE",
                         topic_key="my_topic_key",
                         protocol="zenoh",
@@ -58,6 +58,7 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                         ),
                         vpn_ip="10.10.0.1",
                         vpn_port=12345,
+                        same_node=True,
                     ),
                 ),
                 publishers={},
@@ -179,13 +180,14 @@ def test_defaults_only():
             zenoh_test=InterfaceConfig(
                 name="zenoh_test",
                 subscribers=dict(
-                    HELLO_WORLD_MESSAGE=MappedSubscriber(
+                    HELLO_WORLD_MESSAGE=BoundSubscriber(
                         topic_name="HELLO_WORLD_MESSAGE",
                         topic_key="my_topic_key",
                         protocol="zenoh",
                         message_type="make87_messages.text.text_plain.PlainText",
                         vpn_ip="10.10.0.1",
                         vpn_port=12345,
+                        same_node=True,
                     ),
                 ),
                 publishers={},

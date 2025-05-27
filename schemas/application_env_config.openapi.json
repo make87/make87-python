@@ -11,6 +11,41 @@
   "paths": {},
   "components": {
     "schemas": {
+      "AccessPoint": {
+        "type": "object",
+        "required": [
+          "vpn_ip",
+          "vpn_port",
+          "same_node"
+        ],
+        "properties": {
+          "public_ip": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "public_port": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "same_node": {
+            "type": "boolean"
+          },
+          "vpn_ip": {
+            "type": "string"
+          },
+          "vpn_port": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
       "ApplicationEnvConfig": {
         "type": "object",
         "required": [
@@ -90,6 +125,45 @@
             "type": "string"
           }
         }
+      },
+      "BoundClient": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AccessPoint"
+          },
+          {
+            "$ref": "#/components/schemas/ClientServiceConfig"
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "BoundRequester": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AccessPoint"
+          },
+          {
+            "$ref": "#/components/schemas/RequesterEndpointConfig"
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "BoundSubscriber": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AccessPoint"
+          },
+          {
+            "$ref": "#/components/schemas/SubscriberTopicConfig"
+          },
+          {
+            "type": "object"
+          }
+        ]
       },
       "CameraPeripheral": {
         "type": "object",
@@ -404,7 +478,7 @@
           "clients": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/MappedClient"
+              "$ref": "#/components/schemas/BoundClient"
             },
             "propertyNames": {
               "type": "string"
@@ -434,7 +508,7 @@
           "requesters": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/MappedRequester"
+              "$ref": "#/components/schemas/BoundRequester"
             },
             "propertyNames": {
               "type": "string"
@@ -452,7 +526,7 @@
           "subscribers": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/MappedSubscriber"
+              "$ref": "#/components/schemas/BoundSubscriber"
             },
             "propertyNames": {
               "type": "string"
@@ -486,76 +560,6 @@
             "items": {
               "type": "string"
             }
-          }
-        }
-      },
-      "MappedClient": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/MappedURL"
-          },
-          {
-            "$ref": "#/components/schemas/ClientServiceConfig"
-          },
-          {
-            "type": "object"
-          }
-        ]
-      },
-      "MappedRequester": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/MappedURL"
-          },
-          {
-            "$ref": "#/components/schemas/RequesterEndpointConfig"
-          },
-          {
-            "type": "object"
-          }
-        ]
-      },
-      "MappedSubscriber": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/MappedURL"
-          },
-          {
-            "$ref": "#/components/schemas/SubscriberTopicConfig"
-          },
-          {
-            "type": "object"
-          }
-        ]
-      },
-      "MappedURL": {
-        "type": "object",
-        "required": [
-          "vpn_ip",
-          "vpn_port"
-        ],
-        "properties": {
-          "public_ip": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "public_port": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int32",
-            "minimum": 0
-          },
-          "vpn_ip": {
-            "type": "string"
-          },
-          "vpn_port": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
           }
         }
       },

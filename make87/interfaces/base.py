@@ -3,9 +3,9 @@ from typing import Any, Literal, Optional, Union, overload
 
 from make87.config import load_config_from_env
 from make87.internal.models.application_env_config import (
-    MappedSubscriber,
-    MappedRequester,
-    MappedClient,
+    BoundSubscriber,
+    BoundRequester,
+    BoundClient,
     ServerServiceConfig,
     InterfaceConfig,
 )
@@ -36,16 +36,16 @@ class InterfaceBase(ABC):
     def get_interface_type_by_name(self, name: str, iface_type: Literal["PUB"]) -> PublisherTopicConfig: ...
 
     @overload
-    def get_interface_type_by_name(self, name: str, iface_type: Literal["SUB"]) -> MappedSubscriber: ...
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["SUB"]) -> BoundSubscriber: ...
 
     @overload
-    def get_interface_type_by_name(self, name: str, iface_type: Literal["REQ"]) -> MappedRequester: ...
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["REQ"]) -> BoundRequester: ...
 
     @overload
     def get_interface_type_by_name(self, name: str, iface_type: Literal["PRV"]) -> ProviderEndpointConfig: ...
 
     @overload
-    def get_interface_type_by_name(self, name: str, iface_type: Literal["CLI"]) -> MappedClient: ...
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["CLI"]) -> BoundClient: ...
 
     @overload
     def get_interface_type_by_name(self, name: str, iface_type: Literal["SRV"]) -> ServerServiceConfig: ...
@@ -54,10 +54,10 @@ class InterfaceBase(ABC):
         self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV", "CLI", "SRV"]
     ) -> Union[
         PublisherTopicConfig,
-        MappedSubscriber,
-        MappedRequester,
+        BoundSubscriber,
+        BoundRequester,
         ProviderEndpointConfig,
-        MappedClient,
+        BoundClient,
         ServerServiceConfig,
     ]:
         """
