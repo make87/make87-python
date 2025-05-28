@@ -1,6 +1,7 @@
 import pytest
 import uuid
 
+from make87.config import load_config_from_json
 from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.internal.models.application_env_config import (
     InterfaceConfig,
@@ -15,7 +16,7 @@ from make87.models import (
 
 @pytest.fixture
 def req_config():
-    return ApplicationConfig(
+    application_config_in = ApplicationConfig(
         interfaces=dict(
             zenoh_test=InterfaceConfig(
                 name="zenoh_test",
@@ -28,8 +29,8 @@ def req_config():
                         protocol="zenoh",
                         requester_message_type="make87_messages.text.text_plain.PlainText",
                         provider_message_type="make87_messages.text.text_plain.PlainText",
-                        vpn_ip="10.10.0.1",
-                        vpn_port=12345,
+                        vpn_ip="127.0.0.1",
+                        vpn_port=7447,
                         same_node=True,
                     ),
                 ),
@@ -49,6 +50,9 @@ def req_config():
             application_name="sub_app",
         ),
     )
+
+    application_config_str = application_config_in.model_dump_json()
+    return load_config_from_json(application_config_str)
 
 
 @pytest.fixture

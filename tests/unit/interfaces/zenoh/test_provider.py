@@ -1,21 +1,22 @@
 import pytest
 import uuid
 
+from make87.config import load_config_from_json
 from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.internal.models.application_env_config import (
     InterfaceConfig,
     ProviderEndpointConfig,
     ApplicationInfo,
+    ApplicationEnvConfig,
 )
 from make87.models import (
-    ApplicationConfig,
     MountedPeripherals,
 )
 
 
 @pytest.fixture
 def provider_config():
-    return ApplicationConfig(
+    application_config_in = ApplicationEnvConfig(
         interfaces=dict(
             zenoh_test=InterfaceConfig(
                 name="zenoh_test",
@@ -46,6 +47,9 @@ def provider_config():
             application_name="sub_app",
         ),
     )
+
+    application_config_str = application_config_in.model_dump_json()
+    return load_config_from_json(application_config_str)
 
 
 @pytest.fixture
