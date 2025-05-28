@@ -5,6 +5,8 @@ import make87.peripherals as peripherals
 import make87.models as models
 import make87.encodings as encodings
 import make87.interfaces as interfaces
+import make87.storage as storage
+
 
 __all__ = [
     "run_forever",
@@ -13,6 +15,7 @@ __all__ = [
     "models",
     "encodings",
     "interfaces",
+    "storage",
 ]
 
 
