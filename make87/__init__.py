@@ -1,9 +1,16 @@
 import signal
 import threading
-
+import make87.config as config
+import make87.peripherals as peripherals
+import make87.models as models
+import make87.encodings as encodings
 
 __all__ = [
     "run_forever",
+    "config",
+    "peripherals",
+    "models",
+    "encodings",
 ]
 
 
