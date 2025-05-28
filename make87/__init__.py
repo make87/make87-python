@@ -1,99 +1,31 @@
-from time import sleep
+import signal
+import threading
+import make87.config as config
+import make87.peripherals as peripherals
+import make87.models as models
+import make87.encodings as encodings
+import make87.interfaces as interfaces
+import make87.storage as storage
 
-from make87.endpoints import (  # noqa
-    ProviderNotAvailable,
-    ResponseTimeout,
-    TypedProvider,
-    TypedRequester,
-    get_provider,
-    get_requester,
-    resolve_endpoint_name,
-)
-from make87.endpoints import _EndpointManager
-from make87.peripherals import _PeripheralManager
-from make87.peripherals import resolve_peripheral_name  # noqa
-from make87.handlers import logging, stdout, stderr
-from make87.session import _SessionManager
-from make87.topics import (  # noqa
-    MultiSubscriber,
-    TypedPublisher,
-    TypedSubscriber,
-    get_publisher,
-    get_subscriber,
-    resolve_topic_name,
-    get_multi_subscriber,
-    GroupOn,
-)
-from make87.topics import _TopicManager
-from make87.utils import (
-    Metadata,
-    MessageWithMetadata,
-    create_header,
-    header_from_message,
-    APPLICATION_ID,
-    APPLICATION_NAME,
-    DEPLOYED_APPLICATION_NAME,
-    DEPLOYED_APPLICATION_ID,
-    DEPLOYED_SYSTEM_ID,
-)
-from make87.storage import (
-    get_system_storage_path,
-    get_organization_storage_path,
-    get_application_storage_path,
-    get_deployed_application_storage_path,
-    generate_public_url,
-)
-from make87.application_config import get_config_value
 
 __all__ = [
-    "MessageWithMetadata",
-    "Metadata",
-    "MultiSubscriber",
-    "ProviderNotAvailable",
-    "ResponseTimeout",
-    "TypedProvider",
-    "TypedPublisher",
-    "TypedRequester",
-    "TypedSubscriber",
-    "get_provider",
-    "get_publisher",
-    "get_requester",
-    "get_subscriber",
-    "get_multi_subscriber",
-    "initialize",
-    "resolve_endpoint_name",
-    "resolve_peripheral_name",
-    "resolve_topic_name",
-    "get_config_value",
-    "get_system_storage_path",
-    "get_organization_storage_path",
-    "get_application_storage_path",
-    "get_deployed_application_storage_path",
-    "generate_public_url",
-    "GroupOn",
-    "create_header",
-    "header_from_message",
-    "APPLICATION_ID",
-    "APPLICATION_NAME",
-    "DEPLOYED_APPLICATION_NAME",
-    "DEPLOYED_APPLICATION_ID",
-    "DEPLOYED_SYSTEM_ID",
+    "run_forever",
+    "config",
+    "peripherals",
+    "models",
+    "encodings",
+    "interfaces",
+    "storage",
 ]
 
 
-def initialize():
-    """Initializes the Make87 SDK. Must be called before using any other SDK functions."""
-    # Initialize the session manager
-    _SessionManager.get_instance().initialize()
-    _TopicManager.get_instance().initialize()
-    _EndpointManager.get_instance().initialize()
-    _PeripheralManager.get_instance().initialize()
+def run_forever():
+    stop_event = threading.Event()
 
-    logging.initialize()
-    stdout.initialize()
-    stderr.initialize()
+    def handle_stop(signum, frame):
+        stop_event.set()
 
+    signal.signal(signal.SIGTERM, handle_stop)
+    signal.signal(signal.SIGINT, handle_stop)  # Optional: Ctrl-C
 
-def loop():
-    while True:
-        sleep(10)
+    stop_event.wait()
