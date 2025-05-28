@@ -56,8 +56,8 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                             handler_type=handler_type,
                             capacity=handler_capacity,
                         ),
-                        vpn_ip="10.10.0.1",
-                        vpn_port=12345,
+                        vpn_ip="172.0.0.1",
+                        vpn_port=7447,
                         same_node=True,
                     ),
                 ),
@@ -146,10 +146,13 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
     # Kill publisher
     publisher_proc.terminate()
     try:
-        publisher_proc.communicate(timeout=5)
+        pub_stdout, pub_stderr = publisher_proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
         publisher_proc.kill()
-        publisher_proc.communicate()
+        pub_stdout, pub_stderr = publisher_proc.communicate()
+
+    print(f"Publisher stdout: {pub_stdout.decode()}")
+    print(f"Publisher stderr: {pub_stderr.decode()}")
 
     # Kill subscriber
     subscriber_proc.terminate()
@@ -162,6 +165,7 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
     output = sub_stdout.decode()
 
     print(f"Output: {output}")
+    print(f"Subscriber stdout: {sub_stdout.decode()}")
     print(f"Subscriber stderr: {sub_stderr.decode()}")
 
     assert all(w in output.lower() for w in ("hello", "world"))

@@ -1,4 +1,4 @@
-from .base import PeripheralManager, PeripheralBase
+from .base import PeripheralBase
 from .camera import CameraPeripheral
 from .codec import CodecPeripheral
 from .generic_device import GenericDevicePeripheral
@@ -9,6 +9,7 @@ from .isp import IspPeripheral
 from .other import OtherPeripheral
 from .real_sense import RealSenseCameraPeripheral
 from .rendering import RenderingPeripheral
+from .manager import PeripheralManager
 
 __all__ = [
     "PeripheralManager",
