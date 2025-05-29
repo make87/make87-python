@@ -1,4 +1,3 @@
-import json
 import os
 from typing import Union, Dict, TypeVar, Callable, Any
 
@@ -15,9 +14,7 @@ def load_config_from_env(var: str = CONFIG_ENV_VAR) -> ApplicationConfig:
     raw = os.environ.get(var)
     if not raw:
         raise RuntimeError(f"Required env var {var} missing!")
-    application_config = ApplicationConfig.model_validate_json(raw)
-    application_config.config = json.loads(application_config.config)
-    return application_config
+    return ApplicationConfig.model_validate_json(raw)
 
 
 def load_config_from_json(json_data: Union[str, Dict]) -> ApplicationConfig:
@@ -25,14 +22,11 @@ def load_config_from_json(json_data: Union[str, Dict]) -> ApplicationConfig:
     Load and validate ApplicationConfig from a JSON string or dict.
     """
     if isinstance(json_data, str):
-        application_config = ApplicationConfig.model_validate_json(json_data)
+        return ApplicationConfig.model_validate_json(json_data)
     elif isinstance(json_data, dict):
-        application_config = ApplicationConfig.model_validate(json_data)
+        return ApplicationConfig.model_validate(json_data)
     else:
         raise TypeError("json_data must be a JSON string or dict.")
-
-    application_config.config = json.loads(application_config.config)
-    return application_config
 
 
 T = TypeVar("T")
