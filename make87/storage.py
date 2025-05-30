@@ -21,14 +21,14 @@ try:
             if self._resource is None:
                 self._resource = boto3.resource(
                     "s3",
-                    endpoint_url=self._config.storage_endpoint_url,
-                    aws_access_key_id=self._config.storage_access_key,
-                    aws_secret_access_key=self._config.storage_secret_key,
+                    endpoint_url=self._config.storage.endpoint_url,
+                    aws_access_key_id=self._config.storage.access_key,
+                    aws_secret_access_key=self._config.storage.secret_key,
                 )
             return self._resource
 
         def get_system_path(self) -> S3Path:
-            path = S3Path(self._config.storage_url)
+            path = S3Path(self._config.storage.url)
             register_configuration_parameter(path, resource=self.resource)
             # Also register the bucket root, workaround for s3path bug
             bucket_path = S3Path(path._flavour.sep, path.bucket)
@@ -36,10 +36,10 @@ try:
             return path
 
         def get_application_path(self) -> S3Path:
-            return self.get_system_path() / self._config.application_id
+            return self.get_system_path() / self._config.application_info.application_id
 
         def get_deployed_application_path(self) -> S3Path:
-            return self.get_system_path() / self._config.deployed_application_id
+            return self.get_system_path() / self._config.application_info.deployed_application_id
 
         def _update_content_type(self, file_path: S3Path, new_content_type: str):
             bucket_name, object_key = file_path.bucket, file_path.key
