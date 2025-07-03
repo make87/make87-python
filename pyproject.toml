@@ -40,6 +40,9 @@ yaml = [
 storage = [
     "s3path",
 ]
+rerun = [
+    "rerun-sdk>=0.23.3",
+]
 dev = [
     "pre-commit",
     "pytest",

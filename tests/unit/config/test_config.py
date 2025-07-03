@@ -45,7 +45,7 @@ def test_secret_resolution(monkeypatch):
             },
             "interfaces": {},
             "peripherals": {"peripherals": []},
-            "config": {"password": "${{ secret.MYSECRET }}"},
+            "config": {"password": "{{ secret.MYSECRET }}"},
         }
         config = load_config_from_json(config_dict)
         assert config.config["password"] == secret_value
@@ -54,15 +54,15 @@ def test_secret_resolution(monkeypatch):
 @pytest.mark.parametrize(
     "pattern",
     [
-        "${{secret.MYSECRET}}",
-        "${{ secret.MYSECRET}}",
-        "${{secret.MYSECRET }}",
-        "${{  secret.MYSECRET  }}",
-        "${{    secret.MYSECRET}}",
-        "${{secret.MYSECRET    }}",
-        "${{    secret.MYSECRET    }}",
-        "   ${{secret.MYSECRET}}   ",
-        "\t${{ secret.MYSECRET }}\n",
+        "{{secret.MYSECRET}}",
+        "{{ secret.MYSECRET}}",
+        "{{secret.MYSECRET }}",
+        "{{  secret.MYSECRET  }}",
+        "{{    secret.MYSECRET}}",
+        "{{secret.MYSECRET    }}",
+        "{{    secret.MYSECRET    }}",
+        "   {{secret.MYSECRET}}   ",
+        "\t{{ secret.MYSECRET }}\n",
     ],
 )
 def test_secret_resolution_whitespace(monkeypatch, pattern):

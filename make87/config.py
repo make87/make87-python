@@ -6,8 +6,8 @@ from make87.models import ApplicationConfig
 
 CONFIG_ENV_VAR = "MAKE87_CONFIG"
 
-# Match pattern: ${{ secret.XYZ }} with optional whitespace inside the braces
-SECRET_PATTERN = re.compile(r"^\s*\$\{\{\s*secret\.([A-Za-z0-9_]+)\s*\}\}\s*$")
+# Match pattern: {{ secret.XYZ }} with optional whitespace inside the braces
+SECRET_PATTERN = re.compile(r"^\s*\{\{\s*secret\.([A-Za-z0-9_]+)\s*\}\}\s*$")
 
 
 def _resolve_secrets(obj):
