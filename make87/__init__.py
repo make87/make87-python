@@ -6,6 +6,7 @@ import make87.models as models
 import make87.encodings as encodings
 import make87.interfaces as interfaces
 import make87.storage as storage
+import make87.host as host
 
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
     "encodings",
     "interfaces",
     "storage",
+    "host",
 ]
 
 
