@@ -56,7 +56,7 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                             handler_type=handler_type,
                             capacity=handler_capacity,
                         ),
-                        vpn_ip="172.0.0.1",
+                        vpn_ip="localhost",
                         vpn_port=7447,
                         same_node=True,
                     ),
@@ -129,12 +129,6 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
         }
     )
 
-    # Start subscriber
-    subscriber_proc = subprocess.Popen(
-        [sys.executable, str(subscriber_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=subscriber_env
-    )
-
-    time.sleep(1)  # Let subscriber boot up
 
     # Start publisher (non-blocking)
     publisher_proc = subprocess.Popen(
@@ -142,6 +136,12 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
     )
 
     time.sleep(1)  # Let publisher publish + subscriber receive
+    # Start subscriber
+    subscriber_proc = subprocess.Popen(
+        [sys.executable, str(subscriber_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=subscriber_env
+    )
+
+    time.sleep(1)  # Let subscriber boot up
 
     # Kill publisher
     publisher_proc.terminate()
@@ -189,7 +189,7 @@ def test_defaults_only():
                         topic_key="my_topic_key",
                         protocol="zenoh",
                         message_type="make87_messages.text.text_plain.PlainText",
-                        vpn_ip="127.0.0.1",
+                        vpn_ip="localhost",
                         vpn_port=7447,
                         same_node=True,
                     ),
@@ -258,12 +258,6 @@ def test_defaults_only():
         }
     )
 
-    # Start subscriber
-    subscriber_proc = subprocess.Popen(
-        [sys.executable, str(subscriber_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=subscriber_env
-    )
-
-    time.sleep(1)  # Let subscriber boot up
 
     # Start publisher (non-blocking)
     publisher_proc = subprocess.Popen(
@@ -271,11 +265,17 @@ def test_defaults_only():
     )
 
     time.sleep(1)  # Let publisher publish + subscriber receive
+    # Start subscriber
+    subscriber_proc = subprocess.Popen(
+        [sys.executable, str(subscriber_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=subscriber_env
+    )
+
+    time.sleep(1)  # Let subscriber boot up
 
     # Kill publisher
     publisher_proc.terminate()
     try:
-        publisher_proc.communicate(timeout=5)
+        pub_stdout, pub_stderr = publisher_proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
         publisher_proc.kill()
         publisher_proc.communicate()

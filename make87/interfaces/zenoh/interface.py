@@ -2,6 +2,7 @@ import json
 import logging
 from typing import Any, Callable, Optional, Union
 import zenoh
+import socket
 from functools import cached_property
 from make87.interfaces.base import InterfaceBase
 from make87.interfaces.zenoh.model import (
@@ -11,6 +12,7 @@ from make87.interfaces.zenoh.model import (
     ZenohProviderConfig,
 )
 
+logger = logging.getLogger(__name__)
 
 class ZenohInterface(InterfaceBase):
     """
@@ -21,6 +23,10 @@ class ZenohInterface(InterfaceBase):
     @cached_property
     def zenoh_config(self) -> zenoh.Config:
         cfg = zenoh.Config()
+
+        if not is_port_in_use(7447):
+            cfg.insert_json5("listen/endpoints", json.dumps(["tcp/0.0.0.0:7447"]))
+
         endpoints = {
             f"tcp/{x.vpn_ip}:{x.vpn_port}"
             for x in list(self.interface_config.requesters.values()) + list(self.interface_config.subscribers.values())
@@ -125,3 +131,14 @@ class ZenohInterface(InterfaceBase):
         Zenoh does not have a server concept, so this method is not implemented.
         """
         raise NotImplementedError("Zenoh does not support server interfaces.")
+
+
+def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind((host, port))
+            return False  # Not in use
+        except OSError:
+            logger.info(f"Port {port} is already in use on {host}.")
+            return True   # Already bound
