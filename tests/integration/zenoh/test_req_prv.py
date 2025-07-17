@@ -34,16 +34,16 @@ capacity = [1, 256]
     "priority,congestion_control,express,handler_type,handler_capacity",
     list(itertools.product(priorities, congestion_controls, express_values, handlers, capacity)),
 )
-def test_pub_sub_combination(priority, congestion_control, express, handler_type, handler_capacity):
+def test_req_prv_combination(priority, congestion_control, express, handler_type, handler_capacity):
     base_dir = Path(__file__).parent
 
-    requester_path = base_dir / "requester" / "main.py"
-    publisher_path = base_dir / "provider" / "main.py"
+    requester_path = base_dir / "querier" / "main.py"
+    publisher_path = base_dir / "queryable" / "main.py"
 
     base_env = os.environ.copy()
 
-    requester_env = base_env.copy()
-    provider_env = base_env.copy()
+    querier_env = base_env.copy()
+    queryable_env = base_env.copy()
 
     req_config = ApplicationConfig(
         interfaces=dict(
@@ -115,47 +115,47 @@ def test_pub_sub_combination(priority, congestion_control, express, handler_type
         ),
     )
 
-    requester_env.update(
+    querier_env.update(
         {
             "MAKE87_CONFIG": req_config.model_dump_json(),
         }
     )
 
-    provider_env.update(
+    queryable_env.update(
         {
             "MAKE87_CONFIG": prv_config.model_dump_json(),
         }
     )
 
     # Start provider
-    provider_proc = subprocess.Popen(
-        [sys.executable, str(publisher_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=provider_env
+    queryable_proc = subprocess.Popen(
+        [sys.executable, str(publisher_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=queryable_env
     )
 
     time.sleep(1)  # Let provider boot up and expose
 
     # Start requester
-    requester_proc = subprocess.Popen(
-        [sys.executable, str(requester_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=requester_env
+    querier_proc = subprocess.Popen(
+        [sys.executable, str(requester_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=querier_env
     )
 
     time.sleep(1)  # Let requester boot up and wait for response
 
     # Kill publisher
-    provider_proc.terminate()
+    queryable_proc.terminate()
     try:
-        provider_proc.communicate(timeout=5)
+        queryable_proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
-        provider_proc.kill()
-        provider_proc.communicate()
+        queryable_proc.kill()
+        queryable_proc.communicate()
 
     # Kill subscriber
-    requester_proc.terminate()
+    querier_proc.terminate()
     try:
-        req_stdout, req_stderr = requester_proc.communicate(timeout=5)
+        req_stdout, req_stderr = querier_proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
-        requester_proc.kill()
-        req_stdout, req_stderr = requester_proc.communicate()
+        querier_proc.kill()
+        req_stdout, req_stderr = querier_proc.communicate()
 
     output = req_stdout.decode()
     assert all(w in output.lower() for w in ("olleh", "dlrow"))
@@ -164,13 +164,13 @@ def test_pub_sub_combination(priority, congestion_control, express, handler_type
 def test_defaults_only():
     base_dir = Path(__file__).parent
 
-    requester_path = base_dir / "requester" / "main.py"
-    publisher_path = base_dir / "provider" / "main.py"
+    requester_path = base_dir / "querier" / "main.py"
+    publisher_path = base_dir / "queryable" / "main.py"
 
     base_env = os.environ.copy()
 
-    requester_env = base_env.copy()
-    provider_env = base_env.copy()
+    querier_env = base_env.copy()
+    queryable_env = base_env.copy()
 
     req_config = ApplicationConfig(
         interfaces=dict(
@@ -239,47 +239,47 @@ def test_defaults_only():
         ),
     )
 
-    requester_env.update(
+    querier_env.update(
         {
             "MAKE87_CONFIG": req_config.model_dump_json(),
         }
     )
 
-    provider_env.update(
+    queryable_env.update(
         {
             "MAKE87_CONFIG": prv_config.model_dump_json(),
         }
     )
 
     # Start provider
-    provider_proc = subprocess.Popen(
-        [sys.executable, str(publisher_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=provider_env
+    queryable_proc = subprocess.Popen(
+        [sys.executable, str(publisher_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=queryable_env
     )
 
     time.sleep(1)  # Let provider boot up and expose
 
     # Start requester
-    requester_proc = subprocess.Popen(
-        [sys.executable, str(requester_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=requester_env
+    querier_proc = subprocess.Popen(
+        [sys.executable, str(requester_path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=querier_env
     )
 
     time.sleep(1)  # Let requester boot up and wait for response
 
     # Kill publisher
-    provider_proc.terminate()
+    queryable_proc.terminate()
     try:
-        provider_proc.communicate(timeout=5)
+        queryable_proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
-        provider_proc.kill()
-        provider_proc.communicate()
+        queryable_proc.kill()
+        queryable_proc.communicate()
 
     # Kill subscriber
-    requester_proc.terminate()
+    querier_proc.terminate()
     try:
-        req_stdout, req_stderr = requester_proc.communicate(timeout=5)
+        req_stdout, req_stderr = querier_proc.communicate(timeout=5)
     except subprocess.TimeoutExpired:
-        requester_proc.kill()
-        req_stdout, req_stderr = requester_proc.communicate()
+        querier_proc.kill()
+        req_stdout, req_stderr = querier_proc.communicate()
 
     output = req_stdout.decode()
     assert all(w in output.lower() for w in ("olleh", "dlrow"))

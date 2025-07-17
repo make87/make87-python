@@ -103,11 +103,11 @@ class ZenohPublisherConfig(BaseModel):
     reliability: Optional[Reliability] = None
 
 
-class ZenohRequesterConfig(BaseModel):
+class ZenohQuerierConfig(BaseModel):
     congestion_control: Optional[CongestionControl] = None
     priority: Optional[Priority] = None
     express: Optional[bool] = None
 
 
-class ZenohProviderConfig(BaseModel):
+class ZenohQueryableConfig(BaseModel):
     handler: Optional[HandlerChannel] = None

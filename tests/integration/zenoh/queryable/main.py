@@ -11,10 +11,10 @@ def main():
     message_encoder = ProtobufEncoder(message_type=PlainText)
     zenoh_interface = ZenohInterface(name="zenoh_test")
 
-    provider = zenoh_interface.get_provider("HELLO_WORLD_MESSAGE")
+    queryable = zenoh_interface.get_queryable("HELLO_WORLD_MESSAGE")
 
     while True:
-        with provider.recv() as query:
+        with queryable.recv() as query:
             message = message_encoder.decode(query.payload.to_bytes())
             received_dt = datetime.now(tz=timezone.utc)
             publish_dt = message.header.timestamp.ToDatetime().replace(tzinfo=timezone.utc)

@@ -65,9 +65,9 @@ def test_get_subscriber(zenoh_interface):
 
 def test_get_requester(zenoh_interface):
     with pytest.raises(KeyError):
-        zenoh_interface.get_requester("HELLO_WORLD_MESSAGE")
+        zenoh_interface.get_querier("HELLO_WORLD_MESSAGE")
 
 
 def test_get_provider(zenoh_interface):
     with pytest.raises(KeyError):
-        zenoh_interface.get_provider("HELLO_WORLD_MESSAGE")
+        zenoh_interface.get_queryable("HELLO_WORLD_MESSAGE")

@@ -8,11 +8,12 @@ from make87.interfaces.base import InterfaceBase
 from make87.interfaces.zenoh.model import (
     ZenohPublisherConfig,
     ZenohSubscriberConfig,
-    ZenohRequesterConfig,
-    ZenohProviderConfig,
+    ZenohQuerierConfig,
+    ZenohQueryableConfig,
 )
 
 logger = logging.getLogger(__name__)
+
 
 class ZenohInterface(InterfaceBase):
     """
@@ -70,7 +71,7 @@ class ZenohInterface(InterfaceBase):
             handler = qos_config.handler.to_zenoh() if qos_config.handler is not None else None
         else:
             logging.warning(
-                "Application code defines a custom handler for the provider. Any handler config values for will be ignored."
+                "Application code defines a custom handler for the subscriber. Any handler config values for will be ignored."
             )
 
         return self.session.declare_subscriber(
@@ -78,7 +79,7 @@ class ZenohInterface(InterfaceBase):
             handler=handler,
         )
 
-    def get_requester(
+    def get_querier(
         self,
         name: str,
     ) -> zenoh.Querier:
@@ -86,7 +87,7 @@ class ZenohInterface(InterfaceBase):
         Declare and return a Zenoh querier for the given name.
         """
         iface_config = self.get_interface_type_by_name(name=name, iface_type="REQ")
-        qos_config = ZenohRequesterConfig.model_validate(iface_config.model_config)
+        qos_config = ZenohQuerierConfig.model_validate(iface_config.model_config)
 
         return self.session.declare_querier(
             key_expr=iface_config.endpoint_key,
@@ -95,7 +96,7 @@ class ZenohInterface(InterfaceBase):
             express=qos_config.express,
         )
 
-    def get_provider(
+    def get_queryable(
         self,
         name: str,
         handler: Optional[Union[Callable[[zenoh.Query], Any], zenoh.handlers.Callback]] = None,
@@ -106,31 +107,19 @@ class ZenohInterface(InterfaceBase):
         a Channel handler will be created from the make87 config values.
         """
         iface_config = self.get_interface_type_by_name(name=name, iface_type="PRV")
-        qos_config = ZenohProviderConfig.model_validate(iface_config.model_config)
+        qos_config = ZenohQueryableConfig.model_validate(iface_config.model_config)
 
         if handler is None:
             handler = qos_config.handler.to_zenoh() if qos_config.handler is not None else None
         else:
             logging.warning(
-                "Application code defines a custom handler for the provider. Any handler config values for will be ignored."
+                "Application code defines a custom handler for the queryable. Any handler config values for will be ignored."
             )
 
         return self.session.declare_queryable(
             key_expr=iface_config.endpoint_key,
             handler=handler,
         )
-
-    def get_client(self, name: str) -> Any:
-        """
-        Zenoh does not have a client concept, so this method is not implemented.
-        """
-        raise NotImplementedError("Zenoh does not support client interfaces.")
-
-    def get_server(self, name: str) -> Any:
-        """
-        Zenoh does not have a server concept, so this method is not implemented.
-        """
-        raise NotImplementedError("Zenoh does not support server interfaces.")
 
 
 def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
@@ -141,4 +130,4 @@ def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
             return False  # Not in use
         except OSError:
             logger.info(f"Port {port} is already in use on {host}.")
-            return True   # Already bound
+            return True  # Already bound

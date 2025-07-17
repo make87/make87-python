@@ -61,8 +61,8 @@ def zenoh_interface(req_config):
     return iface
 
 
-def test_get_requester(zenoh_interface):
-    assert zenoh_interface.get_requester("HELLO_WORLD_MESSAGE") is not None
+def test_get_querier(zenoh_interface):
+    assert zenoh_interface.get_querier("HELLO_WORLD_MESSAGE") is not None
 
 
 def test_get_publisher(zenoh_interface):
@@ -75,6 +75,6 @@ def test_get_subscriber(zenoh_interface):
         zenoh_interface.get_subscriber("HELLO_WORLD_MESSAGE")
 
 
-def test_get_provider(zenoh_interface):
+def test_get_queryable(zenoh_interface):
     with pytest.raises(KeyError):
-        zenoh_interface.get_provider("HELLO_WORLD_MESSAGE")
+        zenoh_interface.get_queryable("HELLO_WORLD_MESSAGE")
