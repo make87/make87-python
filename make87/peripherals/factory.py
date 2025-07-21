@@ -48,23 +48,23 @@ def create_peripheral_from_data(mp: object) -> OtherPeripheral: ...
 
 
 def create_peripheral_from_data(mp: MountedPeripheral) -> Peripheral:
-    if isinstance(mp.peripheral, CameraPeripheralModel):
-        return CameraPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, CodecPeripheralModel):
-        return CodecPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, GenericDevicePeripheralModel):
-        return GenericDevicePeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, GpioPeripheralModel):
-        return GpioPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, GpuPeripheralModel):
-        return GpuPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, I2cPeripheralModel):
-        return I2cPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, IspPeripheralModel):
-        return IspPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, RealSenseCameraPeripheralModel):
-        return RealSenseCameraPeripheral.from_config(mp.peripheral)
-    elif isinstance(mp.peripheral, RenderingPeripheralModel):
-        return RenderingPeripheral.from_config(mp.peripheral)
+    if isinstance(mp.peripheral.root, CameraPeripheralModel):
+        return CameraPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, CodecPeripheralModel):
+        return CodecPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, GenericDevicePeripheralModel):
+        return GenericDevicePeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, GpioPeripheralModel):
+        return GpioPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, GpuPeripheralModel):
+        return GpuPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, I2cPeripheralModel):
+        return I2cPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, IspPeripheralModel):
+        return IspPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, RealSenseCameraPeripheralModel):
+        return RealSenseCameraPeripheral.from_config(mp.peripheral.root)
+    elif isinstance(mp.peripheral.root, RenderingPeripheralModel):
+        return RenderingPeripheral.from_config(mp.peripheral.root)
     else:  # ("Other", "Speaker", "Keyboard", "Mouse")
-        return OtherPeripheral.from_config(mp.peripheral)
+        return OtherPeripheral.from_config(mp.peripheral.root)
