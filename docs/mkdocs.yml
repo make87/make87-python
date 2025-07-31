@@ -69,12 +69,11 @@ theme:
     - content.code.copy
     - content.tabs.link
   palette:
-    - scheme: slate # Forces dark mode only
-      primary: custom
-      accent: custom
-      background: custom
-extra_css:
-  - assets/extra.css
+    - scheme: slate
+      primary: amber
+      accent: amber
+#extra_css:
+#  - assets/extra.css
 extra:
   generator: false # Removes "Made with MkDocs" footer
   variables:
