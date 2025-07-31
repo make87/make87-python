@@ -33,6 +33,7 @@ from make87.internal.models.application_env_config import Peripheral10 as Keyboa
 from make87.internal.models.application_env_config import Peripheral11 as MousePeripheral
 from make87.internal.models.application_env_config import Peripheral12 as GenericDevicePeripheral
 from make87.internal.models.application_env_config import Peripheral13 as OtherPeripheral
+from make87.internal.models.application_env_config import Peripheral14 as MicrophonePeripheral
 
 
 __all__ = [
@@ -54,6 +55,7 @@ __all__ = [
     "InterfaceConfig",
     "IspPeripheral",
     "KeyboardPeripheral",
+    "MicrophonePeripheral",
     "MountedPeripheral",
     "MountedPeripherals",
     "MousePeripheral",

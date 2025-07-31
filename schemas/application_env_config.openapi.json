@@ -3,9 +3,6 @@
   "info": {
     "title": "m87_core",
     "description": "",
-    "license": {
-      "name": ""
-    },
     "version": "0.0.0"
   },
   "paths": {},
@@ -106,22 +103,40 @@
           "deployed_application_name": {
             "type": "string"
           },
-          "git_branch": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "git_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "is_release_version": {
             "type": "boolean"
           },
           "system_id": {
+            "type": "string"
+          }
+        }
+      },
+      "AudioPeripheral": {
+        "type": "object",
+        "required": [
+          "card_index",
+          "device_index",
+          "name",
+          "device_nodes"
+        ],
+        "properties": {
+          "card_index": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "device_index": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "device_nodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
             "type": "string"
           }
         }
@@ -169,7 +184,6 @@
         "type": "object",
         "required": [
           "reference",
-          "peripheral_type",
           "name",
           "device_nodes",
           "volumes"
@@ -248,7 +262,6 @@
       "CodecPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "name",
           "supported_codecs",
           "device_nodes"
@@ -277,7 +290,6 @@
       "GenericDevicePeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "name",
           "device_node"
         ],
@@ -333,7 +345,6 @@
       "GpioPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "chip_name",
           "label",
           "num_lines",
@@ -372,7 +383,6 @@
       "GpuPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "name",
           "model",
           "device_nodes"
@@ -431,7 +441,6 @@
       "I2cPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "bus_number",
           "name",
           "device_nodes",
@@ -537,7 +546,6 @@
       "IspPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "name",
           "supported_features",
           "device_nodes"
@@ -597,7 +605,6 @@
         "type": "object",
         "required": [
           "reference",
-          "peripheral_type",
           "name",
           "device_nodes"
         ],
@@ -716,7 +723,7 @@
             ],
             "properties": {
               "Speaker": {
-                "$ref": "#/components/schemas/OtherPeripheral"
+                "$ref": "#/components/schemas/AudioPeripheral"
               }
             }
           },
@@ -761,6 +768,17 @@
             "properties": {
               "Other": {
                 "$ref": "#/components/schemas/OtherPeripheral"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "Microphone"
+            ],
+            "properties": {
+              "Microphone": {
+                "$ref": "#/components/schemas/AudioPeripheral"
               }
             }
           }
@@ -930,7 +948,6 @@
       "RealSenseCameraPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "name",
           "device_nodes",
           "serial_number",
@@ -960,7 +977,6 @@
       "RenderingPeripheral": {
         "type": "object",
         "required": [
-          "peripheral_type",
           "name",
           "supported_apis",
           "device_nodes"
