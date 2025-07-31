@@ -1,3 +1,10 @@
+"""Zenoh messaging interface implementation.
+
+This module provides the ZenohInterface class which implements the Make87
+messaging interface using the Zenoh protocol. It supports publishers,
+subscribers, queriers, and queryables with configurable QoS settings.
+"""
+
 import json
 import logging
 from typing import Any, Callable, Optional, Union
@@ -16,13 +23,35 @@ logger = logging.getLogger(__name__)
 
 
 class ZenohInterface(InterfaceBase):
-    """
-    Concrete Protocol implementation for Zenoh messaging.
-    Lazily initializes Zenoh config and session for efficiency.
+    """Concrete Zenoh implementation of the Make87 messaging interface.
+
+    This class provides a Zenoh-based implementation of the Make87 messaging
+    interface, supporting publish/subscribe and query/response patterns with
+    configurable Quality of Service (QoS) settings.
+
+    The interface lazily initializes Zenoh configuration and session for efficiency,
+    and automatically configures network endpoints based on the application configuration.
+
+    Attributes:
+        zenoh_config: Cached Zenoh configuration object
+        session: Cached Zenoh session for communication
     """
 
     @cached_property
     def zenoh_config(self) -> zenoh.Config:
+        """Get or create the Zenoh configuration.
+
+        Lazily creates and configures a Zenoh configuration object with
+        appropriate network endpoints based on the interface configuration.
+
+        Returns:
+            Configured zenoh.Config instance
+
+        Note:
+            The configuration automatically sets up:
+            - Listen endpoints on port 7447 if available
+            - Connect endpoints based on configured peers
+        """
         cfg = zenoh.Config()
 
         if not is_port_in_use(7447):
@@ -37,12 +66,35 @@ class ZenohInterface(InterfaceBase):
 
     @cached_property
     def session(self) -> zenoh.Session:
-        """Lazily create and cache the Zenoh session."""
+        """Get or create the Zenoh session.
+
+        Lazily creates and caches a Zenoh session using the configured
+        Zenoh configuration.
+
+        Returns:
+            Active zenoh.Session instance for communication
+        """
         return zenoh.open(self.zenoh_config)
 
     def get_publisher(self, name: str) -> zenoh.Publisher:
-        """Declare and return a Zenoh publisher for the given name. The publisher is
-        not cached, and it is user responsibility to manage its lifecycle."""
+        """Create a Zenoh publisher for the specified interface name.
+
+        Args:
+            name: The name of the publisher interface as defined in configuration
+
+        Returns:
+            Configured zenoh.Publisher instance
+
+        Note:
+            The publisher is not cached, and it is the user's responsibility
+            to manage its lifecycle. The publisher will be configured with
+            QoS settings from the interface configuration.
+
+        Example:
+            >>> interface = ZenohInterface("my_interface")
+            >>> publisher = interface.get_publisher("output_topic")
+            >>> publisher.put("Hello, World!")
+        """
         iface_config = self.get_interface_type_by_name(name=name, iface_type="PUB")
         qos_config = ZenohPublisherConfig.model_validate(iface_config.model_extra)
 
@@ -59,10 +111,27 @@ class ZenohInterface(InterfaceBase):
         name: str,
         handler: Optional[Union[Callable[[zenoh.Sample], Any], zenoh.handlers.Callback]] = None,
     ) -> zenoh.Subscriber:
-        """
-        Declare and return a Zenoh subscriber for the given name and handler.
-        The handler can be a Python function or a Zenoh callback. If `None` is provided (or omitted),
-        a Channel handler will be created from the make87 config values.
+        """Create a Zenoh subscriber for the specified interface name.
+
+        Args:
+            name: The name of the subscriber interface as defined in configuration
+            handler: Optional message handler. Can be a Python function accepting
+                a zenoh.Sample, or a Zenoh callback handler. If None, a channel
+                handler will be created from configuration.
+
+        Returns:
+            Configured zenoh.Subscriber instance
+
+        Note:
+            If a custom handler is provided, any handler configuration values
+            will be ignored. The subscriber will use the configured topic key
+            and channel settings.
+
+        Example:
+            >>> interface = ZenohInterface("my_interface")
+            >>> def handle_message(sample):
+            ...     print(f"Received: {sample.value}")
+            >>> subscriber = interface.get_subscriber("input_topic", handle_message)
         """
         iface_config = self.get_interface_type_by_name(name=name, iface_type="SUB")
         qos_config = ZenohSubscriberConfig.model_validate(iface_config.model_extra)
@@ -83,8 +152,24 @@ class ZenohInterface(InterfaceBase):
         self,
         name: str,
     ) -> zenoh.Querier:
-        """
-        Declare and return a Zenoh querier for the given name.
+        """Create a Zenoh querier for the specified interface name.
+
+        Queriers are used for making requests in the query/response pattern.
+
+        Args:
+            name: The name of the querier interface as defined in configuration
+
+        Returns:
+            Configured zenoh.Querier instance
+
+        Note:
+            The querier will be configured with QoS settings from the interface
+            configuration including congestion control, priority, and express delivery.
+
+        Example:
+            >>> interface = ZenohInterface("my_interface")
+            >>> querier = interface.get_querier("api_client")
+            >>> replies = querier.get("some/query")
         """
         iface_config = self.get_interface_type_by_name(name=name, iface_type="REQ")
         qos_config = ZenohQuerierConfig.model_validate(iface_config.model_config)
@@ -101,10 +186,28 @@ class ZenohInterface(InterfaceBase):
         name: str,
         handler: Optional[Union[Callable[[zenoh.Query], Any], zenoh.handlers.Callback]] = None,
     ) -> zenoh.Queryable:
-        """
-        Declare and return a Zenoh queryable for the given name and handler.
-        The handler can be a Python function or a Zenoh callback. If `None` is provided (or omitted),
-        a Channel handler will be created from the make87 config values.
+        """Create a Zenoh queryable for the specified interface name.
+
+        Queryables are used for handling requests in the query/response pattern.
+
+        Args:
+            name: The name of the queryable interface as defined in configuration
+            handler: Optional query handler. Can be a Python function accepting
+                a zenoh.Query, or a Zenoh callback handler. If None, a channel
+                handler will be created from configuration.
+
+        Returns:
+            Configured zenoh.Queryable instance
+
+        Note:
+            If a custom handler is provided, any handler configuration values
+            will be ignored. The handler should process queries and send responses.
+
+        Example:
+            >>> interface = ZenohInterface("my_interface")
+            >>> def handle_query(query):
+            ...     query.reply(zenoh.Sample("response/key", "response data"))
+            >>> queryable = interface.get_queryable("api_server", handle_query)
         """
         iface_config = self.get_interface_type_by_name(name=name, iface_type="PRV")
         qos_config = ZenohQueryableConfig.model_validate(iface_config.model_config)
@@ -123,6 +226,26 @@ class ZenohInterface(InterfaceBase):
 
 
 def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
+    """Check if a network port is currently in use.
+
+    Args:
+        port: The port number to check
+        host: The host address to check. Defaults to "0.0.0.0" (all interfaces)
+
+    Returns:
+        True if the port is in use, False if it's available
+
+    Note:
+        This function attempts to bind to the specified port. If the bind
+        succeeds, the port is available. If it fails with OSError, the
+        port is already in use.
+
+    Example:
+        >>> if is_port_in_use(8080):
+        ...     print("Port 8080 is busy")
+        ... else:
+        ...     print("Port 8080 is available")
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:

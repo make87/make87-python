@@ -1,3 +1,10 @@
+"""Configuration management utilities for Make87 applications.
+
+This module provides functions for loading and managing application configuration
+from environment variables and JSON data. It supports secret resolution from
+Docker secrets and type-safe configuration access.
+"""
+
 import os
 import re
 from typing import Union, Dict, TypeVar, Callable, Any
@@ -10,7 +17,18 @@ CONFIG_ENV_VAR = "MAKE87_CONFIG"
 SECRET_PATTERN = re.compile(r"^\s*\{\{\s*secret\.([A-Za-z0-9_]+)\s*}}\s*$")
 
 
-def _resolve_secrets(obj):
+def _resolve_secrets(obj: Any) -> Any:
+    """Recursively resolve secret placeholders in configuration objects.
+
+    Args:
+        obj: The configuration object to process (dict, list, str, or other)
+
+    Returns:
+        The configuration object with secret placeholders resolved
+
+    Raises:
+        RuntimeError: If a secret file cannot be read
+    """
     # Recursively resolve secrets in dicts/lists
     if isinstance(obj, dict):
         return {k: _resolve_secrets(v) for k, v in obj.items()}
@@ -32,9 +50,26 @@ def _resolve_secrets(obj):
 
 
 def load_config_from_env(var: str = CONFIG_ENV_VAR) -> ApplicationConfig:
-    """
-    Load and validate ApplicationConfig from a JSON environment variable.
-    Raises RuntimeError if not present or invalid.
+    """Load and validate ApplicationConfig from a JSON environment variable.
+
+    Loads configuration from the specified environment variable, validates it
+    against the ApplicationConfig schema, and resolves any secret placeholders.
+
+    Args:
+        var: Environment variable name to load configuration from.
+            Defaults to "MAKE87_CONFIG".
+
+    Returns:
+        Validated and processed ApplicationConfig instance.
+
+    Raises:
+        RuntimeError: If the environment variable is missing or contains invalid JSON.
+
+    Example:
+        >>> import os
+        >>> os.environ["MAKE87_CONFIG"] = '{"application_info": {...}, "config": {...}}'
+        >>> config = load_config_from_env()
+        >>> print(config.application_info.application_id)
     """
     raw = os.environ.get(var)
     if not raw:
@@ -45,8 +80,25 @@ def load_config_from_env(var: str = CONFIG_ENV_VAR) -> ApplicationConfig:
 
 
 def load_config_from_json(json_data: Union[str, Dict]) -> ApplicationConfig:
-    """
-    Load and validate ApplicationConfig from a JSON string or dict.
+    """Load and validate ApplicationConfig from a JSON string or dictionary.
+
+    Processes the provided JSON data, validates it against the ApplicationConfig
+    schema, and resolves any secret placeholders.
+
+    Args:
+        json_data: JSON string or dictionary containing configuration data.
+
+    Returns:
+        Validated and processed ApplicationConfig instance.
+
+    Raises:
+        TypeError: If json_data is neither a string nor a dictionary.
+
+    Example:
+        >>> config_dict = {"application_info": {...}, "config": {...}}
+        >>> config = load_config_from_json(config_dict)
+        >>> config_json = '{"application_info": {...}, "config": {...}}'
+        >>> config = load_config_from_json(config_json)
     """
     if isinstance(json_data, str):
         config = ApplicationConfig.model_validate_json(json_data)
@@ -68,8 +120,31 @@ def get_config_value(
     default_factory: Callable[[], T] = None,
     converter: Callable[[Any], T] = None,
 ) -> T:
-    """
-    Get a configuration value by name with optional default and type conversion.
+    """Get a configuration value by name with optional default and type conversion.
+
+    Retrieves a configuration value from the application config with support
+    for default values, factory functions, and type conversion.
+
+    Args:
+        config: The ApplicationConfig instance to retrieve values from.
+        name: The configuration key name to look up.
+        default: Default value to return if the key is not found.
+        default_factory: Factory function to call if the key is not found
+            and no default is provided.
+        converter: Optional function to convert the retrieved value to the
+            desired type.
+
+    Returns:
+        The configuration value, potentially converted to the desired type.
+
+    Raises:
+        KeyError: If the configuration key is not found and no default is provided.
+
+    Example:
+        >>> config = load_config_from_env()
+        >>> port = get_config_value(config, "port", default=8080, converter=int)
+        >>> debug = get_config_value(config, "debug", default=False, converter=bool)
+        >>> timeout = get_config_value(config, "timeout", default_factory=lambda: 30.0)
     """
     config_dict: Dict[str, Any] = config.config
     value = config_dict.get(name, None)

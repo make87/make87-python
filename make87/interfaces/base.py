@@ -1,3 +1,9 @@
+"""Base interface classes for Make87 messaging systems.
+
+This module provides the abstract base class for all Make87 messaging interfaces,
+including publisher/subscriber, request/response, and client/server patterns.
+"""
+
 from abc import ABC
 from typing import Literal, Optional, Union, overload
 
@@ -17,15 +23,25 @@ from make87.models import (
 
 
 class InterfaceBase(ABC):
-    """
-    Abstract base class for messaging interfaces.
-    Handles publisher/subscriber setup.
+    """Abstract base class for messaging interfaces.
+
+    This class provides a common foundation for all Make87 messaging interfaces,
+    handling configuration management and interface type resolution. It supports
+    multiple messaging patterns including publish/subscribe, request/response,
+    and client/server communication.
+
+    Attributes:
+        _name: The name of this interface instance
+        _config: The Make87 application configuration
     """
 
     def __init__(self, name: str, make87_config: Optional[ApplicationConfig] = None):
-        """
-        Initialize the interface with a configuration object.
-        If no config is provided, it will attempt to load from the environment.
+        """Initialize the interface with a configuration object.
+
+        Args:
+            name: The name identifier for this interface instance
+            make87_config: Optional ApplicationConfig instance. If not provided,
+                configuration will be loaded from the environment.
         """
         if make87_config is None:
             make87_config = load_config_from_env()
@@ -60,8 +76,32 @@ class InterfaceBase(ABC):
         BoundClient,
         ServerServiceConfig,
     ]:
-        """
-        Takes a user-level interface name and looks up the corresponding API-level config object.
+        """Get configuration object for a named interface by type.
+
+        Takes a user-level interface name and looks up the corresponding API-level
+        configuration object based on the interface type.
+
+        Args:
+            name: The user-defined name of the interface to look up
+            iface_type: The type of interface to retrieve. Valid values:
+                - "PUB": Publisher topic configuration
+                - "SUB": Subscriber configuration
+                - "REQ": Requester endpoint configuration
+                - "PRV": Provider endpoint configuration
+                - "CLI": Client service configuration
+                - "SRV": Server service configuration
+
+        Returns:
+            The appropriate configuration object for the specified interface type
+
+        Raises:
+            KeyError: If the interface name is not found for the specified type
+            NotImplementedError: If the interface type is not supported
+
+        Example:
+            >>> interface = SomeInterface("my_interface")
+            >>> pub_config = interface.get_interface_type_by_name("output", "PUB")
+            >>> sub_config = interface.get_interface_type_by_name("input", "SUB")
         """
         if iface_type == "PUB":
             mapped_interface_types = self.interface_config.publishers
@@ -85,14 +125,22 @@ class InterfaceBase(ABC):
 
     @property
     def name(self) -> str:
-        """
-        Return the name of the interface.
+        """Get the name of this interface instance.
+
+        Returns:
+            The name identifier for this interface
         """
         return self._name
 
     @property
     def interface_config(self) -> InterfaceConfig:
-        """
-        Return the application configuration for this interface.
+        """Get the interface configuration for this instance.
+
+        Returns:
+            The InterfaceConfig object containing all interface definitions
+            for this named interface
+
+        Raises:
+            KeyError: If the interface name is not found in the application config
         """
         return self._config.interfaces.get(self._name)
