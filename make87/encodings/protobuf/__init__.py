@@ -1,8 +1,23 @@
+"""Protocol Buffers encoder with version compatibility.
+
+This module provides a Protocol Buffers-based encoder that automatically
+detects the installed protobuf version and imports the appropriate
+implementation. Supports protobuf versions 4, 5, and 6.
+"""
+
 import importlib
 from packaging.version import Version
 
 
 def _get_protobuf_major_version() -> int:
+    """Get the major version of the installed protobuf library.
+
+    Returns:
+        The major version number of the installed protobuf library
+
+    Raises:
+        ImportError: If protobuf is not installed
+    """
     try:
         import google.protobuf
     except ImportError as e:
@@ -34,6 +49,11 @@ try:
 except ImportError:
     # Only expose the error at import/use time
     def _raise_protobuf_import_error(*args, **kwargs):
+        """Raise ImportError when protobuf dependencies are not installed.
+
+        Raises:
+            ImportError: Always raised with installation instructions
+        """
         raise ImportError("Protobuf support is not installed. " "Install with: pip install make87[protobuf]")
 
     ProtobufEncoder = _raise_protobuf_import_error
