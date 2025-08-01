@@ -54,6 +54,7 @@ def run_forever() -> None:
         calling this function.
 
     Example:
+
         >>> import make87
         >>> # Set up your application components here
         >>> make87.run_forever()  # Blocks until signal received

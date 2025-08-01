@@ -40,6 +40,7 @@ class OtherPeripheral(PeripheralBase):
                 (e.g., ["/dev/watchdog0"])
 
         Example:
+
             >>> other = OtherPeripheral(
             ...     name="system_watchdog",
             ...     reference="hardware_watchdog_timer",
@@ -64,6 +65,7 @@ class OtherPeripheral(PeripheralBase):
             OtherPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import OtherPeripheralModel
             >>> config = OtherPeripheralModel(...)
             >>> other = OtherPeripheral.from_config(config)

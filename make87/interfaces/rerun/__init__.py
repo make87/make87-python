@@ -32,6 +32,7 @@ def init_and_connect_grpc(interface_name: str, client_name: str, make87_config: 
         ImportError: If rerun package is not installed
 
     Example:
+
         >>> import make87.interfaces.rerun as rerun_interface
         >>> rerun_interface.init_and_connect_grpc("rerun", "rerun-grpc-client")
         >>> # Now you can use rerun.log() functions

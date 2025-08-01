@@ -48,6 +48,7 @@ class GpioPeripheral(PeripheralBase):
                 the label will be used as the name.
 
         Example:
+
             >>> gpio = GpioPeripheral(
             ...     chip_name="gpiochip0",
             ...     label="Main GPIO Chip",
@@ -81,6 +82,7 @@ class GpioPeripheral(PeripheralBase):
             GpioPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import GpioPeripheralModel
             >>> config = GpioPeripheralModel(...)
             >>> gpio = GpioPeripheral.from_config(config)

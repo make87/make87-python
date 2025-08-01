@@ -44,6 +44,7 @@ class RealSenseCameraPeripheral(PeripheralBase):
                 (e.g., "D435", "D455", "L515")
 
         Example:
+
             >>> realsense = RealSenseCameraPeripheral(
             ...     name="depth_camera",
             ...     device_nodes=["/dev/video0", "/dev/video1", "/dev/video2"],
@@ -70,6 +71,7 @@ class RealSenseCameraPeripheral(PeripheralBase):
             RealSenseCameraPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import RealSenseCameraPeripheralModel
             >>> config = RealSenseCameraPeripheralModel(...)
             >>> realsense = RealSenseCameraPeripheral.from_config(config)

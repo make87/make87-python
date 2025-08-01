@@ -67,6 +67,7 @@ class PeripheralManager:
             KeyError: If no peripheral with the given name exists
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> camera = manager.get_peripheral_by_name("main_camera")
             >>> gpio = manager.get_peripheral_by_name("status_led")
@@ -80,6 +81,7 @@ class PeripheralManager:
             List of all PeripheralBase instances managed by this manager
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> peripherals = manager.list_peripherals()
             >>> for peripheral in peripherals:
@@ -96,6 +98,7 @@ class PeripheralManager:
             Iterator over PeripheralBase instances
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> for peripheral in manager:
             ...     print(f"Found peripheral: {peripheral.name}")
@@ -115,6 +118,7 @@ class PeripheralManager:
             KeyError: If no peripheral with the given name exists
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> camera = manager["main_camera"]
             >>> led = manager["status_led"]
@@ -128,6 +132,7 @@ class PeripheralManager:
             The number of peripheral instances managed by this manager
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> print(f"Managing {len(manager)} peripherals")
         """
@@ -143,6 +148,7 @@ class PeripheralManager:
             True if a peripheral with the given name exists, False otherwise
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> if "main_camera" in manager:
             ...     print("Camera is available")
@@ -156,6 +162,7 @@ class PeripheralManager:
             Dictionary items view of name-peripheral pairs
 
         Example:
+
             >>> manager = PeripheralManager()
             >>> for name, peripheral in manager.items():
             ...     print(f"{name}: {type(peripheral).__name__}")

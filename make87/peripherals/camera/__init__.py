@@ -47,6 +47,7 @@ class CameraPeripheral(PeripheralBase):
             protocol: Optional protocol specification (e.g., "V4L2", "GStreamer")
 
         Example:
+
             >>> camera = CameraPeripheral(
             ...     name="main_camera",
             ...     device_nodes=["/dev/video0"],
@@ -77,6 +78,7 @@ class CameraPeripheral(PeripheralBase):
             CameraPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import CameraPeripheralModel
             >>> config = CameraPeripheralModel(...)
             >>> camera = CameraPeripheral.from_config(config)

@@ -23,6 +23,7 @@ def host_is_updating() -> bool:
         If the file exists, it indicates that an update is in progress.
 
     Example:
+
         >>> import make87.host
         >>> if make87.host.host_is_updating():
         ...     print("Host is updating, waiting...")

@@ -66,6 +66,7 @@ def load_config_from_env(var: str = CONFIG_ENV_VAR) -> ApplicationConfig:
         RuntimeError: If the environment variable is missing or contains invalid JSON.
 
     Example:
+
         >>> import os
         >>> os.environ["MAKE87_CONFIG"] = '{"application_info": {...}, "config": {...}}'
         >>> config = load_config_from_env()
@@ -95,6 +96,7 @@ def load_config_from_json(json_data: Union[str, Dict]) -> ApplicationConfig:
         TypeError: If json_data is neither a string nor a dictionary.
 
     Example:
+
         >>> config_dict = {"application_info": {...}, "config": {...}}
         >>> config = load_config_from_json(config_dict)
         >>> config_json = '{"application_info": {...}, "config": {...}}'
@@ -141,6 +143,7 @@ def get_config_value(
         KeyError: If the configuration key is not found and no default is provided.
 
     Example:
+
         >>> config = load_config_from_env()
         >>> port = get_config_value(config, "port", default=8080, converter=int)
         >>> debug = get_config_value(config, "debug", default=False, converter=bool)

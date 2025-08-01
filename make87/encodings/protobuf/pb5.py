@@ -34,6 +34,7 @@ class ProtobufEncoder(Encoder[T]):
                 This must be a subclass of google.protobuf.message.Message.
 
         Example:
+
             >>> from my_protos import MyMessage
             >>> encoder = ProtobufEncoder(MyMessage)
             >>>
@@ -57,6 +58,7 @@ class ProtobufEncoder(Encoder[T]):
             TypeError: If the object is not an instance of the configured message type
 
         Example:
+
             >>> encoder = ProtobufEncoder(MyMessage)
             >>> message = MyMessage()
             >>> message.name = "example"
@@ -78,6 +80,7 @@ class ProtobufEncoder(Encoder[T]):
                 as a valid protobuf message of the configured type
 
         Example:
+
             >>> encoder = ProtobufEncoder(MyMessage)
             >>> data = b'\\x08\\x96\\x01'  # Some protobuf-encoded bytes
             >>> message = encoder.decode(data)

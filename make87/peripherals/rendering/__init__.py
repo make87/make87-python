@@ -44,6 +44,7 @@ class RenderingPeripheral(PeripheralBase):
                 for the rendering device
 
         Example:
+
             >>> rendering = RenderingPeripheral(
             ...     name="graphics_card",
             ...     supported_apis=["OpenGL", "Vulkan", "CUDA"],
@@ -70,6 +71,7 @@ class RenderingPeripheral(PeripheralBase):
             RenderingPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import RenderingPeripheralModel
             >>> config = RenderingPeripheralModel(...)
             >>> rendering = RenderingPeripheral.from_config(config)

@@ -35,6 +35,7 @@ try:
                     Defaults to yaml.SafeDumper for security.
 
             Example:
+
                 >>> # Simple encoder with safe defaults
                 >>> encoder = YamlEncoder()
                 >>>
@@ -61,6 +62,7 @@ try:
                     or other serialization errors
 
             Example:
+
                 >>> encoder = YamlEncoder()
                 >>> data = {"key": "value", "items": [1, 2, 3]}
                 >>> encoded = encoder.encode(data)
@@ -90,6 +92,7 @@ try:
                     or encoding issues
 
             Example:
+
                 >>> encoder = YamlEncoder()
                 >>> yaml_data = b'key: value\\nitems:\\n- 1\\n- 2\\n- 3\\n'
                 >>> decoded = encoder.decode(yaml_data)

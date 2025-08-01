@@ -99,6 +99,7 @@ class InterfaceBase(ABC):
             NotImplementedError: If the interface type is not supported
 
         Example:
+
             >>> interface = SomeInterface("my_interface")
             >>> pub_config = interface.get_interface_type_by_name("output", "PUB")
             >>> sub_config = interface.get_interface_type_by_name("input", "SUB")

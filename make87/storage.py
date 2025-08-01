@@ -127,6 +127,7 @@ try:
                 ValueError: If the path is not a file or URL generation fails
 
             Example:
+
                 >>> storage = BlobStorage()
                 >>> file_path = storage.get_application_path() / "data.json"
                 >>> url = storage.generate_public_url(file_path, expires_in=3600)

@@ -28,6 +28,7 @@ class GenericDevicePeripheral(PeripheralBase):
             device_node: The device node path (e.g., "/dev/ttyUSB0", "/dev/spidev0.0")
 
         Example:
+
             >>> device = GenericDevicePeripheral(
             ...     name="serial_port",
             ...     device_node="/dev/ttyUSB0"
@@ -50,6 +51,7 @@ class GenericDevicePeripheral(PeripheralBase):
             GenericDevicePeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import GenericDevicePeripheralModel
             >>> config = GenericDevicePeripheralModel(...)
             >>> device = GenericDevicePeripheral.from_config(config)

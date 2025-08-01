@@ -91,6 +91,7 @@ class ZenohInterface(InterfaceBase):
             QoS settings from the interface configuration.
 
         Example:
+
             >>> interface = ZenohInterface("my_interface")
             >>> publisher = interface.get_publisher("output_topic")
             >>> publisher.put("Hello, World!")
@@ -128,6 +129,7 @@ class ZenohInterface(InterfaceBase):
             and channel settings.
 
         Example:
+
             >>> interface = ZenohInterface("my_interface")
             >>> def handle_message(sample):
             ...     print(f"Received: {sample.value}")
@@ -167,6 +169,7 @@ class ZenohInterface(InterfaceBase):
             configuration including congestion control, priority, and express delivery.
 
         Example:
+
             >>> interface = ZenohInterface("my_interface")
             >>> querier = interface.get_querier("api_client")
             >>> replies = querier.get("some/query")
@@ -204,6 +207,7 @@ class ZenohInterface(InterfaceBase):
             will be ignored. The handler should process queries and send responses.
 
         Example:
+
             >>> interface = ZenohInterface("my_interface")
             >>> def handle_query(query):
             ...     query.reply(zenoh.Sample("response/key", "response data"))
@@ -241,6 +245,7 @@ def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
         port is already in use.
 
     Example:
+
         >>> if is_port_in_use(8080):
         ...     print("Port 8080 is busy")
         ... else:

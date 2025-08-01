@@ -39,6 +39,7 @@ class IspPeripheral(PeripheralBase):
                 (e.g., ["/dev/v4l-subdev0"])
 
         Example:
+
             >>> isp = IspPeripheral(
             ...     name="main_isp",
             ...     supported_features=[
@@ -68,6 +69,7 @@ class IspPeripheral(PeripheralBase):
             IspPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import IspPeripheralModel
             >>> config = IspPeripheralModel(...)
             >>> isp = IspPeripheral.from_config(config)

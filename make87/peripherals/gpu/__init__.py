@@ -44,6 +44,7 @@ class GpuPeripheral(PeripheralBase):
             vram: Optional VRAM capacity in megabytes
 
         Example:
+
             >>> gpu = GpuPeripheral(
             ...     name="primary_gpu",
             ...     model="RTX 4090",
@@ -72,6 +73,7 @@ class GpuPeripheral(PeripheralBase):
             GpuPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import GpuPeripheralModel
             >>> config = GpuPeripheralModel(...)
             >>> gpu = GpuPeripheral.from_config(config)

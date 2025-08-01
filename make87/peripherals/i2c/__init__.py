@@ -42,6 +42,7 @@ class I2cPeripheral(PeripheralBase):
                 each containing device address and other properties
 
         Example:
+
             >>> i2c = I2cPeripheral(
             ...     name="main_i2c",
             ...     bus_number=1,
@@ -71,6 +72,7 @@ class I2cPeripheral(PeripheralBase):
             I2cPeripheral instance configured according to the model
 
         Example:
+
             >>> from make87.models import I2cPeripheralModel
             >>> config = I2cPeripheralModel(...)
             >>> i2c = I2cPeripheral.from_config(config)

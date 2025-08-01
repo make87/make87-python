@@ -1,8 +1,16 @@
 site_name: Python3 SDK | make87
 docs_dir: src
 nav:
-  - Home: index.md
-  - API Reference: reference/
+  - API Reference:
+    - make87: reference/index.md
+    - config: reference/config.md
+    - encodings: reference/encodings/index.md
+    - host: reference/host.md
+    - interfaces: reference/interfaces/index.md
+    - models: reference/models/index.md
+    - peripherals: reference/peripherals/index.md
+    - storage: reference/storage.md
+
 plugins:
   - search:
       lang:
