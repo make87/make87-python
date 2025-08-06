@@ -31,6 +31,7 @@ zenoh = [
 ]
 protobuf = [
     "protobuf>=4.22,<7.0",
+    "packaging>=25.0,<26.0",
 ]
 yaml = [
     "PyYAML>=6.0,<7.0",
