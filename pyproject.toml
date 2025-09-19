@@ -37,7 +37,7 @@ yaml = [
     "PyYAML>=6.0,<7.0",
 ]
 storage = [
-    "s3path",
+    "s3path>=0.6.4",
 ]
 rerun = [
     "rerun-sdk>=0.25.1",
