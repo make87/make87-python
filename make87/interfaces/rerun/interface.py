@@ -132,14 +132,14 @@ class RerunInterface(InterfaceBase):
         rerun_config = RerunGRpcServerConfig.model_validate(extra_config)
 
         # Configure memory limit
-        if rerun_config.max_bytes is not None:
+        if rerun_config.memory_limit is not None:
             # Convert bytes to string format (e.g., "1GB", "512MB")
-            if rerun_config.max_bytes >= 1024**3:
-                memory_limit = f"{rerun_config.max_bytes // (1024**3)}GB"
-            elif rerun_config.max_bytes >= 1024**2:
-                memory_limit = f"{rerun_config.max_bytes // (1024**2)}MB"
+            if rerun_config.memory_limit >= 1024**3:
+                memory_limit = f"{rerun_config.memory_limit // (1024**3)}GB"
+            elif rerun_config.memory_limit >= 1024**2:
+                memory_limit = f"{rerun_config.memory_limit // (1024**2)}MB"
             else:
-                memory_limit = f"{rerun_config.max_bytes}B"
+                memory_limit = f"{rerun_config.memory_limit}B"
         else:
             memory_limit = "25%"  # Default memory limit
 
@@ -151,10 +151,14 @@ class RerunInterface(InterfaceBase):
             recording_id=_deterministic_uuid_v4_from_string(system_id),
         )
 
+        # Configure playback behavior
+        newest_first = rerun_config.playback_behavior.value == "NewestFirst"
+
         # Start gRPC server
         _ = rr.serve_grpc(
             grpc_port=9876,
             server_memory_limit=memory_limit,
+            newest_first=newest_first,
             recording=recording,
         )
 

@@ -10,6 +10,7 @@ from make87.interfaces.rerun.interface import (
     RerunInterface,
 )
 from make87.interfaces.rerun.model import (
+    PlaybackBehavior,
     RerunGRpcClientConfig,
     RerunGRpcServerConfig,
     ChunkBatcherConfig,
@@ -17,6 +18,7 @@ from make87.interfaces.rerun.model import (
 
 __all__ = [
     "RerunInterface",
+    "PlaybackBehavior",
     "RerunGRpcClientConfig",
     "RerunGRpcServerConfig",
     "ChunkBatcherConfig",

@@ -3,6 +3,7 @@ from pydantic import ValidationError
 
 from make87.interfaces.rerun.model import (
     ChunkBatcherConfig,
+    PlaybackBehavior,
     RerunGRpcClientConfig,
     RerunGRpcServerConfig,
 )
@@ -126,52 +127,88 @@ class TestRerunGRpcServerConfig:
         """Test default values are correctly set."""
         config = RerunGRpcServerConfig()
 
-        assert config.max_bytes is None
+        assert config.memory_limit is None
+        assert config.playback_behavior == PlaybackBehavior.OLDEST_FIRST
 
     def test_custom_values(self):
         """Test custom values can be set."""
-        config = RerunGRpcServerConfig(max_bytes=1073741824)  # 1GB
+        config = RerunGRpcServerConfig(
+            memory_limit=1073741824,  # 1GB
+            playback_behavior=PlaybackBehavior.NEWEST_FIRST,
+        )
 
-        assert config.max_bytes == 1073741824
+        assert config.memory_limit == 1073741824
+        assert config.playback_behavior == PlaybackBehavior.NEWEST_FIRST
 
-    def test_none_max_bytes(self):
-        """Test that max_bytes can be None (no limit)."""
-        config = RerunGRpcServerConfig(max_bytes=None)
+    def test_none_memory_limit(self):
+        """Test that memory_limit can be None (no limit)."""
+        config = RerunGRpcServerConfig(memory_limit=None)
 
-        assert config.max_bytes is None
+        assert config.memory_limit is None
 
     def test_from_dict(self):
         """Test creating from dictionary."""
-        data = {"max_bytes": 2147483648}  # 2GB
+        data = {
+            "memory_limit": 2147483648,  # 2GB
+            "playback_behavior": "NewestFirst",
+        }
         config = RerunGRpcServerConfig(**data)
 
-        assert config.max_bytes == 2147483648
+        assert config.memory_limit == 2147483648
+        assert config.playback_behavior == PlaybackBehavior.NEWEST_FIRST
 
     def test_large_values(self):
         """Test large memory values."""
         large_value = 1099511627776  # 1TB
-        config = RerunGRpcServerConfig(max_bytes=large_value)
+        config = RerunGRpcServerConfig(memory_limit=large_value)
 
-        assert config.max_bytes == large_value
+        assert config.memory_limit == large_value
 
-    def test_zero_max_bytes(self):
-        """Test zero max_bytes value."""
-        config = RerunGRpcServerConfig(max_bytes=0)
+    def test_zero_memory_limit(self):
+        """Test zero memory_limit value."""
+        config = RerunGRpcServerConfig(memory_limit=0)
 
-        assert config.max_bytes == 0
+        assert config.memory_limit == 0
 
     def test_validation_errors(self):
         """Test validation errors for invalid values."""
         with pytest.raises(ValidationError):
-            RerunGRpcServerConfig(max_bytes="invalid")
+            RerunGRpcServerConfig(memory_limit="invalid")
 
-    def test_negative_max_bytes(self):
-        """Test negative max_bytes value."""
+        with pytest.raises(ValidationError):
+            RerunGRpcServerConfig(playback_behavior="invalid")
+
+    def test_negative_memory_limit(self):
+        """Test negative memory_limit value."""
         # Note: You might want to add validation to prevent negative values
-        config = RerunGRpcServerConfig(max_bytes=-1000)
+        config = RerunGRpcServerConfig(memory_limit=-1000)
 
         # Currently allowed, but you might want to add validation
-        assert config.max_bytes == -1000
+        assert config.memory_limit == -1000
+
+
+class TestPlaybackBehavior:
+    """Test suite for PlaybackBehavior enum."""
+
+    def test_enum_values(self):
+        """Test enum values are correctly defined."""
+        assert PlaybackBehavior.OLDEST_FIRST.value == "OldestFirst"
+        assert PlaybackBehavior.NEWEST_FIRST.value == "NewestFirst"
+
+    def test_string_coercion(self):
+        """Test that string values are correctly coerced."""
+        assert PlaybackBehavior("OldestFirst") == PlaybackBehavior.OLDEST_FIRST
+        assert PlaybackBehavior("NewestFirst") == PlaybackBehavior.NEWEST_FIRST
+
+    def test_default_behavior(self):
+        """Test default playback behavior in server config."""
+        config = RerunGRpcServerConfig()
+        assert config.playback_behavior == PlaybackBehavior.OLDEST_FIRST
+
+    def test_invalid_value(self):
+        """Test invalid enum values raise errors."""
+        with pytest.raises(ValueError):
+            PlaybackBehavior("InvalidValue")
 
 
 class TestModelSerialization:
@@ -211,11 +248,15 @@ class TestModelSerialization:
 
     def test_server_config_serialization(self):
         """Test RerunGRpcServerConfig serialization."""
-        config = RerunGRpcServerConfig(max_bytes=1073741824)
+        config = RerunGRpcServerConfig(
+            memory_limit=1073741824,
+            playback_behavior=PlaybackBehavior.NEWEST_FIRST,
+        )
 
         # Test JSON serialization
         json_data = config.model_dump()
-        assert json_data["max_bytes"] == 1073741824
+        assert json_data["memory_limit"] == 1073741824
+        assert json_data["playback_behavior"] == "NewestFirst"
 
         # Test deserialization
         restored_config = RerunGRpcServerConfig(**json_data)
@@ -236,7 +277,11 @@ class TestModelSerialization:
         assert config.batcher_config.flush_tick == 0.5
 
         # Test server config validation (as used in interface)
-        server_data = {"max_bytes": 1073741824}
+        server_data = {
+            "memory_limit": 1073741824,
+            "playback_behavior": "OldestFirst",
+        }
 
         config = RerunGRpcServerConfig.model_validate(server_data)
-        assert config.max_bytes == 1073741824
+        assert config.memory_limit == 1073741824
+        assert config.playback_behavior == PlaybackBehavior.OLDEST_FIRST

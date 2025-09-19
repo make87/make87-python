@@ -5,6 +5,7 @@ including client and server configuration for gRPC connections and
 chunk batcher settings.
 """
 
+from enum import Enum
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -41,14 +42,34 @@ class RerunGRpcClientConfig(BaseModel):
     batcher_config: ChunkBatcherConfig = Field(default_factory=ChunkBatcherConfig)
 
 
+class PlaybackBehavior(str, Enum):
+    """Playback behavior for Rerun server.
+
+    Defines how the server prioritizes data playback when clients connect.
+
+    Attributes:
+        OLDEST_FIRST: Start playing back all the old data first,
+                     and only after start sending anything that happened since
+        NEWEST_FIRST: Prioritize the newest arriving messages,
+                     replaying the history later, starting with the newest
+    """
+
+    OLDEST_FIRST = "OldestFirst"
+    NEWEST_FIRST = "NewestFirst"
+
+
 class RerunGRpcServerConfig(BaseModel):
     """Configuration for Rerun gRPC server hosting.
 
     Configures how the server hosts Rerun data and manages
-    memory limits for the recording stream.
+    memory limits and playback behavior for the recording stream.
 
     Attributes:
-        max_bytes: Maximum memory usage in bytes (default: None for no limit)
+        memory_limit: Maximum memory usage in bytes (default: None for no limit)
+        playback_behavior: How to prioritize data playback (default: OLDEST_FIRST)
     """
 
-    max_bytes: Optional[int] = Field(default=None, description="Maximum memory usage in bytes")
+    memory_limit: Optional[int] = Field(default=None, description="Maximum memory usage in bytes")
+    playback_behavior: PlaybackBehavior = Field(
+        default=PlaybackBehavior.OLDEST_FIRST, description="Data playback prioritization"
+    )

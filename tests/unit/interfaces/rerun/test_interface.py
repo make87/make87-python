@@ -88,7 +88,8 @@ def server_config(base_application_info):
                         spec="rerun_server_spec",
                         interface_name="rerun",
                         protocol="grpc",
-                        max_bytes=1073741824,  # 1GB
+                        memory_limit=1073741824,  # 1GB
+                        playback_behavior="NewestFirst",
                     )
                 ),
             )
