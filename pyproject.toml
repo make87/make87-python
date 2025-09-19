@@ -8,7 +8,7 @@ include = ["make87*"]
 [project]
 name = "make87"
 version = "0"
-license = { text = "make87 Platform SDK License" }
+license = "Apache-2.0"
 authors = [
     { name = "Nisse Knudsen", email = "nisse@make87.com" },
     { name = "Phillip Thomas", email = "phillip@make87.com" }
@@ -16,7 +16,7 @@ authors = [
 dependencies = [
     "setuptools>=80.7.1",
     "wheel>=0.45.1",
-    "pydantic>=2.11.4,<3.0.0",
+    "pydantic>=2.11.9,<3.0.0",
 ]
 readme = "README.md"
 requires-python = ">=3.9,<3.13"
@@ -27,7 +27,7 @@ Source = "https://github.com/make87/make87-python"
 
 [project.optional-dependencies]
 zenoh = [
-    "eclipse-zenoh>=1.4,<1.5",
+    "eclipse-zenoh>=1.5.1",
 ]
 protobuf = [
     "protobuf>=4.22,<7.0",
@@ -40,15 +40,15 @@ storage = [
     "s3path",
 ]
 rerun = [
-    "rerun-sdk>=0.23.3",
+    "rerun-sdk>=0.25.1",
 ]
 dev = [
-    "pre-commit",
-    "pytest>=8.3.5",
-    "pytest-mock",
-    "ruff>=0.11.10",
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.2",
+    "pytest-mock>=3.15.1",
+    "ruff>=0.13.1",
     "make87_messages",
-    "datamodel-code-generator==0.30.1",
-    "black>=25.1.0",
-    "boto3-stubs==1.40.0",
+    "datamodel-code-generator==0.33.0",
+    "black>=25.9.0",
+    "boto3-stubs>=1.40.35",
 ]
