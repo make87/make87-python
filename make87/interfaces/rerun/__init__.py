@@ -8,10 +8,6 @@ application configuration.
 
 from make87.interfaces.rerun.interface import (
     RerunInterface,
-    RerunInterfaceError,
-    ClientServiceNotFoundError,
-    ServerServiceNotFoundError,
-    RerunNotInstalledError,
 )
 from make87.interfaces.rerun.model import (
     RerunGRpcClientConfig,
@@ -21,10 +17,6 @@ from make87.interfaces.rerun.model import (
 
 __all__ = [
     "RerunInterface",
-    "RerunInterfaceError",
-    "ClientServiceNotFoundError",
-    "ServerServiceNotFoundError",
-    "RerunNotInstalledError",
     "RerunGRpcClientConfig",
     "RerunGRpcServerConfig",
     "ChunkBatcherConfig",

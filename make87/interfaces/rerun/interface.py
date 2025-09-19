@@ -11,37 +11,9 @@ import uuid
 
 from make87.interfaces.base import InterfaceBase
 from make87.interfaces.rerun.model import RerunGRpcClientConfig, RerunGRpcServerConfig
+import rerun as rr
 
 logger = logging.getLogger(__name__)
-
-
-class RerunInterfaceError(Exception):
-    """Base exception for Rerun interface errors."""
-
-    pass
-
-
-class ClientServiceNotFoundError(RerunInterfaceError):
-    """Raised when a requested client service is not found in configuration."""
-
-    def __init__(self, name: str):
-        super().__init__(f"No client service config found with name: {name}")
-        self.name = name
-
-
-class ServerServiceNotFoundError(RerunInterfaceError):
-    """Raised when a requested server service is not found in configuration."""
-
-    def __init__(self, name: str):
-        super().__init__(f"No server service config found with name: {name}")
-        self.name = name
-
-
-class RerunNotInstalledError(RerunInterfaceError):
-    """Raised when rerun package is not installed."""
-
-    def __init__(self):
-        super().__init__("rerun package is not installed. Install it with: pip install rerun-sdk")
 
 
 def _deterministic_uuid_v4_from_string(val: str) -> uuid.UUID:
@@ -101,24 +73,13 @@ class RerunInterface(InterfaceBase):
             >>> recording = interface.get_client_recording_stream("rerun_client")
             >>> recording.log("world/points", rr.Points3D([[0, 0, 0], [1, 1, 1]]))
         """
-        try:
-            import rerun as rr
-        except ImportError:
-            raise RerunNotInstalledError()
+        client_config = self.get_interface_type_by_name(name=name, iface_type="CLI")
 
-        try:
-            client_config = self.get_interface_type_by_name(name=name, iface_type="CLI")
-        except KeyError:
-            raise ClientServiceNotFoundError(name)
-
-        try:
-            # Handle nested model_extra structure if present
-            extra_config = client_config.model_extra
-            if isinstance(extra_config, dict) and "model_extra" in extra_config:
-                extra_config = extra_config["model_extra"]
-            rerun_config = RerunGRpcClientConfig.model_validate(extra_config)
-        except Exception as e:
-            raise RerunInterfaceError(f"Failed to parse client configuration: {e}")
+        # Handle nested model_extra structure if present
+        extra_config = client_config.model_extra
+        if isinstance(extra_config, dict) and "model_extra" in extra_config:
+            extra_config = extra_config["model_extra"]
+        rerun_config = RerunGRpcClientConfig.model_validate(extra_config)
 
         # Configure the chunk batcher
         batcher_config = rr.ChunkBatcherConfig()
@@ -128,23 +89,20 @@ class RerunInterface(InterfaceBase):
 
         system_id = self._config.application_info.system_id
 
-        try:
-            # Create recording stream with deterministic ID and batcher config
-            recording = rr.RecordingStream(
-                application_id=system_id,
-                recording_id=_deterministic_uuid_v4_from_string(system_id),
-                batcher_config=batcher_config,
-            )
+        # Create recording stream with deterministic ID and batcher config
+        recording = rr.RecordingStream(
+            application_id=system_id,
+            recording_id=_deterministic_uuid_v4_from_string(system_id),
+            batcher_config=batcher_config,
+        )
 
-            # Connect to gRPC server
-            rr.connect_grpc(
-                f"rerun+http://{client_config.vpn_ip}:{client_config.vpn_port}/proxy",
-                recording=recording,
-            )
+        # Connect to gRPC server
+        rr.connect_grpc(
+            f"rerun+http://{client_config.vpn_ip}:{client_config.vpn_port}/proxy",
+            recording=recording,
+        )
 
-            return recording
-        except Exception as e:
-            raise RerunInterfaceError(f"Failed to create client recording stream: {e}")
+        return recording
 
     def get_server_recording_stream(self, name: str):
         """Create a Rerun recording stream that hosts a gRPC server.
@@ -159,8 +117,6 @@ class RerunInterface(InterfaceBase):
             Configured rerun.RecordingStream instance hosting a server
 
         Raises:
-            ServerServiceNotFoundError: If the server service is not found
-            RerunNotInstalledError: If rerun package is not installed
             RerunInterfaceError: If server creation or configuration fails
 
         Example:
@@ -168,24 +124,12 @@ class RerunInterface(InterfaceBase):
             >>> recording = interface.get_server_recording_stream("rerun_server")
             >>> recording.log("world/points", rr.Points3D([[0, 0, 0], [1, 1, 1]]))
         """
-        try:
-            import rerun as rr
-        except ImportError:
-            raise RerunNotInstalledError()
+        server_config = self.get_interface_type_by_name(name=name, iface_type="SRV")
 
-        try:
-            server_config = self.get_interface_type_by_name(name=name, iface_type="SRV")
-        except KeyError:
-            raise ServerServiceNotFoundError(name)
-
-        try:
-            # Handle nested model_extra structure if present
-            extra_config = server_config.model_extra
-            if isinstance(extra_config, dict) and "model_extra" in extra_config:
-                extra_config = extra_config["model_extra"]
-            rerun_config = RerunGRpcServerConfig.model_validate(extra_config)
-        except Exception as e:
-            raise RerunInterfaceError(f"Failed to parse server configuration: {e}")
+        extra_config = server_config.model_extra
+        if isinstance(extra_config, dict) and "model_extra" in extra_config:
+            extra_config = extra_config["model_extra"]
+        rerun_config = RerunGRpcServerConfig.model_validate(extra_config)
 
         # Configure memory limit
         if rerun_config.max_bytes is not None:
@@ -201,20 +145,17 @@ class RerunInterface(InterfaceBase):
 
         system_id = self._config.application_info.system_id
 
-        try:
-            # Create recording stream with deterministic ID
-            recording = rr.RecordingStream(
-                application_id=system_id,
-                recording_id=_deterministic_uuid_v4_from_string(system_id),
-            )
+        # Create recording stream with deterministic ID
+        recording = rr.RecordingStream(
+            application_id=system_id,
+            recording_id=_deterministic_uuid_v4_from_string(system_id),
+        )
 
-            # Start gRPC server
-            _ = rr.serve_grpc(
-                grpc_port=9876,
-                server_memory_limit=memory_limit,
-                recording=recording,
-            )
+        # Start gRPC server
+        _ = rr.serve_grpc(
+            grpc_port=9876,
+            server_memory_limit=memory_limit,
+            recording=recording,
+        )
 
-            return recording
-        except Exception as e:
-            raise RerunInterfaceError(f"Failed to create server recording stream: {e}")
+        return recording

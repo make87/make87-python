@@ -4,8 +4,6 @@ import uuid
 from make87.config import load_config_from_json
 from make87.interfaces.rerun.interface import (
     RerunInterface,
-    ClientServiceNotFoundError,
-    ServerServiceNotFoundError,
     _deterministic_uuid_v4_from_string,
 )
 from make87.internal.models.application_env_config import (
@@ -190,13 +188,6 @@ class TestRerunInterface:
         # Test that the interface parses the configuration without errors
         # (We don't actually create the recording stream to avoid rerun dependency)
 
-    def test_get_client_recording_stream_client_not_found(self, empty_config):
-        """Test error when client service is not found."""
-        interface = RerunInterface("rerun_test", empty_config)
-
-        with pytest.raises(ClientServiceNotFoundError, match="rerun_client"):
-            interface.get_client_recording_stream("rerun_client")
-
     def test_get_server_recording_stream_config_parsing(self, server_config):
         """Test server recording stream configuration parsing."""
         interface = RerunInterface("rerun_test", server_config)
@@ -207,13 +198,6 @@ class TestRerunInterface:
 
         # Test that the interface parses the configuration without errors
         # (We don't actually create the recording stream to avoid rerun dependency)
-
-    def test_get_server_recording_stream_server_not_found(self, empty_config):
-        """Test error when server service is not found."""
-        interface = RerunInterface("rerun_test", empty_config)
-
-        with pytest.raises(ServerServiceNotFoundError, match="rerun_server"):
-            interface.get_server_recording_stream("rerun_server")
 
     def test_interface_config_property(self, client_config):
         """Test the interface_config property."""
