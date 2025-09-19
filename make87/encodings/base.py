@@ -1,6 +1,6 @@
 """Base encoder classes for data serialization and deserialization.
 
-This module provides the abstract base class for all Make87 data encoders,
+This module provides the abstract base class for all make87 data encoders,
 defining the interface for converting Python objects to and from bytes.
 """
 
@@ -13,7 +13,7 @@ T = TypeVar("T")  # The Python object type to encode/decode (e.g. dict, custom c
 class Encoder(ABC, Generic[T]):
     """Abstract base class for data serialization and deserialization.
 
-    This class defines the interface for all Make87 encoders, providing
+    This class defines the interface for all make87 encoders, providing
     methods to serialize Python objects to bytes and deserialize bytes
     back to Python objects.
 

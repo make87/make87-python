@@ -1,7 +1,7 @@
-"""GPU peripheral implementation for Make87 hardware control.
+"""GPU peripheral implementation for make87 hardware control.
 
 This module provides the GpuPeripheral class for managing GPU devices
-in Make87 applications, including device node access, model information,
+in make87 applications, including device node access, model information,
 and VRAM configuration.
 """
 
@@ -12,9 +12,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class GpuPeripheral(PeripheralBase):
-    """GPU peripheral device for Make87 hardware control.
+    """GPU peripheral device for make87 hardware control.
 
-    This class represents a GPU (Graphics Processing Unit) device in the Make87
+    This class represents a GPU (Graphics Processing Unit) device in the make87
     system, providing access to GPU hardware through device nodes and managing
     GPU-specific properties like model, index, and VRAM capacity.
 
@@ -44,7 +44,6 @@ class GpuPeripheral(PeripheralBase):
             vram: Optional VRAM capacity in megabytes
 
         Example:
-
             >>> gpu = GpuPeripheral(
             ...     name="primary_gpu",
             ...     model="RTX 4090",
@@ -73,7 +72,6 @@ class GpuPeripheral(PeripheralBase):
             GpuPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import GpuPeripheralModel
             >>> config = GpuPeripheralModel(...)
             >>> gpu = GpuPeripheral.from_config(config)

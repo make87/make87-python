@@ -1,7 +1,7 @@
-"""Camera peripheral implementation for Make87 hardware control.
+"""Camera peripheral implementation for make87 hardware control.
 
 This module provides the CameraPeripheral class for managing camera devices
-in Make87 applications, including device node access, protocol configuration,
+in make87 applications, including device node access, protocol configuration,
 and volume mounting for camera hardware.
 """
 
@@ -12,9 +12,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class CameraPeripheral(PeripheralBase):
-    """Camera peripheral device for Make87 hardware control.
+    """Camera peripheral device for make87 hardware control.
 
-    This class represents a camera device in the Make87 system, providing
+    This class represents a camera device in the make87 system, providing
     access to camera hardware through device nodes and supporting various
     camera types and protocols.
 
@@ -47,7 +47,6 @@ class CameraPeripheral(PeripheralBase):
             protocol: Optional protocol specification (e.g., "V4L2", "GStreamer")
 
         Example:
-
             >>> camera = CameraPeripheral(
             ...     name="main_camera",
             ...     device_nodes=["/dev/video0"],
@@ -78,7 +77,6 @@ class CameraPeripheral(PeripheralBase):
             CameraPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import CameraPeripheralModel
             >>> config = CameraPeripheralModel(...)
             >>> camera = CameraPeripheral.from_config(config)

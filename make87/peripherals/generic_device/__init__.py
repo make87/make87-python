@@ -1,7 +1,7 @@
-"""Generic device peripheral implementation for Make87 hardware control.
+"""Generic device peripheral implementation for make87 hardware control.
 
 This module provides the GenericDevicePeripheral class for managing generic
-hardware devices in Make87 applications through direct device node access.
+hardware devices in make87 applications through direct device node access.
 """
 
 from make87.models import GenericDevicePeripheral as GenericDevicePeripheralModel
@@ -9,9 +9,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class GenericDevicePeripheral(PeripheralBase):
-    """Generic device peripheral for Make87 hardware control.
+    """Generic device peripheral for make87 hardware control.
 
-    This class represents a generic hardware device in the Make87 system,
+    This class represents a generic hardware device in the make87 system,
     providing basic device node access for devices that don't fit into
     specific peripheral categories.
 
@@ -28,7 +28,6 @@ class GenericDevicePeripheral(PeripheralBase):
             device_node: The device node path (e.g., "/dev/ttyUSB0", "/dev/spidev0.0")
 
         Example:
-
             >>> device = GenericDevicePeripheral(
             ...     name="serial_port",
             ...     device_node="/dev/ttyUSB0"
@@ -51,7 +50,6 @@ class GenericDevicePeripheral(PeripheralBase):
             GenericDevicePeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import GenericDevicePeripheralModel
             >>> config = GenericDevicePeripheralModel(...)
             >>> device = GenericDevicePeripheral.from_config(config)

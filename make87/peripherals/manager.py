@@ -1,7 +1,7 @@
-"""Peripheral management for Make87 hardware devices.
+"""Peripheral management for make87 hardware devices.
 
 This module provides the PeripheralManager class for managing and accessing
-hardware peripheral devices in Make87 applications. It handles peripheral
+hardware peripheral devices in make87 applications. It handles peripheral
 discovery, creation, and provides a convenient interface for accessing
 configured peripherals.
 """
@@ -15,7 +15,7 @@ from make87.peripherals.factory import create_peripheral_from_data
 
 
 class PeripheralManager:
-    """Manager for Make87 hardware peripheral devices.
+    """Manager for make87 hardware peripheral devices.
 
     This class provides centralized management of hardware peripheral devices,
     automatically discovering and creating peripheral instances based on the
@@ -23,7 +23,7 @@ class PeripheralManager:
     and supports iteration over all managed devices.
 
     Attributes:
-        _config: The Make87 application configuration
+        _config: The make87 application configuration
         _peripherals: Registry of created peripheral instances
     """
 

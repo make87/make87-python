@@ -1,7 +1,7 @@
-"""ISP peripheral implementation for Make87 hardware control.
+"""ISP peripheral implementation for make87 hardware control.
 
 This module provides the IspPeripheral class for managing Image Signal Processor
-devices in Make87 applications, including feature detection and device node access.
+devices in make87 applications, including feature detection and device node access.
 """
 
 from typing import List
@@ -11,9 +11,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class IspPeripheral(PeripheralBase):
-    """ISP peripheral device for Make87 hardware control.
+    """ISP peripheral device for make87 hardware control.
 
-    This class represents an ISP (Image Signal Processor) device in the Make87
+    This class represents an ISP (Image Signal Processor) device in the make87
     system, providing access to image processing hardware through device nodes
     and managing supported ISP features.
 
@@ -39,7 +39,6 @@ class IspPeripheral(PeripheralBase):
                 (e.g., ["/dev/v4l-subdev0"])
 
         Example:
-
             >>> isp = IspPeripheral(
             ...     name="main_isp",
             ...     supported_features=[
@@ -69,7 +68,6 @@ class IspPeripheral(PeripheralBase):
             IspPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import IspPeripheralModel
             >>> config = IspPeripheralModel(...)
             >>> isp = IspPeripheral.from_config(config)

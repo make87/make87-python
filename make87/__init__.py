@@ -1,6 +1,6 @@
-"""Make87 Python SDK.
+"""make87 Python SDK.
 
-This package provides a comprehensive SDK for building applications on the Make87 platform.
+This package provides a comprehensive SDK for building applications on the make87 platform.
 It includes modules for configuration management, peripheral control, messaging interfaces,
 data encoding/decoding, storage operations, and host system integration.
 
@@ -42,7 +42,7 @@ def run_forever() -> None:
 
     This function sets up signal handlers for SIGTERM and SIGINT (Ctrl+C) and blocks
     execution until one of these signals is received. This is typically used as the
-    main loop for long-running Make87 applications.
+    main loop for long-running make87 applications.
 
     The function will gracefully handle:
         - SIGTERM: Termination signal (sent by process managers)
@@ -54,7 +54,6 @@ def run_forever() -> None:
         calling this function.
 
     Example:
-
         >>> import make87
         >>> # Set up your application components here
         >>> make87.run_forever()  # Blocks until signal received

@@ -1,6 +1,6 @@
-"""Base interface classes for Make87 messaging systems.
+"""Base interface classes for make87 messaging systems.
 
-This module provides the abstract base class for all Make87 messaging interfaces,
+This module provides the abstract base class for all make87 messaging interfaces,
 including publisher/subscriber, request/response, and client/server patterns.
 """
 
@@ -25,14 +25,14 @@ from make87.models import (
 class InterfaceBase(ABC):
     """Abstract base class for messaging interfaces.
 
-    This class provides a common foundation for all Make87 messaging interfaces,
+    This class provides a common foundation for all make87 messaging interfaces,
     handling configuration management and interface type resolution. It supports
     multiple messaging patterns including publish/subscribe, request/response,
     and client/server communication.
 
     Attributes:
         _name: The name of this interface instance
-        _config: The Make87 application configuration
+        _config: The make87 application configuration
     """
 
     def __init__(self, name: str, make87_config: Optional[ApplicationConfig] = None):
@@ -99,7 +99,6 @@ class InterfaceBase(ABC):
             NotImplementedError: If the interface type is not supported
 
         Example:
-
             >>> interface = SomeInterface("my_interface")
             >>> pub_config = interface.get_interface_type_by_name("output", "PUB")
             >>> sub_config = interface.get_interface_type_by_name("input", "SUB")

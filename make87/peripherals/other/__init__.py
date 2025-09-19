@@ -1,7 +1,7 @@
-"""Other peripheral implementation for Make87 hardware control.
+"""Other peripheral implementation for make87 hardware control.
 
 This module provides the OtherPeripheral class for managing miscellaneous
-hardware devices in Make87 applications that don't fit into specific
+hardware devices in make87 applications that don't fit into specific
 peripheral categories.
 """
 
@@ -12,9 +12,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class OtherPeripheral(PeripheralBase):
-    """Other peripheral device for Make87 hardware control.
+    """Other peripheral device for make87 hardware control.
 
-    This class represents miscellaneous hardware devices in the Make87 system
+    This class represents miscellaneous hardware devices in the make87 system
     that don't fit into specific peripheral categories. It provides basic
     device node access and reference management for various hardware types.
 
@@ -40,7 +40,6 @@ class OtherPeripheral(PeripheralBase):
                 (e.g., ["/dev/watchdog0"])
 
         Example:
-
             >>> other = OtherPeripheral(
             ...     name="system_watchdog",
             ...     reference="hardware_watchdog_timer",
@@ -65,7 +64,6 @@ class OtherPeripheral(PeripheralBase):
             OtherPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import OtherPeripheralModel
             >>> config = OtherPeripheralModel(...)
             >>> other = OtherPeripheral.from_config(config)

@@ -1,7 +1,7 @@
-"""Rendering peripheral implementation for Make87 hardware control.
+"""Rendering peripheral implementation for make87 hardware control.
 
 This module provides the RenderingPeripheral class for managing rendering
-devices in Make87 applications, including graphics API support, performance
+devices in make87 applications, including graphics API support, performance
 configuration, and device node access.
 """
 
@@ -12,9 +12,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class RenderingPeripheral(PeripheralBase):
-    """Rendering peripheral device for Make87 hardware control.
+    """Rendering peripheral device for make87 hardware control.
 
-    This class represents a rendering device in the Make87 system, providing
+    This class represents a rendering device in the make87 system, providing
     access to graphics rendering hardware through device nodes and managing
     supported graphics APIs and performance characteristics.
 
@@ -44,7 +44,6 @@ class RenderingPeripheral(PeripheralBase):
                 for the rendering device
 
         Example:
-
             >>> rendering = RenderingPeripheral(
             ...     name="graphics_card",
             ...     supported_apis=["OpenGL", "Vulkan", "CUDA"],
@@ -71,7 +70,6 @@ class RenderingPeripheral(PeripheralBase):
             RenderingPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import RenderingPeripheralModel
             >>> config = RenderingPeripheralModel(...)
             >>> rendering = RenderingPeripheral.from_config(config)

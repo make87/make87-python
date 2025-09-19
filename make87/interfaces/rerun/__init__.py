@@ -1,8 +1,8 @@
-"""Rerun integration utilities for Make87 applications.
+"""Rerun integration utilities for make87 applications.
 
-This module provides utilities for connecting Make87 applications to Rerun
+This module provides utilities for connecting make87 applications to Rerun
 for data visualization and logging. It handles automatic configuration
-and connection setup based on the Make87 application configuration.
+and connection setup based on the make87 application configuration.
 """
 
 import hashlib
@@ -14,10 +14,10 @@ from make87.models import ApplicationConfig
 
 
 def init_and_connect_grpc(interface_name: str, client_name: str, make87_config: Optional[ApplicationConfig] = None):
-    """Initialize Rerun and connect via gRPC using Make87 configuration.
+    """Initialize Rerun and connect via gRPC using make87 configuration.
 
     This function initializes a Rerun session and connects to a Rerun server
-    via gRPC using configuration from the Make87 application config. It sets
+    via gRPC using configuration from the make87 application config. It sets
     up the application ID and creates a deterministic recording ID based on
     the system ID.
 
@@ -32,7 +32,6 @@ def init_and_connect_grpc(interface_name: str, client_name: str, make87_config: 
         ImportError: If rerun package is not installed
 
     Example:
-
         >>> import make87.interfaces.rerun as rerun_interface
         >>> rerun_interface.init_and_connect_grpc("rerun", "rerun-grpc-client")
         >>> # Now you can use rerun.log() functions

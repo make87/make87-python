@@ -1,7 +1,7 @@
-"""Intel RealSense camera peripheral implementation for Make87 hardware control.
+"""Intel RealSense camera peripheral implementation for make87 hardware control.
 
 This module provides the RealSenseCameraPeripheral class for managing Intel
-RealSense camera devices in Make87 applications, including device identification,
+RealSense camera devices in make87 applications, including device identification,
 model information, and device node access.
 """
 
@@ -12,9 +12,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class RealSenseCameraPeripheral(PeripheralBase):
-    """Intel RealSense camera peripheral device for Make87 hardware control.
+    """Intel RealSense camera peripheral device for make87 hardware control.
 
-    This class represents an Intel RealSense camera device in the Make87 system,
+    This class represents an Intel RealSense camera device in the make87 system,
     providing access to depth and RGB camera functionality through device nodes
     and managing device-specific properties like serial number and model.
 
@@ -44,7 +44,6 @@ class RealSenseCameraPeripheral(PeripheralBase):
                 (e.g., "D435", "D455", "L515")
 
         Example:
-
             >>> realsense = RealSenseCameraPeripheral(
             ...     name="depth_camera",
             ...     device_nodes=["/dev/video0", "/dev/video1", "/dev/video2"],
@@ -71,7 +70,6 @@ class RealSenseCameraPeripheral(PeripheralBase):
             RealSenseCameraPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import RealSenseCameraPeripheralModel
             >>> config = RealSenseCameraPeripheralModel(...)
             >>> realsense = RealSenseCameraPeripheral.from_config(config)

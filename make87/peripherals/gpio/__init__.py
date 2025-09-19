@@ -1,7 +1,7 @@
-"""GPIO peripheral implementation for Make87 hardware control.
+"""GPIO peripheral implementation for make87 hardware control.
 
 This module provides the GpioPeripheral class for managing GPIO (General Purpose
-Input/Output) devices in Make87 applications, including GPIO chip configuration,
+Input/Output) devices in make87 applications, including GPIO chip configuration,
 line management, and device node access.
 """
 
@@ -12,9 +12,9 @@ from make87.peripherals.base import PeripheralBase
 
 
 class GpioPeripheral(PeripheralBase):
-    """GPIO peripheral device for Make87 hardware control.
+    """GPIO peripheral device for make87 hardware control.
 
-    This class represents a GPIO chip device in the Make87 system, providing
+    This class represents a GPIO chip device in the make87 system, providing
     access to GPIO functionality including individual GPIO lines, chip
     configuration, and device node management.
 
@@ -48,7 +48,6 @@ class GpioPeripheral(PeripheralBase):
                 the label will be used as the name.
 
         Example:
-
             >>> gpio = GpioPeripheral(
             ...     chip_name="gpiochip0",
             ...     label="Main GPIO Chip",
@@ -82,7 +81,6 @@ class GpioPeripheral(PeripheralBase):
             GpioPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import GpioPeripheralModel
             >>> config = GpioPeripheralModel(...)
             >>> gpio = GpioPeripheral.from_config(config)

@@ -1,4 +1,4 @@
-"""Blob storage operations and utilities for Make87 applications.
+"""Blob storage operations and utilities for make87 applications.
 
 This module provides the BlobStorage class for interacting with S3-compatible
 storage systems. It supports file operations, public URL generation, and
@@ -16,14 +16,14 @@ try:
     from make87.models import ApplicationConfig
 
     class BlobStorage:
-        """S3-compatible blob storage client for Make87 applications.
+        """S3-compatible blob storage client for make87 applications.
 
         This class provides a high-level interface for interacting with S3-compatible
         storage systems. It handles authentication, path management, and file operations
         for both system-level and application-specific storage.
 
         Attributes:
-            _config: The Make87 application configuration
+            _config: The make87 application configuration
             _resource: Cached boto3 S3 resource instance
         """
 

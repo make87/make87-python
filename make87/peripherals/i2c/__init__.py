@@ -1,7 +1,7 @@
-"""I2C peripheral implementation for Make87 hardware control.
+"""I2C peripheral implementation for make87 hardware control.
 
 This module provides the I2cPeripheral class for managing I2C bus devices
-in Make87 applications, including bus configuration, device detection,
+in make87 applications, including bus configuration, device detection,
 and device node access.
 """
 
@@ -12,10 +12,10 @@ from make87.peripherals.base import PeripheralBase
 
 
 class I2cPeripheral(PeripheralBase):
-    """I2C peripheral device for Make87 hardware control.
+    """I2C peripheral device for make87 hardware control.
 
     This class represents an I2C (Inter-Integrated Circuit) bus device in the
-    Make87 system, providing access to I2C communication through device nodes
+    make87 system, providing access to I2C communication through device nodes
     and managing detected devices on the bus.
 
     Attributes:
@@ -42,7 +42,6 @@ class I2cPeripheral(PeripheralBase):
                 each containing device address and other properties
 
         Example:
-
             >>> i2c = I2cPeripheral(
             ...     name="main_i2c",
             ...     bus_number=1,
@@ -72,7 +71,6 @@ class I2cPeripheral(PeripheralBase):
             I2cPeripheral instance configured according to the model
 
         Example:
-
             >>> from make87.models import I2cPeripheralModel
             >>> config = I2cPeripheralModel(...)
             >>> i2c = I2cPeripheral.from_config(config)

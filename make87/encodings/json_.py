@@ -39,7 +39,6 @@ class JsonEncoder(Encoder[T]):
                 a JSON-serializable object or raise TypeError.
 
         Example:
-
             >>> # Simple encoder
             >>> encoder = JsonEncoder()
             >>>
@@ -71,7 +70,6 @@ class JsonEncoder(Encoder[T]):
                 or other serialization errors
 
         Example:
-
             >>> encoder = JsonEncoder()
             >>> data = {"key": "value", "number": 42}
             >>> encoded = encoder.encode(data)
@@ -97,7 +95,6 @@ class JsonEncoder(Encoder[T]):
                 or encoding issues
 
         Example:
-
             >>> encoder = JsonEncoder()
             >>> data = b'{"key": "value", "number": 42}'
             >>> decoded = encoder.decode(data)

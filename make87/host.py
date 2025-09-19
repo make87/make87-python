@@ -1,4 +1,4 @@
-"""Host system integration utilities for Make87 applications.
+"""Host system integration utilities for make87 applications.
 
 This module provides functions for interacting with the host system and
 checking system status, such as whether the host is currently updating.
