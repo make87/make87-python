@@ -12,7 +12,6 @@ from typing import List
 
 from make87.interfaces.base import InterfaceBase
 from make87.interfaces.rerun.model import RerunGRpcClientConfig, RerunGRpcServerConfig
-from make87.interfaces.zenoh.interface import is_port_in_use
 import rerun as rr
 
 logger = logging.getLogger(__name__)
@@ -232,21 +231,11 @@ class RerunInterface(InterfaceBase):
 
         # Port resolution hierarchy: service binding -> interface binding -> default port
         grpc_port = 9876
-        port_source = "default"
 
         if server_config.binding is not None:
             grpc_port = server_config.binding.container_port
-            port_source = "service binding"
         elif self.interface_config.binding is not None:
             grpc_port = self.interface_config.binding.container_port
-            port_source = "interface binding"
-
-        # Check if the port is available before starting the server
-        if is_port_in_use(grpc_port):
-            raise RuntimeError(
-                f"Cannot start Rerun server: {port_source} port {grpc_port} is already in use. "
-                f"Please ensure the port is available or configure a different binding port."
-            )
 
         # Start gRPC server
         _ = rr.serve_grpc(

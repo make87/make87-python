@@ -59,13 +59,6 @@ class ZenohInterface(InterfaceBase):
         if self.interface_config.binding is not None:
             listen_port = self.interface_config.binding.container_port
 
-        if is_port_in_use(listen_port):
-            port_source = "configured binding" if self.interface_config.binding is not None else "default"
-            raise RuntimeError(
-                f"Cannot start Zenoh interface: {port_source} port {listen_port} is already in use. "
-                f"Please ensure the port is available or configure a different binding port."
-            )
-
         cfg.insert_json5("listen/endpoints", json.dumps([f"tcp/0.0.0.0:{listen_port}"]))
 
         endpoints = {
