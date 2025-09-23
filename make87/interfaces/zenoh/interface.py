@@ -67,6 +67,11 @@ class ZenohInterface(InterfaceBase):
                     for multi_sub in (self.interface_config.multi_subscribers or {}).values()
                     for access_point in multi_sub.access_points.values()
                 ]
+                + [
+                    access_point
+                    for multi_cli in (self.interface_config.multi_clients or {}).values()
+                    for access_point in multi_cli.access_points.values()
+                ]
             )
         }
         cfg.insert_json5("connect/endpoints", json.dumps(list(endpoints)))
@@ -203,6 +208,44 @@ class ZenohInterface(InterfaceBase):
             subscribers.append(subscriber)
 
         return subscribers
+
+    def get_multi_client(
+        self,
+        name: str,
+    ) -> List[zenoh.Querier]:
+        """Create multiple Zenoh queriers (clients) for the specified multi-client interface name.
+
+        Args:
+            name: The name of the multi-client interface as defined in configuration
+
+        Returns:
+            List of configured zenoh.Querier instances, one for each endpoint key
+
+        Note:
+            Each querier will use one of the configured endpoint keys from the
+            multi-client configuration. All queriers will use the same QoS settings.
+
+        Example:
+            >>> interface = ZenohInterface("my_interface")
+            >>> queriers = interface.get_multi_client("multi_api_client")
+            >>> for i, querier in enumerate(queriers):
+            ...     replies = querier.get(f"query/endpoint/{i}")
+            >>> print(f"Created {len(queriers)} queriers")
+        """
+        iface_config = self.get_interface_type_by_name(name=name, iface_type="MCLI")
+        qos_config = ZenohQuerierConfig.model_validate(iface_config.model_extra)
+
+        queriers = []
+        for endpoint_key in iface_config.keys:
+            querier = self.session.declare_querier(
+                key_expr=endpoint_key,
+                congestion_control=qos_config.congestion_control.to_zenoh() if qos_config.congestion_control else None,
+                priority=qos_config.priority.to_zenoh() if qos_config.priority else None,
+                express=qos_config.express,
+            )
+            queriers.append(querier)
+
+        return queriers
 
     def get_querier(
         self,
