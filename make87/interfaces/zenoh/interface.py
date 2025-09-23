@@ -7,7 +7,7 @@ subscribers, queriers, and queryables with configurable QoS settings.
 
 import json
 import logging
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 import zenoh
 import socket
 from functools import cached_property
@@ -59,7 +59,15 @@ class ZenohInterface(InterfaceBase):
 
         endpoints = {
             f"tcp/{x.vpn_ip}:{x.vpn_port}"
-            for x in list(self.interface_config.requesters.values()) + list(self.interface_config.subscribers.values())
+            for x in (
+                list(self.interface_config.requesters.values())
+                + list(self.interface_config.subscribers.values())
+                + [
+                    access_point
+                    for multi_sub in (self.interface_config.multi_subscribers or {}).values()
+                    for access_point in multi_sub.access_points.values()
+                ]
+            )
         }
         cfg.insert_json5("connect/endpoints", json.dumps(list(endpoints)))
         return cfg
@@ -147,6 +155,54 @@ class ZenohInterface(InterfaceBase):
             key_expr=iface_config.topic_key,
             handler=handler,
         )
+
+    def get_multi_subscriber(
+        self,
+        name: str,
+        handler: Optional[Union[Callable[[zenoh.Sample], Any], zenoh.handlers.Callback]] = None,
+    ) -> List[zenoh.Subscriber]:
+        """Create multiple Zenoh subscribers for the specified multi-subscriber interface name.
+
+        Args:
+            name: The name of the multi-subscriber interface as defined in configuration
+            handler: Optional message handler. Can be a Python function accepting
+                a zenoh.Sample, or a Zenoh callback handler. If None, a channel
+                handler will be created from configuration.
+
+        Returns:
+            List of configured zenoh.Subscriber instances, one for each topic key
+
+        Note:
+            If a custom handler is provided, the same handler will be used for all
+            subscribers. Each subscriber will use one of the configured topic keys
+            from the multi-subscriber configuration.
+
+        Example:
+            >>> interface = ZenohInterface("my_interface")
+            >>> def handle_message(sample):
+            ...     print(f"Received: {sample.value}")
+            >>> subscribers = interface.get_multi_subscriber("multi_input", handle_message)
+            >>> print(f"Created {len(subscribers)} subscribers")
+        """
+        iface_config = self.get_interface_type_by_name(name=name, iface_type="MSUB")
+        qos_config = ZenohSubscriberConfig.model_validate(iface_config.model_extra)
+
+        if handler is None:
+            handler = qos_config.handler.to_zenoh() if qos_config.handler is not None else None
+        else:
+            logging.warning(
+                "Application code defines a custom handler for the multi-subscriber. Any handler config values will be ignored."
+            )
+
+        subscribers = []
+        for topic_key in iface_config.topic_keys:
+            subscriber = self.session.declare_subscriber(
+                key_expr=topic_key,
+                handler=handler,
+            )
+            subscribers.append(subscriber)
+
+        return subscribers
 
     def get_querier(
         self,
