@@ -3,7 +3,7 @@ import uuid
 
 from make87.config import load_config_from_json
 from make87.interfaces.zenoh.interface import ZenohInterface
-from make87.internal.models.application_env_config import InterfaceConfig, ApplicationInfo, PublisherTopicConfig
+from make87.internal.models.application_env_config import InterfaceConfig, ApplicationInfo, BoundPublisher
 from make87.models import ApplicationConfig, MountedPeripherals
 
 
@@ -15,7 +15,7 @@ def pub_config():
                 name="zenoh_test",
                 subscribers={},
                 publishers=dict(
-                    HELLO_WORLD_MESSAGE=PublisherTopicConfig(
+                    HELLO_WORLD_MESSAGE=BoundPublisher(
                         topic_name="HELLO_WORLD_MESSAGE",
                         topic_key="my_topic_key",
                         protocol="zenoh",

@@ -10,7 +10,7 @@ from make87.internal.models.application_env_config import (
     InterfaceConfig,
     ApplicationInfo,
     BoundClient,
-    ServerServiceConfig,
+    BoundServer,
 )
 from make87.models import ApplicationConfig, MountedPeripherals
 
@@ -82,7 +82,7 @@ def server_config(base_application_info):
                 providers={},
                 clients={},
                 servers=dict(
-                    rerun_server=ServerServiceConfig(
+                    rerun_server=BoundServer(
                         name="rerun_server_service",
                         key="rerun_server_key",
                         spec="rerun_server_spec",

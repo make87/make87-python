@@ -5,7 +5,7 @@ from make87.config import load_config_from_json
 from make87.interfaces.zenoh.interface import ZenohInterface
 from make87.internal.models.application_env_config import (
     InterfaceConfig,
-    ProviderEndpointConfig,
+    BoundProvider,
     ApplicationInfo,
     ApplicationEnvConfig,
 )
@@ -24,7 +24,7 @@ def provider_config():
                 publishers={},
                 requesters={},
                 providers=dict(
-                    HELLO_WORLD_MESSAGE=ProviderEndpointConfig(
+                    HELLO_WORLD_MESSAGE=BoundProvider(
                         endpoint_name="HELLO_WORLD_MESSAGE",
                         endpoint_key="my_endpoint_key",
                         protocol="zenoh",

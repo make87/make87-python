@@ -14,7 +14,7 @@ from make87.internal.models.application_env_config import (
     InterfaceConfig,
     BoundRequester,
     ApplicationInfo,
-    ProviderEndpointConfig,
+    BoundProvider,
 )
 
 from make87.models import (
@@ -91,7 +91,7 @@ def test_req_prv_combination(priority, congestion_control, express, handler_type
                 publishers={},
                 requesters={},
                 providers=dict(
-                    HELLO_WORLD_MESSAGE=ProviderEndpointConfig(
+                    HELLO_WORLD_MESSAGE=BoundProvider(
                         endpoint_name="HELLO_WORLD_MESSAGE",
                         endpoint_key="my_endpoint_key",
                         protocol="zenoh",
@@ -215,7 +215,7 @@ def test_defaults_only():
                 publishers={},
                 requesters={},
                 providers=dict(
-                    HELLO_WORLD_MESSAGE=ProviderEndpointConfig(
+                    HELLO_WORLD_MESSAGE=BoundProvider(
                         endpoint_name="HELLO_WORLD_MESSAGE",
                         endpoint_key="my_endpoint_key",
                         protocol="zenoh",
