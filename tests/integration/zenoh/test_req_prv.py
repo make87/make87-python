@@ -15,6 +15,7 @@ from make87.internal.models.application_env_config import (
     BoundRequester,
     ApplicationInfo,
     BoundProvider,
+    Binding,
 )
 
 from make87.models import (
@@ -69,6 +70,12 @@ def test_req_prv_combination(priority, congestion_control, express, handler_type
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7446,
+                    host_ip="127.0.0.1",
+                    host_port=7446,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -101,6 +108,12 @@ def test_req_prv_combination(priority, congestion_control, express, handler_type
                 ),
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -193,6 +206,12 @@ def test_defaults_only():
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7446,
+                    host_ip="127.0.0.1",
+                    host_port=7446,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -225,6 +244,12 @@ def test_defaults_only():
                 ),
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
