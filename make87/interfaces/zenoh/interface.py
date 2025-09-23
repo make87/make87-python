@@ -49,13 +49,24 @@ class ZenohInterface(InterfaceBase):
 
         Note:
             The configuration automatically sets up:
-            - Listen endpoints on port 7447 if available
+            - Listen endpoints on configured binding port or 7447 if available
             - Connect endpoints based on configured peers
         """
         cfg = zenoh.Config()
 
-        if not is_port_in_use(7447):
-            cfg.insert_json5("listen/endpoints", json.dumps(["tcp/0.0.0.0:7447"]))
+        # Use binding port if configured, otherwise default to 7447
+        listen_port = 7447
+        if self.interface_config.binding is not None:
+            listen_port = self.interface_config.binding.container_port
+
+        if is_port_in_use(listen_port):
+            port_source = "configured binding" if self.interface_config.binding is not None else "default"
+            raise RuntimeError(
+                f"Cannot start Zenoh interface: {port_source} port {listen_port} is already in use. "
+                f"Please ensure the port is available or configure a different binding port."
+            )
+
+        cfg.insert_json5("listen/endpoints", json.dumps([f"tcp/0.0.0.0:{listen_port}"]))
 
         endpoints = {
             f"tcp/{x.vpn_ip}:{x.vpn_port}"

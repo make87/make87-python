@@ -9,16 +9,15 @@ import time
 import pytest
 
 from make87.interfaces.zenoh import ZenohInterface
-from make87.internal.models.application_env_config import (
-    ApplicationInfo,
-    BoundProvider,
-    BoundMultiClient,
-    AccessPoint,
-    InterfaceConfig,
-)
 from make87.models import (
     ApplicationConfig,
     MountedPeripherals,
+    AccessPoint,
+    ApplicationInfo,
+    Binding,
+    BoundMultiClient,
+    BoundProvider,
+    InterfaceConfig,
 )
 from make87.config import load_config_from_json
 from make87_messages.text.text_plain_pb2 import PlainText
@@ -68,6 +67,12 @@ def multi_client_app_config():
                         express=True,
                     )
                 ),
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -109,6 +114,12 @@ def queryable_app_configs():
                     ),
                     clients={},
                     servers={},
+                    binding=Binding(
+                        container_ip="127.0.0.1",
+                        container_port=7447 + i,
+                        host_ip="127.0.0.1",
+                        host_port=7447 + i,
+                    ),
                 )
             ),
             peripherals=MountedPeripherals(peripherals=[]),

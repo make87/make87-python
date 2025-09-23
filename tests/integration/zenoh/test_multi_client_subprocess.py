@@ -13,6 +13,7 @@ from make87.internal.models.application_env_config import (
     BoundMultiClient,
     AccessPoint,
     InterfaceConfig,
+    Binding,
 )
 from make87.models import (
     ApplicationConfig,
@@ -57,12 +58,12 @@ def test_multi_client_subprocess():
                             ),
                             "test_endpoint_2": AccessPoint(
                                 vpn_ip="localhost",
-                                vpn_port=7447,
+                                vpn_port=7448,
                                 same_node=True,
                             ),
                             "test_endpoint_3": AccessPoint(
                                 vpn_ip="localhost",
-                                vpn_port=7447,
+                                vpn_port=7449,
                                 same_node=True,
                             ),
                         },
@@ -70,6 +71,12 @@ def test_multi_client_subprocess():
                         priority="REAL_TIME",
                         express=True,
                     )
+                ),
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7450,
+                    host_ip="127.0.0.1",
+                    host_port=7450,
                 ),
             )
         ),
@@ -111,6 +118,12 @@ def test_multi_client_subprocess():
                 ),
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -144,6 +157,12 @@ def test_multi_client_subprocess():
                 ),
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7448,
+                    host_ip="127.0.0.1",
+                    host_port=7448,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -177,6 +196,12 @@ def test_multi_client_subprocess():
                 ),
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7449,
+                    host_ip="127.0.0.1",
+                    host_port=7449,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),

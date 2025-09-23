@@ -15,6 +15,7 @@ from make87.internal.models.application_env_config import (
     BoundPublisher,
     InterfaceConfig,
     BoundSubscriber,
+    Binding,
 )
 from make87.models import (
     ApplicationConfig,
@@ -66,6 +67,12 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7448,
+                    host_ip="127.0.0.1",
+                    host_port=7448,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -108,6 +115,12 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -198,6 +211,12 @@ def test_defaults_only():
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7448,
+                    host_ip="127.0.0.1",
+                    host_port=7448,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -236,6 +255,12 @@ def test_defaults_only():
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
