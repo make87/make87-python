@@ -12,9 +12,10 @@ import pytest
 from make87.interfaces.zenoh.model import Priority, Reliability, CongestionControl
 from make87.internal.models.application_env_config import (
     ApplicationInfo,
-    PublisherTopicConfig,
+    BoundPublisher,
     InterfaceConfig,
     BoundSubscriber,
+    Binding,
 )
 from make87.models import (
     ApplicationConfig,
@@ -66,6 +67,12 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7448,
+                    host_ip="127.0.0.1",
+                    host_port=7448,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -93,7 +100,7 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                 name="zenoh_test",
                 subscribers={},
                 publishers=dict(
-                    HELLO_WORLD_MESSAGE=PublisherTopicConfig(
+                    HELLO_WORLD_MESSAGE=BoundPublisher(
                         topic_name="HELLO_WORLD_MESSAGE",
                         topic_key="my_topic_key",
                         protocol="zenoh",
@@ -108,6 +115,12 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -128,7 +141,6 @@ def test_pub_sub_combination(priority, reliability, congestion_control, express,
             "MAKE87_CONFIG": pub_config.model_dump_json(),
         }
     )
-
 
     # Start publisher (non-blocking)
     publisher_proc = subprocess.Popen(
@@ -199,6 +211,12 @@ def test_defaults_only():
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7448,
+                    host_ip="127.0.0.1",
+                    host_port=7448,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -226,7 +244,7 @@ def test_defaults_only():
                 name="zenoh_test",
                 subscribers={},
                 publishers=dict(
-                    HELLO_WORLD_MESSAGE=PublisherTopicConfig(
+                    HELLO_WORLD_MESSAGE=BoundPublisher(
                         topic_name="HELLO_WORLD_MESSAGE",
                         topic_key="my_topic_key",
                         protocol="zenoh",
@@ -237,6 +255,12 @@ def test_defaults_only():
                 providers={},
                 clients={},
                 servers={},
+                binding=Binding(
+                    container_ip="127.0.0.1",
+                    container_port=7447,
+                    host_ip="127.0.0.1",
+                    host_port=7447,
+                ),
             )
         ),
         peripherals=MountedPeripherals(peripherals=[]),
@@ -257,7 +281,6 @@ def test_defaults_only():
             "MAKE87_CONFIG": pub_config.model_dump_json(),
         }
     )
-
 
     # Start publisher (non-blocking)
     publisher_proc = subprocess.Popen(

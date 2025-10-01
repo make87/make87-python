@@ -12,13 +12,16 @@ from make87.internal.models.application_env_config import (
     BoundSubscriber,
     BoundRequester,
     BoundClient,
-    ServerServiceConfig,
+    BoundServer,
+    BoundProvider,
+    BoundPublisher,
     InterfaceConfig,
+    BoundMultiSubscriber,
+    BoundMultiClient,
+    BoundPeer,
 )
 from make87.models import (
     ApplicationConfig,
-    ProviderEndpointConfig,
-    PublisherTopicConfig,
 )
 
 
@@ -49,7 +52,7 @@ class InterfaceBase(ABC):
         self._config = make87_config
 
     @overload
-    def get_interface_type_by_name(self, name: str, iface_type: Literal["PUB"]) -> PublisherTopicConfig: ...
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["PUB"]) -> BoundPublisher: ...
 
     @overload
     def get_interface_type_by_name(self, name: str, iface_type: Literal["SUB"]) -> BoundSubscriber: ...
@@ -58,23 +61,35 @@ class InterfaceBase(ABC):
     def get_interface_type_by_name(self, name: str, iface_type: Literal["REQ"]) -> BoundRequester: ...
 
     @overload
-    def get_interface_type_by_name(self, name: str, iface_type: Literal["PRV"]) -> ProviderEndpointConfig: ...
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["PRV"]) -> BoundProvider: ...
 
     @overload
     def get_interface_type_by_name(self, name: str, iface_type: Literal["CLI"]) -> BoundClient: ...
 
     @overload
-    def get_interface_type_by_name(self, name: str, iface_type: Literal["SRV"]) -> ServerServiceConfig: ...
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["SRV"]) -> BoundServer: ...
+
+    @overload
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["MSUB"]) -> BoundMultiSubscriber: ...
+
+    @overload
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["MCLI"]) -> BoundMultiClient: ...
+
+    @overload
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["PEER"]) -> BoundPeer: ...
 
     def get_interface_type_by_name(
-        self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV", "CLI", "SRV"]
+        self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV", "CLI", "SRV", "MSUB", "MCLI", "PEER"]
     ) -> Union[
-        PublisherTopicConfig,
+        BoundPublisher,
         BoundSubscriber,
         BoundRequester,
-        ProviderEndpointConfig,
+        BoundProvider,
         BoundClient,
-        ServerServiceConfig,
+        BoundServer,
+        BoundMultiSubscriber,
+        BoundMultiClient,
+        BoundPeer,
     ]:
         """Get configuration object for a named interface by type.
 
@@ -90,6 +105,9 @@ class InterfaceBase(ABC):
                 - "PRV": Provider endpoint configuration
                 - "CLI": Client service configuration
                 - "SRV": Server service configuration
+                - "MSUB": Multi-subscriber configuration
+                - "MCLI": Multi-client configuration
+                - "PEER": Peer configuration
 
         Returns:
             The appropriate configuration object for the specified interface type
@@ -115,6 +133,12 @@ class InterfaceBase(ABC):
             mapped_interface_types = self.interface_config.clients
         elif iface_type == "SRV":
             mapped_interface_types = self.interface_config.servers
+        elif iface_type == "MSUB":
+            mapped_interface_types = self.interface_config.multi_subscribers or {}
+        elif iface_type == "MCLI":
+            mapped_interface_types = self.interface_config.multi_clients or {}
+        elif iface_type == "PEER":
+            mapped_interface_types = self.interface_config.peers or {}
         else:
             raise NotImplementedError(f"Interface type {iface_type} is not supported.")
 

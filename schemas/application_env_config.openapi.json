@@ -141,6 +141,33 @@
           }
         }
       },
+      "Binding": {
+        "type": "object",
+        "required": [
+          "container_ip",
+          "container_port",
+          "host_ip",
+          "host_port"
+        ],
+        "properties": {
+          "container_ip": {
+            "type": "string"
+          },
+          "container_port": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "host_ip": {
+            "type": "string"
+          },
+          "host_port": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
       "BoundClient": {
         "allOf": [
           {
@@ -154,6 +181,122 @@
           }
         ]
       },
+      "BoundMultiClient": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MultiClientServiceConfig"
+          },
+          {
+            "type": "object",
+            "required": [
+              "access_points"
+            ],
+            "properties": {
+              "access_points": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/AccessPoint"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "BoundMultiSubscriber": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MultiSubscriberTopicConfig"
+          },
+          {
+            "type": "object",
+            "required": [
+              "access_points"
+            ],
+            "properties": {
+              "access_points": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/AccessPoint"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "BoundPeer": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PeerConfig"
+          },
+          {
+            "type": "object",
+            "required": [
+              "access_points"
+            ],
+            "properties": {
+              "access_points": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/AccessPoint"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "BoundProvider": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProviderEndpointConfig"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "binding": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Binding"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "BoundPublisher": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PublisherTopicConfig"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "binding": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Binding"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
       "BoundRequester": {
         "allOf": [
           {
@@ -164,6 +307,28 @@
           },
           {
             "type": "object"
+          }
+        ]
+      },
+      "BoundServer": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ServerServiceConfig"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "binding": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Binding"
+                  }
+                ]
+              }
+            }
           }
         ]
       },
@@ -484,6 +649,16 @@
           "servers"
         ],
         "properties": {
+          "binding": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Binding"
+              }
+            ]
+          },
           "clients": {
             "type": "object",
             "additionalProperties": {
@@ -493,13 +668,40 @@
               "type": "string"
             }
           },
+          "multi_clients": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BoundMultiClient"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
+          "multi_subscribers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BoundMultiSubscriber"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
           "name": {
             "type": "string"
+          },
+          "peers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BoundPeer"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
           },
           "providers": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/ProviderEndpointConfig"
+              "$ref": "#/components/schemas/BoundProvider"
             },
             "propertyNames": {
               "type": "string"
@@ -508,7 +710,7 @@
           "publishers": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/PublisherTopicConfig"
+              "$ref": "#/components/schemas/BoundPublisher"
             },
             "propertyNames": {
               "type": "string"
@@ -526,7 +728,7 @@
           "servers": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/ServerServiceConfig"
+              "$ref": "#/components/schemas/BoundServer"
             },
             "propertyNames": {
               "type": "string"
@@ -601,6 +803,70 @@
           }
         }
       },
+      "MultiClientServiceConfig": {
+        "type": "object",
+        "required": [
+          "name",
+          "spec",
+          "keys"
+        ],
+        "properties": {
+          "interface_name": {
+            "type": "string"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "MultiSubscriberTopicConfig": {
+        "type": "object",
+        "required": [
+          "topic_name",
+          "topic_keys",
+          "message_type"
+        ],
+        "properties": {
+          "encoding": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "interface_name": {
+            "type": "string"
+          },
+          "message_type": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "topic_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "topic_name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
       "OtherPeripheral": {
         "type": "object",
         "required": [
@@ -625,6 +891,39 @@
             "type": "string"
           }
         }
+      },
+      "PeerConfig": {
+        "type": "object",
+        "required": [
+          "name",
+          "key",
+          "peer_keys",
+          "spec"
+        ],
+        "properties": {
+          "interface_name": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "peer_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
       },
       "Peripheral": {
         "oneOf": [

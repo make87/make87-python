@@ -11,7 +11,7 @@ from make87.internal.models.application_env_config import (
     ApplicationInfo,
     InterfaceConfig,
     BoundClient,
-    ServerServiceConfig,
+    BoundServer,
 )
 from make87.models import (
     ApplicationConfig,
@@ -79,7 +79,7 @@ def create_server_config():
                 providers={},
                 clients={},
                 servers=dict(
-                    rerun_server=ServerServiceConfig(
+                    rerun_server=BoundServer(
                         name="rerun_server_service",
                         key="rerun_server_key",
                         spec="rerun_server_spec",

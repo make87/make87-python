@@ -8,6 +8,7 @@ to existing Rerun servers and hosting Rerun servers locally.
 import hashlib
 import logging
 import uuid
+from typing import List
 
 from make87.interfaces.base import InterfaceBase
 from make87.interfaces.rerun.model import RerunGRpcClientConfig, RerunGRpcServerConfig
@@ -104,6 +105,80 @@ class RerunInterface(InterfaceBase):
 
         return recording
 
+    def get_multi_client_recording_streams(self, name: str) -> List:
+        """Create multiple Rerun recording streams connected to gRPC servers.
+
+        Creates and configures multiple Rerun recording streams based on the
+        multi-client configuration, with each stream connecting to a different
+        server endpoint.
+
+        Args:
+            name: The name of the multi-client service configuration to use
+
+        Returns:
+            List of configured rerun.RecordingStream instances, one for each endpoint
+
+        Raises:
+            KeyError: If the multi-client service is not found
+            RerunNotInstalledError: If rerun package is not installed
+            RerunInterfaceError: If connection or configuration fails
+
+        Example:
+            >>> interface = RerunInterface("my_interface")
+            >>> recordings = interface.get_multi_client_recording_streams("multi_rerun_client")
+            >>> for i, recording in enumerate(recordings):
+            ...     recording.log(f"world/points_{i}", rr.Points3D([[i, i, i]]))
+        """
+        multi_client_config = self.get_interface_type_by_name(name=name, iface_type="MCLI")
+
+        # Handle nested model_extra structure if present
+        extra_config = multi_client_config.model_extra
+        if isinstance(extra_config, dict) and "model_extra" in extra_config:
+            extra_config = extra_config["model_extra"]
+        rerun_config = RerunGRpcClientConfig.model_validate(extra_config)
+
+        # Configure the chunk batcher
+        batcher_config = rr.ChunkBatcherConfig()
+        batcher_config.flush_tick = rerun_config.batcher_config.flush_tick
+        batcher_config.flush_num_bytes = rerun_config.batcher_config.flush_num_bytes
+        batcher_config.flush_num_rows = rerun_config.batcher_config.flush_num_rows
+
+        system_id = self._config.application_info.system_id
+
+        recording_streams = []
+        for i, key in enumerate(multi_client_config.keys):
+            # Get the access point for this key
+            access_point = multi_client_config.access_points[key]
+
+            # Create unique recording stream for each endpoint
+            recording_id = _deterministic_uuid_v4_from_string(f"{system_id}_{key}_{i}")
+            recording = rr.RecordingStream(
+                application_id=f"{system_id}_{key}",
+                recording_id=recording_id,
+                batcher_config=batcher_config,
+            )
+
+            # Connect to gRPC server using the access point
+            rr.connect_grpc(
+                f"rerun+http://{access_point.vpn_ip}:{access_point.vpn_port}/proxy",
+                recording=recording,
+            )
+
+            recording_streams.append(recording)
+
+        return recording_streams
+
+    def get_multi_client(self, name: str) -> List:
+        """Alias for get_multi_client_recording_streams for consistency with other interfaces.
+
+        Args:
+            name: The name of the multi-client service configuration to use
+
+        Returns:
+            List of configured rerun.RecordingStream instances, one for each endpoint
+        """
+        return self.get_multi_client_recording_streams(name)
+
     def get_server_recording_stream(self, name: str):
         """Create a Rerun recording stream that hosts a gRPC server.
 
@@ -154,9 +229,17 @@ class RerunInterface(InterfaceBase):
         # Configure playback behavior
         newest_first = rerun_config.playback_behavior.value == "NewestFirst"
 
+        # Port resolution hierarchy: service binding -> interface binding -> default port
+        grpc_port = 9876
+
+        if server_config.binding is not None:
+            grpc_port = server_config.binding.container_port
+        elif self.interface_config.binding is not None:
+            grpc_port = self.interface_config.binding.container_port
+
         # Start gRPC server
         _ = rr.serve_grpc(
-            grpc_port=9876,
+            grpc_port=grpc_port,
             server_memory_limit=memory_limit,
             newest_first=newest_first,
             recording=recording,
