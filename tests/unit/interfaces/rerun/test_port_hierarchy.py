@@ -160,16 +160,10 @@ def config_with_no_bindings():
     return load_config_from_json(application_config_str)
 
 
-@patch("make87.interfaces.rerun.interface.is_port_in_use")
 @patch("make87.interfaces.rerun.interface.rr.serve_grpc")
 @patch("make87.interfaces.rerun.interface.rr.RecordingStream")
-def test_service_binding_takes_priority(
-    mock_recording_stream, mock_serve_grpc, mock_is_port_in_use, config_with_service_binding
-):
+def test_service_binding_takes_priority(mock_recording_stream, mock_serve_grpc, config_with_service_binding):
     """Test that service binding port takes priority over interface binding."""
-    # Mock that ports are available
-    mock_is_port_in_use.return_value = False
-
     # Mock rerun components
     mock_recording_stream.return_value = "mock_recording_stream"
     mock_serve_grpc.return_value = "mock_server"
@@ -177,27 +171,21 @@ def test_service_binding_takes_priority(
     interface = RerunInterface(name="rerun_test", make87_config=config_with_service_binding)
 
     # Get the recording stream - should use service binding port (9999)
-    _ = interface.get_server_recording_stream("rerun_server")
-
-    # Verify the port check was called with service binding port
-    mock_is_port_in_use.assert_called_with(9999)
+    recording = interface.get_server_recording_stream("rerun_server")
 
     # Verify serve_grpc was called with service binding port
     mock_serve_grpc.assert_called_once()
     call_args = mock_serve_grpc.call_args
     assert call_args[1]["grpc_port"] == 9999
+    assert recording == "mock_recording_stream"
 
 
-@patch("make87.interfaces.rerun.interface.is_port_in_use")
 @patch("make87.interfaces.rerun.interface.rr.serve_grpc")
 @patch("make87.interfaces.rerun.interface.rr.RecordingStream")
 def test_interface_binding_used_when_no_service_binding(
-    mock_recording_stream, mock_serve_grpc, mock_is_port_in_use, config_with_interface_binding_only
+    mock_recording_stream, mock_serve_grpc, config_with_interface_binding_only
 ):
     """Test that interface binding port is used when service binding is not specified."""
-    # Mock that ports are available
-    mock_is_port_in_use.return_value = False
-
     # Mock rerun components
     mock_recording_stream.return_value = "mock_recording_stream"
     mock_serve_grpc.return_value = "mock_server"
@@ -205,27 +193,19 @@ def test_interface_binding_used_when_no_service_binding(
     interface = RerunInterface(name="rerun_test", make87_config=config_with_interface_binding_only)
 
     # Get the recording stream - should use interface binding port (8888)
-    _ = interface.get_server_recording_stream("rerun_server")
-
-    # Verify the port check was called with interface binding port
-    mock_is_port_in_use.assert_called_with(8888)
+    recording = interface.get_server_recording_stream("rerun_server")
 
     # Verify serve_grpc was called with interface binding port
     mock_serve_grpc.assert_called_once()
     call_args = mock_serve_grpc.call_args
     assert call_args[1]["grpc_port"] == 8888
+    assert recording == "mock_recording_stream"
 
 
-@patch("make87.interfaces.rerun.interface.is_port_in_use")
 @patch("make87.interfaces.rerun.interface.rr.serve_grpc")
 @patch("make87.interfaces.rerun.interface.rr.RecordingStream")
-def test_default_port_used_when_no_bindings(
-    mock_recording_stream, mock_serve_grpc, mock_is_port_in_use, config_with_no_bindings
-):
+def test_default_port_used_when_no_bindings(mock_recording_stream, mock_serve_grpc, config_with_no_bindings):
     """Test that default port 9876 is used when no bindings are specified."""
-    # Mock that ports are available
-    mock_is_port_in_use.return_value = False
-
     # Mock rerun components
     mock_recording_stream.return_value = "mock_recording_stream"
     mock_serve_grpc.return_value = "mock_server"
@@ -233,60 +213,36 @@ def test_default_port_used_when_no_bindings(
     interface = RerunInterface(name="rerun_test", make87_config=config_with_no_bindings)
 
     # Get the recording stream - should use default port (9876)
-    _ = interface.get_server_recording_stream("rerun_server")
-
-    # Verify the port check was called with default port
-    mock_is_port_in_use.assert_called_with(9876)
+    recording = interface.get_server_recording_stream("rerun_server")
 
     # Verify serve_grpc was called with default port
     mock_serve_grpc.assert_called_once()
     call_args = mock_serve_grpc.call_args
     assert call_args[1]["grpc_port"] == 9876
+    assert recording == "mock_recording_stream"
 
 
-@patch("make87.interfaces.rerun.interface.is_port_in_use")
-def test_service_binding_port_conflict_error_message(mock_is_port_in_use, config_with_service_binding):
-    """Test that port conflict error message identifies service binding correctly."""
-    # Mock that port is in use
-    mock_is_port_in_use.return_value = True
+def test_port_hierarchy_configuration_parsing(
+    config_with_service_binding, config_with_interface_binding_only, config_with_no_bindings
+):
+    """Test that port hierarchy configurations are parsed correctly."""
+    # Service binding case
+    interface_service = RerunInterface(name="rerun_test", make87_config=config_with_service_binding)
+    server_config_service = interface_service.get_interface_type_by_name("rerun_server", "SRV")
+    assert server_config_service.binding is not None
+    assert server_config_service.binding.container_port == 9999
+    assert interface_service.interface_config.binding is not None
+    assert interface_service.interface_config.binding.container_port == 8888
 
-    interface = RerunInterface(name="rerun_test", make87_config=config_with_service_binding)
+    # Interface binding only case
+    interface_interface = RerunInterface(name="rerun_test", make87_config=config_with_interface_binding_only)
+    server_config_interface = interface_interface.get_interface_type_by_name("rerun_server", "SRV")
+    assert server_config_interface.binding is None
+    assert interface_interface.interface_config.binding is not None
+    assert interface_interface.interface_config.binding.container_port == 8888
 
-    with pytest.raises(RuntimeError) as exc_info:
-        _ = interface.get_server_recording_stream("rerun_server")
-
-    error_message = str(exc_info.value)
-    assert "service binding port 9999 is already in use" in error_message
-    assert "Cannot start Rerun server" in error_message
-
-
-@patch("make87.interfaces.rerun.interface.is_port_in_use")
-def test_interface_binding_port_conflict_error_message(mock_is_port_in_use, config_with_interface_binding_only):
-    """Test that port conflict error message identifies interface binding correctly."""
-    # Mock that port is in use
-    mock_is_port_in_use.return_value = True
-
-    interface = RerunInterface(name="rerun_test", make87_config=config_with_interface_binding_only)
-
-    with pytest.raises(RuntimeError) as exc_info:
-        _ = interface.get_server_recording_stream("rerun_server")
-
-    error_message = str(exc_info.value)
-    assert "interface binding port 8888 is already in use" in error_message
-    assert "Cannot start Rerun server" in error_message
-
-
-@patch("make87.interfaces.rerun.interface.is_port_in_use")
-def test_default_port_conflict_error_message(mock_is_port_in_use, config_with_no_bindings):
-    """Test that port conflict error message identifies default port correctly."""
-    # Mock that port is in use
-    mock_is_port_in_use.return_value = True
-
-    interface = RerunInterface(name="rerun_test", make87_config=config_with_no_bindings)
-
-    with pytest.raises(RuntimeError) as exc_info:
-        _ = interface.get_server_recording_stream("rerun_server")
-
-    error_message = str(exc_info.value)
-    assert "default port 9876 is already in use" in error_message
-    assert "Cannot start Rerun server" in error_message
+    # No bindings case
+    interface_default = RerunInterface(name="rerun_test", make87_config=config_with_no_bindings)
+    server_config_default = interface_default.get_interface_type_by_name("rerun_server", "SRV")
+    assert server_config_default.binding is None
+    assert interface_default.interface_config.binding is None

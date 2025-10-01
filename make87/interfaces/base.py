@@ -18,6 +18,7 @@ from make87.internal.models.application_env_config import (
     InterfaceConfig,
     BoundMultiSubscriber,
     BoundMultiClient,
+    BoundPeer,
 )
 from make87.models import (
     ApplicationConfig,
@@ -74,8 +75,11 @@ class InterfaceBase(ABC):
     @overload
     def get_interface_type_by_name(self, name: str, iface_type: Literal["MCLI"]) -> BoundMultiClient: ...
 
+    @overload
+    def get_interface_type_by_name(self, name: str, iface_type: Literal["PEER"]) -> BoundPeer: ...
+
     def get_interface_type_by_name(
-        self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV", "CLI", "SRV", "MSUB", "MCLI"]
+        self, name: str, iface_type: Literal["PUB", "SUB", "REQ", "PRV", "CLI", "SRV", "MSUB", "MCLI", "PEER"]
     ) -> Union[
         BoundPublisher,
         BoundSubscriber,
@@ -85,6 +89,7 @@ class InterfaceBase(ABC):
         BoundServer,
         BoundMultiSubscriber,
         BoundMultiClient,
+        BoundPeer,
     ]:
         """Get configuration object for a named interface by type.
 
@@ -102,6 +107,7 @@ class InterfaceBase(ABC):
                 - "SRV": Server service configuration
                 - "MSUB": Multi-subscriber configuration
                 - "MCLI": Multi-client configuration
+                - "PEER": Peer configuration
 
         Returns:
             The appropriate configuration object for the specified interface type
@@ -131,6 +137,8 @@ class InterfaceBase(ABC):
             mapped_interface_types = self.interface_config.multi_subscribers or {}
         elif iface_type == "MCLI":
             mapped_interface_types = self.interface_config.multi_clients or {}
+        elif iface_type == "PEER":
+            mapped_interface_types = self.interface_config.peers or {}
         else:
             raise NotImplementedError(f"Interface type {iface_type} is not supported.")
 
