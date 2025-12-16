@@ -14,6 +14,16 @@ Modules:
     host: Host system integration utilities
 """
 
+import warnings
+
+warnings.warn(
+    "The make87 package is deprecated and unmaintained. "
+    "make87 has pivoted to a CLI/agent-based device management workflow. "
+    "If you are still using this SDK, pin your dependency version and migrate off this package.",
+    UserWarning,
+    stacklevel=2,
+)
+
 import signal
 import threading
 import make87.config as config
